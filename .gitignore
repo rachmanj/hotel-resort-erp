@@ -1,0 +1,40 @@
+# Environment
+.env
+.env.local
+.env.production
+
+# Dependencies
+/node_modules
+/vendor
+
+# Laravel
+/storage/*.key
+/storage/app/public/*
+/storage/framework/cache/*
+/storage/framework/sessions/*
+/storage/framework/testing/*
+/storage/framework/views/*
+/storage/logs/*
+!storage/logs/.gitkeep
+/bootstrap/cache/*
+
+# Build
+/public/build
+/public/hot
+/node_modules/.vite
+
+# IDE
+.idea
+.vscode
+*.sublime-*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Hermes
+.hermes-task-prompt.md
+
+# PHPUnit
+.phpunit.result.cache
+.phpunit.cache
