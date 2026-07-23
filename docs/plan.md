@@ -1,8 +1,8 @@
 # Hotel & Resort ERP — Implementation Plan
 
-> **Status:** Draft v1.0 — Greenfield project plan
-> **Stack:** Laravel 13+ (PHP 8.5) · Inertia.js + React + Ant Design ProTable · MySQL 8 · Laravel Reverb · `irazasyed/telegram-bot-sdk` · Laravel Queue (database driver) · DomPDF
-> **Context:** Indonesian hospitality operations (PPN 11%, Service Charge 10% common practice), single-property MVP with multi-property-ready architecture.
+> **Status:** Draft v1.1 — Greenfield project plan
+> **Stack:** Laravel 13+ (PHP 8.5) · Inertia.js + React + Ant Design ProTable · MySQL 8 · Laravel Reverb · `irazasyed/telegram-bot-sdk` · Laravel Queue (database driver) · DomPDF · `maatwebsite/excel`
+> **Context:** Indonesian hospitality operations (PPN 11%, Service Charge 10% common practice), single-property MVP with multi-property-ready architecture. Full **accrual-based, double-entry accounting** (PSAK-aligned) is a first-class module, not an afterthought — this plan is reviewed against CPA/finance-grade standards.
 
 ---
 
@@ -26,13 +26,14 @@
 
 ### What this ERP does
 
-A full-featured **Hotel & Resort Enterprise Resource Planning (ERP)** system that unifies front office operations, housekeeping, food & beverage (F&B), billing/finance, guest relationship management (CRM), inventory/purchasing, maintenance/engineering, spa & wellness, and management reporting into a single web application — with a **Telegram bot as a first-class operational channel** for staff who are on the move (housekeepers, front office agents, maintenance techs, F&B runners, duty managers).
+A full-featured **Hotel & Resort Enterprise Resource Planning (ERP)** system that unifies front office operations, housekeeping, food & beverage (F&B), billing/finance, guest relationship management (CRM), inventory/purchasing, maintenance/engineering, spa & wellness, **full accounting & finance (General Ledger, financial statements, AR/AP, budgeting, tax)**, and management reporting into a single web application — with a **Telegram bot as a first-class operational channel** for staff who are on the move (housekeepers, front office agents, maintenance techs, F&B runners, duty managers).
 
 The system replaces disconnected spreadsheets, WhatsApp coordination, and paper logbooks with:
 - A single source of truth for room inventory, reservations, and guest folios.
 - Role-based web dashboards (Ant Design ProTable-driven) for desk-bound staff (front office, finance, management).
 - A Telegram bot for floor staff who need fast, low-friction access without opening a laptop — check room status, update housekeeping status, receive alerts, and even process check-in/out from a phone.
-- Finance-grade billing: folios, tax (PPN 11%), service charge (10%), split billing, city ledger for corporate accounts — reflecting proper accrual/cash accounting discipline expected by a CPA-led finance team.
+- Finance-grade billing: folios, tax (PPN 11%), service charge (10%), split billing, city ledger for corporate accounts — reflecting proper accrual accounting discipline expected by a CPA-led finance team.
+- A dedicated **Accounting Module** ([2.12](#212-accounting--finance-new--must-have)) sitting underneath every revenue/expense-generating module: a Chart of Accounts, double-entry General Ledger, Journal Entries, PSAK-aligned financial statements (Neraca, Laba Rugi, Arus Kas), AR/AP subledgers, bank reconciliation, fixed assets/depreciation, budgeting, and Indonesian tax accounting (PPN, PPh 21/23/4(2)) — every folio charge, payment, supplier invoice, and stock movement posts to the GL automatically, so the books are always current, not reconstructed at month-end.
 
 ### Target users
 
@@ -42,7 +43,7 @@ The system replaces disconnected spreadsheets, WhatsApp coordination, and paper 
 | **Housekeeping** | Telegram (primary) + Web (supervisor view) | Room status updates, task assignment, linen tracking |
 | **F&B / Restaurant** | Web (POS-lite) + Telegram (kitchen alerts) | Orders, charge-to-room, kitchen display |
 | **Management / GM** | Web dashboard + Telegram alerts | Occupancy, revenue, ADR/RevPAR, exception alerts (VIP, incidents) |
-| **Finance / Accounting (CPA)** | Web (ProTable, reports) | Folios, city ledger, tax reconciliation, exports |
+| **Finance / Accounting (CPA)** | Web (ProTable, reports) + Telegram (quick GL/report queries) | Chart of Accounts, General Ledger, journal entries, financial statements (Neraca/Laba Rugi/Arus Kas), AR/AP, bank reconciliation, fixed assets, budgeting, tax reconciliation (PPN/PPh), exports |
 | **Maintenance / Engineering** | Telegram (work orders) + Web (asset registry) | Work orders, preventive maintenance, asset tracking |
 | **Spa & Wellness staff** | Web (booking calendar) + Telegram (schedule) | Appointments, therapist schedule, charge-to-room |
 | **Guests** (indirect, MVP placeholder) | Online booking widget (future), front desk | Reservation, stay, checkout |
@@ -153,6 +154,95 @@ Unlike generic hotel PMS software, this ERP treats **Telegram as a full operatio
 - Therapist schedule (`spa_therapists`, `spa_therapist_schedules`).
 - Charge to room (posts to guest folio, same mechanism as F&B).
 
+### 2.12 Accounting & Finance (NEW — MUST HAVE)
+
+The accounting module is the financial backbone of the ERP — accrual-based, double-entry, PSAK-aligned, and the single source of truth for every rupiah that moves through Front Office, F&B, Spa, and Inventory/Purchasing. Every revenue and expense event elsewhere in the system posts here automatically; nothing bypasses the General Ledger.
+
+**Chart of Accounts (CoA)**
+- Standard hotel-industry CoA aligned to PSAK (Pernyataan Standar Akuntansi Keuangan), loosely following the Uniform System of Accounts for the Lodging Industry (USALI) departmental structure, adapted for Indonesian statutory reporting.
+- Five account groups: **Aset** (Assets), **Kewajiban** (Liabilities), **Ekuitas** (Equity), **Pendapatan** (Revenue), **Beban** (Expenses) — with Harga Pokok Penjualan (COGS) broken out as its own group for hotel F&B/inventory costing.
+- Account numbering convention: `1-0000` Aset, `2-0000` Kewajiban, `3-0000` Ekuitas, `4-0000` Pendapatan, `5-0000` COGS, `6-0000` Beban Operasional — sub-ranges per department (e.g. `4-1000` Room Revenue with `4-1100`/`4-1200`/`4-1300` per room type, `4-2000` F&B Revenue per outlet, `4-3000` Spa Revenue).
+- `chart_of_accounts` supports unlimited-depth `parent_id` hierarchy (header/subtotal accounts vs. postable detail accounts), an `account_type` (`asset`,`liability`,`equity`,`revenue`,`cogs`,`expense`), and `normal_balance` (`debit`,`credit`); header accounts are non-postable (`is_postable = false`), enforced at the posting layer.
+- Default CoA seeder (`ChartOfAccountsSeeder`) ships ~80–100 hotel-standard accounts out of the box: cash/bank, guest ledger AR, city ledger AR, inventory, prepaid expenses, fixed assets & accumulated depreciation, AP, accrued expenses, tax payable/receivable, room/F&B/spa revenue lines, and standard operating expense lines (payroll, utilities, marketing, admin).
+- Custom account creation restricted to the `finance` role; accounts with existing GL history cannot be deleted, only soft-deactivated (`is_active` flag).
+
+**General Ledger**
+- Strict double-entry bookkeeping — every transaction is a balanced set of debit/credit lines; the posting layer rejects any unbalanced entry within a DB transaction.
+- Every financial-impact event elsewhere in the system posts to the GL automatically and immediately — folio charges, payments received, supplier invoices, stock movements — with no manual re-entry of operational transactions.
+- `general_ledger` transaction lines record: account, debit/credit amount, transaction date, reference number, description, `accounting_period_id`, and a polymorphic `source_type`/`source_id`.
+- Period locking via `accounting_periods` — once a period is `closed`, no new postings (manual or automatic) may target it; late adjustments require a reversing/correcting entry dated in the current open period.
+- Full audit trail: every GL line links back to its originating source document (`folio_items`, `payments`, `supplier_invoices`, `stock_movements`, or a manual `journal_entry_lines` row) — nothing posts to GL without a traceable origin.
+
+**Journal Entries**
+- Manual journal entry creation restricted to the `finance` role, for adjustments not covered by automatic posting (accruals, corrections, depreciation, amortization).
+- Journal voucher numbering: `JV-{YYYY}{MM}-{seq}` (e.g. `JV-202607-0014`).
+- Supporting document upload per journal entry (invoice scan, calculation worksheet, approval memo).
+- Recurring journal entries (monthly depreciation, prepaid rent/insurance amortization) auto-generated as `draft` on a schedule for finance to review and approve — never silently auto-posted.
+- Approval workflow: `draft` → `submitted` → `approved` → `posted`, mirroring the purchase requisition approval pattern already used in Inventory & Purchasing ([2.7](#27-inventory--purchasing)) for consistency.
+- Reversal entries — a posted journal entry can be reversed, generating an equal-and-opposite entry in the current open period rather than mutating history.
+
+**Financial Statements**
+- **Neraca (Balance Sheet)** — assets, liabilities, and equity as of a given date, with current/non-current classification.
+- **Laba Rugi (Income Statement / P&L)** — revenue, COGS, and operating expenses for a period, with department-level revenue breakdown (rooms/F&B/spa/other) and net income.
+- **Arus Kas (Cash Flow Statement)** — operating, investing, and financing activities, built via the indirect method from GL movements on cash/bank plus non-cash adjustments.
+- **Trial Balance (Neraca Saldo)** — all account balances pre-adjustment, the reconciliation checkpoint before finalizing statements.
+- **General Ledger Report** — per-account transaction history with running balance, drillable to source document.
+- All statements/reports filterable by date range, department (rooms/F&B/spa), and property (multi-property-ready, same scoping strategy as [10.6](#106-multi-tenancy-single-hotel-or-multi-property)).
+- Export to PDF (DomPDF) and Excel (`maatwebsite/excel`), matching the export conventions already used in Reporting & Analytics ([2.8](#28-reporting--analytics)).
+- Comparative periods built into every statement view: this month vs. last month, and YTD vs. last year YTD.
+
+**Accounts Receivable (AR) — City Ledger Extension**
+- Formalizes the city ledger concept already introduced in Billing ([2.5](#25-billing--front-desk-cashier), [4.5](#45-billing--folio)) into a proper AR subledger — `ar_invoices` are generated periodically from open city-ledger folios per `companies` account, rather than folios simply staying open indefinitely.
+- AR aging report — 0-30, 31-60, 61-90, 90+ day buckets by company.
+- Customer statements (PDF) for corporate accounts, summarizing open invoices for a period.
+- Payment allocation — incoming AR payments applied against specific `ar_invoices` (oldest-first default, manually overridable).
+- Credit limit enforcement at folio posting — `companies.credit_limit` checked before a new city-ledger charge is allowed to post; over-limit charges require manager override.
+- Dunning letters / reminders — **placeholder** (template + manual trigger only; automated scheduling out of scope for MVP).
+
+**Accounts Payable (AP)**
+- Supplier invoice entry (`supplier_invoices` + `supplier_invoice_lines`) matched against `purchase_orders`/`purchase_order_items` (3-way match: PO → goods receipt → invoice).
+- AP aging report — same bucket structure as AR aging, by supplier.
+- Payment scheduling — due-date-driven payment run list, prioritized by `suppliers` payment terms.
+- Tax withholding on supplier payments — **PPh 23** (services/rentals, 2%) and **PPh 4(2)** (final tax on land/building rent) calculated automatically per supplier invoice line based on a tax-object classification.
+- Bukti Potong (withholding tax slip) — **placeholder** (data captured; PDF slip generation stubbed for future e-Bupot integration).
+
+**Bank Reconciliation**
+- Bank account setup (`bank_accounts`) — supports multiple accounts (operational, payroll, deposit accounts), each mapped to a GL cash/bank account.
+- Import bank statement via CSV upload (staged into `bank_reconciliation_lines` before matching).
+- Matching engine pairs GL cash/bank lines against imported statement lines (amount + date-window auto-match, manual match for the remainder).
+- Outstanding checks / deposits-in-transit tracked as unmatched lines carried forward to the next reconciliation period.
+- Reconciliation report — book balance vs. statement balance, itemized reconciling items, signed off by finance.
+
+**Fixed Assets & Depreciation**
+- Asset register (`fixed_assets`) ties into the Maintenance module's existing `assets` table ([4.8](#48-maintenance--engineering)) rather than duplicating it — a `fixed_assets` row references the physical `asset` and carries the accounting attributes (acquisition cost, useful life, salvage value).
+- Depreciation methods: straight-line and double-declining balance, selectable per asset.
+- Monthly depreciation run auto-generates a recurring journal entry (draft, pending finance approval) debiting the relevant depreciation expense account and crediting accumulated depreciation.
+- Asset disposal / write-off — posts remaining net book value as gain/loss on disposal.
+- Asset revaluation — supported with a dedicated revaluation journal entry type and audit note (reason, appraised value, approver).
+
+**Budgeting**
+- Annual budget per department — rooms, F&B, spa, admin, maintenance, marketing.
+- Budget per account (`budget_lines`) — both revenue and expense accounts, with a monthly breakdown for the fiscal year.
+- Budget vs. Actual report with variance analysis (amount and %), drillable by department and by month.
+- Budget input form — spreadsheet-like monthly entry grid (AntD editable `Table`) per account, with copy-from-last-year and % escalation helpers.
+
+**Tax Accounting**
+- **PPN (VAT) Input & Output** tracking — output tax from guest folios (already charged per [4.5](#45-billing--folio)), input tax from supplier invoices; both flow into `tax_transactions` for reconciliation.
+- PPN monthly reconciliation — output vs. input tax summary to support SPT Masa PPN preparation (manual filing in MVP; no direct e-Faktur API integration — see [Open Questions](#11-open-questions--decisions)).
+- **PPh 21** (employee income tax) — **placeholder**, awaiting the Payroll module scope decision ([Open Questions](#11-open-questions--decisions)); schema reserves a `pph21` tax type.
+- **PPh 23** (service/rental withholding, 2%) on qualifying supplier payments — see Accounts Payable above.
+- **PPh 4(2)** (final tax on rent/land) where applicable — see Accounts Payable above.
+- **PBB** (property tax) — **placeholder** (annual expense entry only, no calculation engine).
+- Tax report generation — per-tax-type summary for a period, exportable for the CPA/finance team's external filing workflow.
+
+**Integration Points with Existing Modules**
+- Folio charges → auto-post to GL: debit AR/Guest Ledger (or Cash if paid immediately), credit the relevant Revenue account, per [4.5](#45-billing--folio).
+- Payments received → auto-post to GL: debit Cash/Bank, credit AR/Guest Ledger.
+- Supplier/purchase invoices → auto-post to GL: debit Expense or Inventory, credit AP, per [4.9](#49-inventory--purchasing).
+- Stock movements (consumption) → auto-post COGS to GL: debit COGS, credit Inventory asset account.
+- Payroll (future module) → auto-post salary expense journal entries once Payroll scope is decided.
+- Telegram bot commands: `/gl {account_code}`, `/trialbalance`, `/pnl {month}`, `/balancesheet` — see [6.3](#63-full-command-list).
+
 ---
 
 ## 3. ERD (Entity Relationship Diagram)
@@ -218,6 +308,41 @@ erDiagram
     SPA_APPOINTMENTS }o--o| RESERVATIONS : "charge to room"
 
     TELEGRAM_USERS ||--o{ TELEGRAM_CONVERSATION_STATES : "has active flow"
+
+    CHART_OF_ACCOUNTS ||--o{ CHART_OF_ACCOUNTS : "parent of (sub-accounts)"
+    CHART_OF_ACCOUNTS ||--o{ GENERAL_LEDGER : "posted to"
+    ACCOUNTING_PERIODS ||--o{ GENERAL_LEDGER : "contains postings"
+    USERS ||--o{ JOURNAL_ENTRIES : "created_by / approved_by"
+    JOURNAL_ENTRIES ||--o{ JOURNAL_ENTRY_LINES : "contains"
+    JOURNAL_ENTRY_LINES }o--|| CHART_OF_ACCOUNTS : "debits/credits"
+    JOURNAL_ENTRIES ||--o{ GENERAL_LEDGER : "posts as"
+
+    FOLIO_ITEMS ||--o| GENERAL_LEDGER : "auto-posts (source)"
+    PAYMENTS ||--o| GENERAL_LEDGER : "auto-posts (source)"
+    STOCK_MOVEMENTS ||--o| GENERAL_LEDGER : "auto-posts COGS (source)"
+
+    SUPPLIERS ||--o{ SUPPLIER_INVOICES : "bills"
+    PURCHASE_ORDERS ||--o{ SUPPLIER_INVOICES : "matched against"
+    SUPPLIER_INVOICES ||--o{ SUPPLIER_INVOICE_LINES : "contains"
+    SUPPLIER_INVOICES ||--o| GENERAL_LEDGER : "auto-posts (source)"
+
+    COMPANIES ||--o{ AR_INVOICES : "billed (city ledger)"
+    AR_INVOICES }o--o{ FOLIOS : "consolidates"
+    AR_INVOICES ||--o{ PAYMENTS : "settled by"
+
+    BANK_ACCOUNTS ||--o{ BANK_RECONCILIATIONS : "reconciled periodically"
+    BANK_RECONCILIATIONS ||--o{ BANK_RECONCILIATION_LINES : "contains"
+    BANK_RECONCILIATION_LINES }o--o| GENERAL_LEDGER : "matches"
+
+    BUDGETS ||--o{ BUDGET_LINES : "contains"
+    BUDGET_LINES }o--|| CHART_OF_ACCOUNTS : "budgets"
+
+    ASSETS ||--o| FIXED_ASSETS : "accounting record"
+    FIXED_ASSETS ||--o{ GENERAL_LEDGER : "depreciation auto-posts"
+
+    TAX_TRANSACTIONS }o--|| CHART_OF_ACCOUNTS : "affects tax account"
+    FOLIO_ITEMS ||--o| TAX_TRANSACTIONS : "output tax"
+    SUPPLIER_INVOICE_LINES ||--o| TAX_TRANSACTIONS : "input tax"
 ```
 
 ---
@@ -524,6 +649,163 @@ Index: `housekeeping_logs(room_id, changed_at)`.
 
 **`hotel_settings`** — key-value (`key`, `value`, `type`) OR single-row config table: `id`, `name`, `address`, `logo_path`, `currency` default `IDR`, `timezone` default `Asia/Jakarta`, `default_checkin_time`, `default_checkout_time`. (Design as single-row table now, architecture-ready to become `hotels` table for multi-property — see [Section 11](#11-open-questions--decisions).)
 
+### 4.12 Accounting Schema
+
+> All monetary columns follow the same `decimal(14,2)` / IDR convention as [Section 4](#4-schema-design-per-module). GL-facing tables (`general_ledger`, `journal_entry_lines`, `chart_of_accounts`) are considered **append-mostly**: rows are never hard-deleted once posted, only reversed via new entries.
+
+**`chart_of_accounts`**
+| Column | Type | Notes |
+|---|---|---|
+| id | bigint PK | |
+| code | varchar(20) unique | e.g. `4-1100` |
+| name | varchar(150) | e.g. "Room Revenue - Deluxe" |
+| account_type | enum(`asset`,`liability`,`equity`,`revenue`,`cogs`,`expense`) | |
+| normal_balance | enum(`debit`,`credit`) | |
+| parent_id | bigint FK → chart_of_accounts, nullable | header/sub-account hierarchy |
+| is_postable | boolean default true | false for header/subtotal accounts |
+| is_active | boolean default true | |
+| description | text nullable | |
+
+Index: `chart_of_accounts(parent_id)`, `chart_of_accounts(account_type)`.
+
+**`accounting_periods`**
+| Column | Type | Notes |
+|---|---|---|
+| id | bigint PK | |
+| name | varchar(20) | e.g. `2026-07` |
+| start_date | date | |
+| end_date | date | |
+| status | enum(`open`,`closed`) default `open` | |
+| closed_by | bigint FK users nullable | |
+| closed_at | timestamp nullable | |
+
+Unique: `accounting_periods(start_date, end_date)`.
+
+**`general_ledger`**
+| Column | Type | Notes |
+|---|---|---|
+| id | bigint PK | |
+| accounting_period_id | bigint FK | |
+| chart_of_account_id | bigint FK | |
+| transaction_date | date | |
+| debit | decimal(14,2) default 0 | |
+| credit | decimal(14,2) default 0 | |
+| description | varchar(255) | |
+| reference_no | varchar(50) nullable | folio_no / po_no / JV number |
+| source_type | varchar(60) | polymorphic: `folio_item`,`payment`,`supplier_invoice`,`stock_movement`,`journal_entry` |
+| source_id | bigint | polymorphic id |
+| posted_by | bigint FK users nullable | null if system-auto-posted |
+| posted_at | timestamp | |
+
+Index: `general_ledger(chart_of_account_id, transaction_date)`, `general_ledger(source_type, source_id)`, `general_ledger(accounting_period_id)`.
+
+> **Business logic note:** every row is inserted exclusively through `GlPostingService::post(array $lines)`, which validates `SUM(debit) == SUM(credit)` for the batch inside a DB transaction before committing — never inserted directly via Eloquent `create()` elsewhere in the codebase (see [10.7](#107-accounting--gl-posting-architecture)).
+
+**`journal_entries`**
+| Column | Type | Notes |
+|---|---|---|
+| id | bigint PK | |
+| voucher_no | varchar(20) unique | `JV-{YYYYMM}-{seq}` |
+| entry_date | date | |
+| description | varchar(255) | |
+| status | enum(`draft`,`submitted`,`approved`,`posted`,`rejected`) | |
+| is_recurring | boolean default false | |
+| recurrence_rule | varchar(100) nullable | e.g. `monthly_last_day` |
+| reversed_journal_entry_id | bigint FK nullable, self-ref | set on the reversing entry |
+| attachment_path | varchar(255) nullable | |
+| created_by | bigint FK users | |
+| submitted_by / submitted_at | bigint FK users nullable / timestamp nullable | |
+| approved_by / approved_at | bigint FK users nullable / timestamp nullable | |
+| posted_by / posted_at | bigint FK users nullable / timestamp nullable | |
+
+**`journal_entry_lines`**
+| Column | Type | Notes |
+|---|---|---|
+| id | bigint PK | |
+| journal_entry_id | bigint FK | |
+| chart_of_account_id | bigint FK | |
+| debit | decimal(14,2) default 0 | |
+| credit | decimal(14,2) default 0 | |
+| description | varchar(255) nullable | |
+
+Index: `journal_entry_lines(journal_entry_id)`.
+
+**`ar_invoices`** (formal city-ledger invoicing)
+| Column | Type | Notes |
+|---|---|---|
+| id | bigint PK | |
+| invoice_no | varchar(20) unique | e.g. `AR-INV-20260731-0004` |
+| company_id | bigint FK companies | |
+| period_start | date | |
+| period_end | date | |
+| total_amount | decimal(14,2) | |
+| paid_amount | decimal(14,2) default 0 | |
+| status | enum(`open`,`partially_paid`,`paid`,`overdue`,`void`) | |
+| due_date | date | |
+| issued_at | timestamp | |
+
+**`ar_invoice_folios`** (pivot) — `ar_invoice_id` FK, `folio_id` FK, composite unique(`ar_invoice_id`,`folio_id`).
+
+**`supplier_invoices`**
+| Column | Type | Notes |
+|---|---|---|
+| id | bigint PK | |
+| invoice_no | varchar(50) | supplier's own invoice number |
+| supplier_id | bigint FK | |
+| purchase_order_id | bigint FK nullable | |
+| invoice_date | date | |
+| due_date | date | |
+| subtotal | decimal(14,2) | |
+| tax_amount | decimal(14,2) default 0 | PPN input |
+| withholding_tax_amount | decimal(14,2) default 0 | PPh 23 / PPh 4(2) |
+| total_amount | decimal(14,2) | |
+| status | enum(`draft`,`pending_approval`,`approved`,`paid`,`disputed`) | |
+| paid_at | timestamp nullable | |
+
+**`supplier_invoice_lines`** — `id`, `supplier_invoice_id` FK, `purchase_order_item_id` FK nullable, `inventory_item_id` FK nullable, `chart_of_account_id` FK (expense/inventory account to debit), `description`, `quantity` decimal(12,2), `unit_cost` decimal(14,2), `amount` decimal(14,2).
+
+**`bank_accounts`** — `id`, `bank_name`, `account_no`, `account_name`, `chart_of_account_id` FK (linked cash/bank GL account), `currency` default `IDR`, `is_active`.
+
+**`bank_reconciliations`** — `id`, `bank_account_id` FK, `period_end_date` date, `statement_balance` decimal(14,2), `book_balance` decimal(14,2), `status` (`in_progress`,`completed`), `reconciled_by` FK users, `reconciled_at`.
+
+**`bank_reconciliation_lines`** — `id`, `bank_reconciliation_id` FK, `general_ledger_id` FK nullable, `statement_line_ref` varchar(100) nullable, `statement_date` date, `statement_amount` decimal(14,2), `is_matched` boolean default false, `matched_at` timestamp nullable.
+
+**`budgets`** — `id`, `department` enum(`rooms`,`fb`,`spa`,`admin`,`maintenance`,`marketing`), `fiscal_year` year, `status` (`draft`,`approved`), `created_by` FK users. Unique(`department`,`fiscal_year`).
+
+**`budget_lines`** — `id`, `budget_id` FK, `chart_of_account_id` FK, `month` tinyint (1–12), `budgeted_amount` decimal(14,2). Unique(`budget_id`,`chart_of_account_id`,`month`).
+
+**`fixed_assets`** (accounting extension of Maintenance's `assets` table, [4.8](#48-maintenance--engineering))
+| Column | Type | Notes |
+|---|---|---|
+| id | bigint PK | |
+| asset_id | bigint FK → assets, nullable | links to physical asset registry |
+| name | varchar(150) | |
+| acquisition_date | date | |
+| acquisition_cost | decimal(14,2) | |
+| salvage_value | decimal(14,2) default 0 | |
+| useful_life_months | smallint | |
+| depreciation_method | enum(`straight_line`,`double_declining`) | |
+| accumulated_depreciation | decimal(14,2) default 0 | |
+| status | enum(`in_use`,`disposed`,`written_off`) default `in_use` | |
+| disposed_at | date nullable | |
+| disposal_proceeds | decimal(14,2) nullable | |
+
+**`tax_transactions`**
+| Column | Type | Notes |
+|---|---|---|
+| id | bigint PK | |
+| tax_type | enum(`ppn_output`,`ppn_input`,`pph21`,`pph23`,`pph4_2`,`pbb`) | |
+| source_type | varchar(60) | polymorphic: `folio_item`,`supplier_invoice_line` |
+| source_id | bigint | polymorphic id |
+| transaction_date | date | |
+| base_amount | decimal(14,2) | DPP (Dasar Pengenaan Pajak) |
+| tax_rate_percent | decimal(5,2) | |
+| tax_amount | decimal(14,2) | |
+| tax_period | varchar(7) | `YYYY-MM`, for SPT Masa grouping |
+| status | enum(`unreported`,`reported`) default `unreported` | |
+
+Index: `tax_transactions(tax_type, tax_period)`, `tax_transactions(source_type, source_id)`.
+
 ---
 
 ## 5. UX Flow
@@ -634,6 +916,32 @@ flowchart TD
     L --> M
 ```
 
+### 5.6 Month-End Closing Flow (Accounting)
+
+```mermaid
+flowchart TD
+    A[Finance opens Month-End Closing checklist] --> B[Review pending / unposted transactions]
+    B --> C{All folios closed & payments posted?}
+    C -- No --> D[Chase open folios / unposted payments]
+    D --> B
+    C -- Yes --> E[Post recurring journal entries - prepaid amortization, accruals]
+    E --> F[Run monthly depreciation - auto-generates draft journal entries]
+    F --> G[Finance reviews & approves depreciation + recurring journals]
+    G --> H[Post approved journals to General Ledger]
+    H --> I[Generate Trial Balance - Neraca Saldo]
+    I --> J{Trial balance balanced & reviewed?}
+    J -- No --> K[Investigate variance, post correcting journal entry]
+    K --> I
+    J -- Yes --> L[Generate financial statements - Balance Sheet, P&L, Cash Flow]
+    L --> M[Finance / CPA reviews statements]
+    M --> N{Approved for close?}
+    N -- No --> K
+    N -- Yes --> O[Lock accounting_periods row - status = closed]
+    O --> P[Statements archived / exported to PDF + Excel]
+```
+
+> **Business logic note:** step O (period lock) is the enforcement point — `GlPostingService` and the Journal Entry approval workflow both check `accounting_periods.status` before allowing any write against a `transaction_date`/`entry_date` falling in a closed period; late adjustments must be dated in the next open period as reversing/correcting entries, never backdated into a closed one.
+
 ---
 
 ## 6. Telegram Bot Specification
@@ -675,6 +983,10 @@ flowchart TD
 | `/approve` | `/approve {requisition_no}` | manager, finance | `/approve PR-2026-0031` | Approves a pending purchase requisition |
 | `/kds` | `/kds` | fb | `/kds` | Shows current active kitchen orders summary |
 | `/report` | `/report {daily\|occupancy\|revenue} [date]` | manager, finance | `/report daily 2026-07-21` | Sends summary report (text + optional PDF) |
+| `/gl` | `/gl {account_code}` | finance, manager | `/gl 4-1100` | Shows recent GL transactions & running balance for an account |
+| `/trialbalance` | `/trialbalance [period]` | finance, manager | `/trialbalance 2026-07` | Shows trial balance (Neraca Saldo) summary for a period |
+| `/pnl` | `/pnl {month}` | finance, manager | `/pnl 2026-07` | Shows Laba Rugi (P&L) summary for the month |
+| `/balancesheet` | `/balancesheet [date]` | finance, manager | `/balancesheet 2026-07-31` | Shows Neraca (Balance Sheet) snapshot as of date |
 | `/help` | `/help` | anyone linked | `/help` | Lists commands available to the caller's role |
 
 ### 6.4 Alerts (Push Notifications, No Reply Needed)
@@ -728,16 +1040,16 @@ Bot:    Priority updated to High. Notified maintenance team.
 
 ### 6.7 Permission Model Summary
 
-| Role | Rooms/Reservations | Housekeeping | Maintenance | F&B | Inventory/Purchasing | Reports |
-|---|---|---|---|---|---|---|
-| admin | full | full | full | full | full | full |
-| manager | view, cancel | view | view, escalate | view | approve | full |
-| front_office | full (create/edit/checkin/out) | view, update status | create ticket | view | — | daily/occupancy |
-| housekeeping | view status only | full | create ticket | — | view stock | — |
-| fb | — | — | — | full (own orders/KDS) | view stock | fb sales |
-| finance | view | — | — | — | approve, view | full |
-| maintenance | — | — | full | — | — | — |
-| spa | — | — | — | — | — | — |
+| Role | Rooms/Reservations | Housekeeping | Maintenance | F&B | Inventory/Purchasing | Reports | Accounting |
+|---|---|---|---|---|---|---|---|
+| admin | full | full | full | full | full | full | full |
+| manager | view, cancel | view | view, escalate | view | approve | full | view (GL, statements, budgets) |
+| front_office | full (create/edit/checkin/out) | view, update status | create ticket | view | — | daily/occupancy | — |
+| housekeeping | view status only | full | create ticket | — | view stock | — | — |
+| fb | — | — | — | full (own orders/KDS) | view stock | fb sales | — |
+| finance | view | — | — | — | approve, view | full | full (CoA, GL, journals, statements, AR/AP, bank rec, budgets, tax) |
+| maintenance | — | — | full | — | — | — | view own asset depreciation |
+| spa | — | — | — | — | — | — | — |
 
 Permission checks reuse the same `permissions`/`roles` tables as the web app — **no separate Telegram permission system**; the bot handler simply calls the same Laravel Policies/Gates as controllers, keyed off the linked `users` record.
 
@@ -788,6 +1100,29 @@ Permission checks reuse the same `permissions`/`roles` tables as the web app —
 | GET | `/reports/daily-revenue` | `Reports\DailyRevenueController@index` | `reports.daily-revenue` | `auth`, `can:reports.view` |
 | GET | `/reports/occupancy` | `Reports\OccupancyController@index` | `reports.occupancy` | `auth`, `can:reports.view` |
 | GET | `/reports/adr-revpar` | `Reports\AdrRevParController@index` | `reports.adr-revpar` | `auth`, `can:reports.view` |
+| GET | `/accounting/chart-of-accounts` | `Accounting\ChartOfAccountController@index` | `accounting.coa.index` | `auth`, `can:accounting.manage` |
+| GET | `/accounting/journal-entries` | `Accounting\JournalEntryController@index` | `accounting.journal-entries.index` | `auth`, `can:accounting.view` |
+| GET | `/accounting/journal-entries/create` | `Accounting\JournalEntryController@create` | `accounting.journal-entries.create` | `auth`, `can:accounting.post` |
+| GET | `/accounting/journal-entries/{journalEntry}` | `Accounting\JournalEntryController@show` | `accounting.journal-entries.show` | `auth`, `can:accounting.view` |
+| POST | `/accounting/journal-entries/{journalEntry}/submit` | `Accounting\JournalEntryApprovalController@submit` | `accounting.journal-entries.submit` | `auth`, `can:accounting.post` |
+| POST | `/accounting/journal-entries/{journalEntry}/approve` | `Accounting\JournalEntryApprovalController@approve` | `accounting.journal-entries.approve` | `auth`, `can:accounting.approve` |
+| POST | `/accounting/journal-entries/{journalEntry}/reverse` | `Accounting\JournalEntryApprovalController@reverse` | `accounting.journal-entries.reverse` | `auth`, `can:accounting.approve` |
+| GET | `/accounting/general-ledger` | `Accounting\GeneralLedgerController@index` | `accounting.gl.index` | `auth`, `can:accounting.view` |
+| GET | `/accounting/reports/trial-balance` | `Accounting\Reports\TrialBalanceController@index` | `accounting.reports.trial-balance` | `auth`, `can:accounting.view` |
+| GET | `/accounting/reports/balance-sheet` | `Accounting\Reports\BalanceSheetController@index` | `accounting.reports.balance-sheet` | `auth`, `can:accounting.view` |
+| GET | `/accounting/reports/income-statement` | `Accounting\Reports\IncomeStatementController@index` | `accounting.reports.income-statement` | `auth`, `can:accounting.view` |
+| GET | `/accounting/reports/cash-flow` | `Accounting\Reports\CashFlowController@index` | `accounting.reports.cash-flow` | `auth`, `can:accounting.view` |
+| GET | `/accounting/bank-reconciliation` | `Accounting\BankReconciliationController@index` | `accounting.bank-rec.index` | `auth`, `can:accounting.manage` |
+| POST | `/accounting/bank-reconciliation/{bankAccount}/import` | `Accounting\BankStatementImportController@store` | `accounting.bank-rec.import` | `auth`, `can:accounting.manage` |
+| GET | `/accounting/bank-reconciliation/{bankReconciliation}/reconcile` | `Accounting\BankReconciliationController@reconcile` | `accounting.bank-rec.reconcile` | `auth`, `can:accounting.manage` |
+| GET | `/accounting/budgets` | `Accounting\BudgetController@index` | `accounting.budgets.index` | `auth`, `can:accounting.manage` |
+| GET | `/accounting/budgets/{budget}/edit` | `Accounting\BudgetController@edit` | `accounting.budgets.edit` | `auth`, `can:accounting.manage` |
+| GET | `/accounting/budgets/actual` | `Accounting\Reports\BudgetVsActualController@index` | `accounting.budgets.actual` | `auth`, `can:accounting.view` |
+| GET | `/accounting/receivables/aging` | `Accounting\Reports\ArAgingController@index` | `accounting.ar.aging` | `auth`, `can:accounting.view` |
+| GET | `/accounting/payables/aging` | `Accounting\Reports\ApAgingController@index` | `accounting.ap.aging` | `auth`, `can:accounting.view` |
+| GET | `/accounting/fixed-assets` | `Accounting\FixedAssetController@index` | `accounting.fixed-assets.index` | `auth`, `can:accounting.manage` |
+| GET | `/accounting/fixed-assets/depreciation` | `Accounting\DepreciationRunController@index` | `accounting.fixed-assets.depreciation` | `auth`, `can:accounting.manage` |
+| POST | `/accounting/fixed-assets/depreciation/run` | `Accounting\DepreciationRunController@store` | `accounting.fixed-assets.depreciation.run` | `auth`, `can:accounting.post` |
 | GET | `/admin/users` | `Admin\UserController@index` | `admin.users.index` | `auth`, `can:admin.manage` |
 | GET | `/admin/roles` | `Admin\RoleController@index` | `admin.roles.index` | `auth`, `can:admin.manage` |
 | GET | `/admin/rate-plans` | `Admin\RatePlanController@index` | `admin.rate-plans.index` | `auth`, `can:admin.manage` |
@@ -815,6 +1150,8 @@ Permission checks reuse the same `permissions`/`roles` tables as the web app —
 | GET | `/api/inventory/{item}/stock` | `Api\InventoryController@stock` | `api.inventory.stock` | `auth:sanctum` |
 | POST | `/api/maintenance-requests` | `Api\MaintenanceRequestController@store` | `api.maintenance.store` | `auth:sanctum` |
 | GET | `/api/reports/daily` | `Api\Reports\DailyController@show` | `api.reports.daily` | `auth:sanctum` |
+| GET | `/api/accounting/chart-of-accounts/{account}/ledger` | `Api\Accounting\GeneralLedgerController@forAccount` | `api.accounting.gl.for-account` | `auth:sanctum` |
+| POST | `/api/accounting/periods/{accountingPeriod}/close` | `Api\Accounting\AccountingPeriodController@close` | `api.accounting.periods.close` | `auth:sanctum`, `can:accounting.approve` |
 | GET | `/api/broadcasting/auth` | Laravel built-in | `broadcasting.auth` | `auth:sanctum` (Reverb private channel auth) |
 
 > Internal Telegram command handlers call the **same underlying Service/Action classes** as the `Api\*` and web controllers (see [Section 10](#10-conventions--architecture)) rather than making HTTP calls to these API routes — the API routes exist for potential future mobile app / external integration reuse.
@@ -867,6 +1204,28 @@ resources/js/
 │   │   ├── Requests/Index.tsx
 │   │   └── Assets/Index.tsx
 │   ├── Spa/Appointments/Index.tsx     (calendar-style booking view)
+│   ├── Accounting/
+│   │   ├── ChartOfAccounts/Index.tsx  (tree table, expandable parent/sub-accounts)
+│   │   ├── JournalEntries/
+│   │   │   ├── Index.tsx              (ProTable, status filter incl. approval queue)
+│   │   │   ├── Create.tsx             (multi-line debit/credit form, live balance check)
+│   │   │   └── Show.tsx               (detail + approval actions + attachment + reversal)
+│   │   ├── GeneralLedger/Index.tsx    (per-account drilldown, running balance)
+│   │   ├── TrialBalance/Index.tsx
+│   │   ├── BalanceSheet/Index.tsx     (comparative periods toggle)
+│   │   ├── IncomeStatement/Index.tsx  (department breakdown toggle)
+│   │   ├── CashFlow/Index.tsx
+│   │   ├── BankReconciliation/
+│   │   │   ├── Index.tsx              (per-bank-account reconciliation list)
+│   │   │   └── Reconcile.tsx          (statement import + matching workspace)
+│   │   ├── Receivables/Aging.tsx      (AR aging buckets by company)
+│   │   ├── Payables/Aging.tsx         (AP aging buckets by supplier)
+│   │   ├── FixedAssets/
+│   │   │   ├── Index.tsx              (asset register, tied to Maintenance assets)
+│   │   │   └── Depreciation.tsx       (monthly run + review/approve journal)
+│   │   └── Budget/
+│   │       ├── Setup.tsx              (editable monthly grid per department/account)
+│   │       └── Actual.tsx             (budget vs. actual variance report)
 │   ├── Reports/
 │   │   ├── DailyRevenue.tsx
 │   │   ├── Occupancy.tsx
@@ -902,11 +1261,12 @@ resources/js/
 | `Calendar` / custom grid | Reservation calendar, spa appointment scheduling |
 | `Descriptions` | Reservation/guest/folio detail read-only views |
 | `Tag` / `Badge` | Room status, order status, VIP tier chips |
-| `Steps` | Multi-step reservation creation, purchase requisition approval flow |
+| `Steps` | Multi-step reservation creation, purchase requisition approval flow, journal entry approval workflow (draft → submitted → approved → posted) |
 | `Drawer` | Side-panel quick edit (e.g., edit room status without leaving list) |
 | `Statistic` | Dashboard KPI cards (occupancy %, ADR, revenue) |
-| `Upload` | ID document scan upload |
+| `Upload` | ID document scan upload, journal entry / bank statement attachments |
 | `Timeline` | Guest stay history, maintenance request activity log |
+| `Table` (editable cells) | Budget monthly-grid input, journal entry debit/credit line editor |
 
 ### 8.4 Inertia Shared Data (`HandleInertiaRequests` middleware)
 
@@ -941,10 +1301,13 @@ resources/js/
 | 6 | **Guest CRM + Corporate/City Ledger** | Guest intelligence & B2B billing | `guests`, `guest_preferences`, `guest_stays`, `guest_incidents`, `companies`, city ledger billing on folios, VIP alerting (web + Telegram) | Phase 3 | Medium | 6th |
 | 7 | **F&B / Restaurant Module** | Revenue center #2 | `menu_items`, `orders`, `order_items`, KDS (Reverb), charge-to-room integration, Telegram kitchen alerts | Phase 3 (folio posting) | Medium-High | 7th |
 | 8 | **Inventory & Purchasing + Maintenance/Engineering** | Back-of-house ops | `inventory_items`, `stock_movements`, `suppliers`, `purchase_requisitions`/`purchase_orders`, `maintenance_requests`/`work_orders`/`assets`, Telegram `/maint`, `/stock`, `/approve` | Phase 1 (rooms/assets), Phase 5 (bot infra) | Medium | 8th |
-| 9 | **Spa & Wellness + Reporting & Analytics** | Resort completeness & insight | `spa_treatments`/`spa_appointments`/`spa_therapists`, charge-to-room reuse, daily revenue/occupancy/ADR/RevPAR reports, Excel/PDF export, `/report` Telegram command | Phases 3, 4, 7 | Medium | 9th |
-| 10 | **Hardening, Multi-Property Readiness, Polish** | Production readiness | Full test coverage pass, performance tuning (indexes, query caching), audit logging, admin settings polish, OTA webhook stub finalize, multi-property schema readiness review | All prior phases | Medium | 10th |
+| 8b | **Accounting Core** | Books of record | `chart_of_accounts` + seeder, `accounting_periods`, `general_ledger`, `GlPostingService`, `journal_entries`/`journal_entry_lines` + approval workflow, GL auto-posting listeners retrofitted onto folio/payment (Phase 3), purchase invoice (Phase 8), and stock movement (Phase 8) events, Trial Balance, Balance Sheet, P&L, `/gl`, `/trialbalance`, `/pnl`, `/balancesheet` Telegram commands | Phases 3, 5, 8 (posts against their events; reuses bot infra) | High | 9th |
+| 9a | **Reporting & Analytics** | Cross-module insight | Daily revenue/occupancy/ADR/RevPAR reports, Excel/PDF export, `/report` Telegram command | Phases 3, 4, 7 | Medium | 10th |
+| 9b | **Spa & Wellness** | Resort completeness | `spa_treatments`/`spa_appointments`/`spa_therapists`, charge-to-room reuse | Phase 3 | Medium | 11th |
+| 10 | **Accounting Extensions** | Full finance close cycle | `ar_invoices` (city ledger formalization), AR/AP aging, `supplier_invoices`/`supplier_invoice_lines` + 3-way match, `bank_accounts`/`bank_reconciliations`, `fixed_assets` + depreciation runs, `budgets`/`budget_lines` + Budget vs Actual, `tax_transactions` (PPN/PPh 23/PPh 4(2)) | Phase 8b (requires GL/CoA/periods) | High | 12th |
+| 11 | **Hardening, Multi-Property Readiness, Polish** | Production readiness | Full test coverage pass, performance tuning (indexes, query caching), audit logging, admin settings polish, OTA webhook stub finalize, multi-property schema readiness review (incl. accounting `hotel_id` scoping) | All prior phases | Medium | 13th |
 
-> **Recommended order rationale:** Phases 1→4 build the operational spine (rooms → reservations → money → cleanliness) that every other module depends on for realistic data. The Telegram bot (Phase 5) is placed immediately after because it is explicitly the differentiator and should be demoed early with real reservation/room/checkin data already in place — it should **not** be pushed to the end. F&B, Inventory, Maintenance, Spa are largely independent of each other and can be resequenced or parallelized by different developers once Phase 5 lands, since they mostly plug into the same folio/Telegram infrastructure rather than into each other.
+> **Recommended order rationale:** Phases 1→4 build the operational spine (rooms → reservations → money → cleanliness) that every other module depends on for realistic data. The Telegram bot (Phase 5) is placed immediately after because it is explicitly the differentiator and should be demoed early with real reservation/room/checkin data already in place — it should **not** be pushed to the end. F&B, Inventory, Maintenance are largely independent of each other and can be resequenced or parallelized by different developers once Phase 5 lands. **Accounting Core (Phase 8b)** is deliberately placed *after* Billing (3), the Telegram bot (5), and Inventory/Purchasing (8) — those phases must already emit the operational events (folio charges, payments, purchase invoices, stock movements) that the GL posting listeners hook into; building the GL before those sources exist would mean testing it against nothing. **Accounting Extensions (Phase 10)** — AR/AP subledgers, bank reconciliation, fixed assets, budgeting, tax — depend on Phase 8b's CoA/GL/period-lock foundation and are lower urgency than getting a basic, auditable GL live, so they land after Reporting (9a) and Spa (9b) rather than blocking the rest of the resort's feature completeness.
 
 ---
 
@@ -1025,6 +1388,16 @@ app/
 - Reservations, folios, orders, etc. don't need direct `hotel_id` — they inherit hotel context transitively through `room`/`floor`. This keeps the MVP schema lean while avoiding a full rewrite later.
 - **This is a recommendation, not yet a decision** — confirm with stakeholder before Phase 1 migrations are finalized (see Open Questions).
 
+### 10.7 Accounting & GL Posting Architecture
+
+- **Accrual basis, not cash basis** — revenue is recognized when earned (folio charge posted), expenses when incurred (supplier invoice/goods receipt), independent of when cash actually moves. Cash movements are tracked separately via `payments`/bank GL lines, per standard PSAK accrual principles.
+- **Double-entry enforced at the service layer**, not just by convention — `GlPostingService::post(array $lines)` is the *only* sanctioned write path into `general_ledger`; it validates `SUM(debit) === SUM(credit)` for the batch and that the target `accounting_periods` row is `open`, all inside one DB transaction. Direct `GeneralLedger::create()` calls elsewhere are treated as a code-review violation.
+- **GL posting via Laravel Events/Listeners** (Laravel 11+ auto-listener discovery, per this project's stated skeleton conventions — no manual listener registration): domain events like `FolioItemPosted`, `PaymentReceived`, `SupplierInvoiceApproved`, and `StockMovementRecorded` are dispatched by their respective Actions/Services (Billing, Inventory) exactly as those modules already do for other side effects (e.g. Telegram alerts); dedicated listeners (`PostFolioChargeToGl`, `PostPaymentToGl`, `PostSupplierInvoiceToGl`, `PostStockMovementToGl`) translate each event into balanced GL lines via `GlPostingService`. This keeps Billing/Inventory code unaware of accounting internals — they just fire events.
+- **`GlPostingService`** is the core accounting service (`app/Services/Accounting/GlPostingService.php`), following this plan's existing Service-layer convention ([10.1](#101-code-organization)): stateless, reused by GL listeners, manual Journal Entry posting, and depreciation/recurring-journal runs alike.
+- **Period locking** via `accounting_periods` — enforced inside `GlPostingService` (rejects any post where `transaction_date` falls in a `closed` period) and inside the Journal Entry approval Action (rejects approving/posting an entry dated into a closed period). See [5.6](#56-month-end-closing-flow-accounting).
+- **Audit trail via polymorphic source reference** — every `general_ledger` row carries `source_type`/`source_id` (mirroring the existing `folio_items.reference_type`/`reference_id` pattern from [4.5](#45-billing--folio) and the trade-off already documented in [11.2](#112-trade-offs-documented)), so any GL line can be traced back to the exact folio item, payment, supplier invoice, stock movement, or journal entry that produced it — a non-negotiable requirement for CPA-grade auditability.
+- **Idempotent posting**: each source event carries a unique reference (e.g. `folio_item_id`) that `GlPostingService` checks before posting, so retried queue jobs (per the existing idempotency convention in [10.4](#104-error-handling)) never double-post the same transaction.
+
 ---
 
 ## 11. Open Questions & Decisions
@@ -1043,23 +1416,29 @@ app/
 | 8 | Payment gateway integration (Midtrans/Xendit) for guest self-pay / deposit online, vs. manual payment recording only? | Manual recording (cashier enters payment received) is simplest and matches "front desk cashier" framing in spec; gateway adds online guest-facing payment capability. | Manual recording for MVP (matches spec's Billing & Front Desk Cashier framing); gateway integration flagged as a clean future Action-layer addition (`RecordPaymentAction` already abstracts the payment source). |
 | 9 | Reverb vs polling for real-time (KDS, room status, notifications)? Spec allows either. | Reverb = true real-time, requires a persistent WebSocket server process in deployment. Polling = simpler ops, higher latency, more DB/API load. | Reverb — deployment complexity is justified by KDS and notification UX quality; polling as a fallback config toggle if hosting constraints (e.g., shared hosting without persistent process support) emerge. |
 | 10 | Excel export library: `maatwebsite/excel` vs custom CSV? | `maatwebsite/excel` = richer (styling, multi-sheet), extra dependency. CSV = zero-dependency, less polished. | `maatwebsite/excel` for Reporting module ([Section 2.8](#28-reporting--analytics)) given finance-grade export expectations from a CPA-led team. |
+| 11 | PSAK 73 (IFRS 16) lease accounting for hotel property leases — in scope or out? | PSAK 73 requires recognizing right-of-use assets/lease liabilities for most leases (equipment, leased retail space in a resort, land lease). Full compliance adds a dedicated lease-accounting sub-module (ROU asset schedule, discount rate, liability amortization). | Out of scope for MVP Accounting Core/Extensions ([2.12](#212-accounting--finance-new--must-have)); revisit as a targeted follow-up phase if the property has material lease exposure — confirm with stakeholder which leases (if any) exist. |
+| 12 | Multi-currency accounting (USD guest folios + IDR reporting)? | Resorts with international guests sometimes quote/settle in USD; statutory reporting must still be in IDR, requiring FX rate capture per transaction + realized/unrealized FX gain/loss postings. | IDR-only for MVP (matches `hotel_settings.currency` single-value design); flag multi-currency as a Phase 10+ enhancement if USD settlement is a hard requirement. |
+| 13 | Integration with external accounting software (Accurate, Jurnal.id, SAP) vs. standalone? | Standalone GL (this plan) gives full control and avoids per-seat SaaS accounting fees, but the CPA/finance team may already have institutional workflows in an external tool. | Standalone by default, given the explicit request for a built-in Chart of Accounts/GL/Financial Statements; if an external system must remain the system of record, this module can be scoped down to an export/sync layer instead — needs explicit confirmation before Phase 8b. |
+| 14 | Payroll module scope — full payroll with PPh 21 calculation, or placeholder only? | Full payroll (gross-to-net, BPJS, PPh 21 progressive brackets, THR) is a substantial module on its own; a placeholder just reserves the GL account and `tax_transactions.pph21` type for a future phase. | Placeholder only for this plan's scope ([2.12](#212-accounting--finance-new--must-have) Tax Accounting); confirm whether a dedicated Payroll module should be added as a future phase or is handled by an external payroll provider. |
+| 15 | Tax e-Filing integration (e-SPT, e-Faktur) or manual export only? | Direct API integration with DJP's e-Faktur/e-SPT systems is a significant, separately-scoped integration (certificate-based auth, strict schema) vs. this plan's manual export of tax reports for the finance team to file externally. | Manual export only for MVP (per [2.12](#212-accounting--finance-new--must-have) Tax Accounting); flag e-Filing API integration as a distinct future initiative, not bundled into Accounting Core/Extensions phases. |
 
 ### 11.2 Trade-offs documented
 
 - **Room status as derived/cached field** ([4.2](#42-front-office--rooms)) vs. always computing live from `housekeeping_logs` + `reservation_rooms`: caching improves read performance for the room grid (checked frequently, by many staff, including Telegram polling) at the cost of needing careful invalidation via model observers. Chosen: cached with observer-based recalculation, documented in schema notes.
 - **Overlap prevention at application layer** (transaction + locking) instead of DB constraints: MySQL cannot express date-range exclusion constraints natively; a `SELECT ... FOR UPDATE` + application check is pragmatic but requires discipline (all booking paths — web, Telegram, future OTA webhook — must route through the same `AvailabilityService`/Action, never raw Eloquent creates).
 - **Folio `item_type` as polymorphic-ish reference** (`reference_type`/`reference_id`) rather than separate join tables per source (F&B, spa, room): keeps `folios` reporting simple (one table to sum for revenue) at the cost of losing strict FK referential integrity on the polymorphic pair — mitigated by only writing these columns through `FolioPostingService`.
-- **City ledger as unsettled folios** rather than a separate AR subledger table: simpler for MVP (city-ledger folios just stay `open` with `company_id` set, invoiced periodically), but a real AR aging/collections module would eventually need a dedicated `ar_invoices`/`ar_payments` structure — flagged as a finance-module enhancement, not built in MVP.
+- **City ledger folios feed a dedicated `ar_invoices` subledger** ([4.12](#412-accounting-schema)) rather than staying open indefinitely: Billing ([2.5](#25-billing--front-desk-cashier)) still closes folios at checkout as before, but for `company_id`-billed folios, closing routes the balance into a periodic `ar_invoices` record instead of requiring immediate settlement — giving proper AR aging/collections without folios themselves needing to model payment terms.
 
 ### 11.3 In scope vs out of scope for MVP
 
-**In scope (MVP, Phases 1–10):**
+**In scope (MVP, Phases 1–11):**
 - All modules listed in [Section 2](#2-core-modules-feature-list) except explicitly flagged placeholders.
 - Telegram bot core command set ([6.3](#63-full-command-list)) and alerting ([6.4](#64-alerts-push-notifications-no-reply-needed)).
 - PPN 11% + Service Charge 10% tax engine, configurable rates.
 - Single-property operation with multi-property-ready schema.
 - PDF invoices, Excel/PDF report exports.
 - Reverb-based real-time for KDS, room status, notifications.
+- Full accrual-based accounting: Chart of Accounts, General Ledger, Journal Entries, Neraca/Laba Rugi/Arus Kas, Trial Balance, AR/AP aging, bank reconciliation, fixed assets & depreciation, budgeting, PPN/PPh 23/PPh 4(2) tax accounting ([2.12](#212-accounting--finance-new--must-have)).
 
 **Out of scope (explicitly deferred, tracked as future phases):**
 - OCR-based ID scanning (manual entry only).
@@ -1069,6 +1448,8 @@ app/
 - Email/SMS marketing campaign sending (schema stub only, per [2.6](#26-guest-management-crm)).
 - Multi-property operation (architecture-ready, not activated).
 - Native mobile app (Telegram bot serves the "staff mobility" need for MVP).
+- Full Payroll module (PPh 21 calculation, BPJS, THR) — placeholder only, per [Open Questions](#111-needs-user-decision-before-implementation).
+- PSAK 73 (IFRS 16) lease accounting, multi-currency accounting, external accounting software integration, and tax e-Filing (e-SPT/e-Faktur) API integration — all pending stakeholder decisions, per [Open Questions](#111-needs-user-decision-before-implementation).
 
 ---
 
