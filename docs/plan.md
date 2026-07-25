@@ -1,8 +1,8 @@
 # Hotel & Resort ERP — Implementation Plan
 
-> **Status:** Draft v1.1 — Greenfield project plan
-> **Stack:** Laravel 13+ (PHP 8.5) · Inertia.js + React + Ant Design ProTable · MySQL 8 · Laravel Reverb · `irazasyed/telegram-bot-sdk` · Laravel Queue (database driver) · DomPDF · `maatwebsite/excel`
-> **Context:** Indonesian hospitality operations (PPN 11%, Service Charge 10% common practice), single-property MVP with multi-property-ready architecture. Full **accrual-based, double-entry accounting** (PSAK-aligned) is a first-class module, not an afterthought — this plan is reviewed against CPA/finance-grade standards.
+> **Status:** v2.0 — All 15 stakeholder Open Questions resolved (decided 2026-07-25); see [Section 11](#11-open-questions--decisions) for the full decisions log.
+> **Stack:** Laravel 13+ (PHP 8.5) · Inertia.js + React + Ant Design ProTable · MySQL 8 · Laravel Reverb · `irazasyed/telegram-bot-sdk` · `spatie/laravel-permission` · Laravel Queue (database driver) · DomPDF · `maatwebsite/excel`
+> **Context:** Indonesian hospitality operations (PPN 11%, Service Charge 10% common practice), **multi-property from Phase 1** (every property is a first-class `hotels` record) and **multi-currency from Phase 1** (guest-facing IDR + USD, statutory GL always consolidated to IDR). Full **accrual-based, double-entry accounting** (PSAK-aligned) is a first-class module, not an afterthought — this plan is reviewed against CPA/finance-grade standards.
 
 ---
 
@@ -28,12 +28,14 @@
 
 A full-featured **Hotel & Resort Enterprise Resource Planning (ERP)** system that unifies front office operations, housekeeping, food & beverage (F&B), billing/finance, guest relationship management (CRM), inventory/purchasing, maintenance/engineering, spa & wellness, **full accounting & finance (General Ledger, financial statements, AR/AP, budgeting, tax)**, and management reporting into a single web application — with a **Telegram bot as a first-class operational channel** for staff who are on the move (housekeepers, front office agents, maintenance techs, F&B runners, duty managers).
 
+Built **multi-property from day one** (Stakeholder Decision Q2): every property in the group is a first-class `hotels` record with its own rooms, reservations, folios, and books, while guest profiles, corporate (city ledger) accounts, and group-level consolidated reporting span every property. Also built **multi-currency from day one** (Stakeholder Decision Q12): guests may be quoted and charged in IDR or USD, but every statutory GL posting and financial statement consolidates to **IDR**, the group's base currency — there is no dual-currency ledger, only currency capture-and-convert at the transaction layer.
+
 The system replaces disconnected spreadsheets, WhatsApp coordination, and paper logbooks with:
-- A single source of truth for room inventory, reservations, and guest folios.
-- Role-based web dashboards (Ant Design ProTable-driven) for desk-bound staff (front office, finance, management).
+- A single source of truth for room inventory, reservations, and guest folios — scoped per property, with staff switching between properties they have access to via a `PropertySwitcher` ([5.7](#57-property-selection--switch-flow-multi-property)).
+- Role-based web dashboards (Ant Design ProTable-driven) for desk-bound staff (front office, finance, management), with roles/permissions managed by `spatie/laravel-permission` (Stakeholder Decision Q1).
 - A Telegram bot for floor staff who need fast, low-friction access without opening a laptop — check room status, update housekeeping status, receive alerts, and even process check-in/out from a phone.
-- Finance-grade billing: folios, tax (PPN 11%), service charge (10%), split billing, city ledger for corporate accounts — reflecting proper accrual accounting discipline expected by a CPA-led finance team.
-- A dedicated **Accounting Module** ([2.12](#212-accounting--finance-new--must-have)) sitting underneath every revenue/expense-generating module: a Chart of Accounts, double-entry General Ledger, Journal Entries, PSAK-aligned financial statements (Neraca, Laba Rugi, Arus Kas), AR/AP subledgers, bank reconciliation, fixed assets/depreciation, budgeting, and Indonesian tax accounting (PPN, PPh 21/23/4(2)) — every folio charge, payment, supplier invoice, and stock movement posts to the GL automatically, so the books are always current, not reconstructed at month-end.
+- Finance-grade billing: folios, tax (PPN 11%), service charge (10%), split billing, city ledger for corporate accounts, and foreign-currency capture (IDR/USD) — reflecting proper accrual accounting discipline expected by a CPA-led finance team.
+- A dedicated **Accounting Module** ([2.12](#212-accounting--finance-new--must-have)) sitting underneath every revenue/expense-generating module: a Chart of Accounts, double-entry General Ledger, Journal Entries, PSAK-aligned financial statements (Neraca, Laba Rugi, Arus Kas), AR/AP subledgers, bank reconciliation, fixed assets/depreciation, budgeting, FX gain/loss postings, and Indonesian tax accounting (PPN, PPh 21/23/4(2)) — every folio charge, payment, supplier invoice, and stock movement posts to the GL automatically, per property, so the books are always current, not reconstructed at month-end.
 
 ### Target users
 
@@ -52,8 +54,8 @@ The system replaces disconnected spreadsheets, WhatsApp coordination, and paper 
 
 Unlike generic hotel PMS software, this ERP treats **Telegram as a full operational surface**, not just a notification channel:
 
-- Each staff `User` links to a `telegram_users` record via a one-time linking code (`/link CODE`).
-- Role-based command permissions — a housekeeper cannot create reservations via Telegram; a front office agent cannot approve purchase requisitions.
+- Each staff `User` links to a `telegram_users` record via a one-time linking code (`/link CODE`); the link also captures the user's home `hotel_id` so bot commands resolve the correct property context automatically ([10.6](#106-multi-property-architecture-active-from-phase-1)).
+- Role-based command permissions (via `spatie/laravel-permission`) — a housekeeper cannot create reservations via Telegram; a front office agent cannot approve purchase requisitions.
 - Two-way: staff *receive* alerts (VIP arrival, room ready, maintenance emergency) and *act* (check availability, update room status, check-in/out, approve requests) directly from chat, backed by Laravel's queue + Reverb broadcasting for near real-time push.
 - Conversational, stateful flows (multi-step) implemented via a lightweight conversation-state table (`telegram_conversation_states`), not just single-shot commands.
 
@@ -135,11 +137,13 @@ Unlike generic hotel PMS software, this ERP treats **Telegram as a full operatio
 
 ### 2.9 Administration
 
-- User management — roles: `admin`, `front_office`, `housekeeping`, `fb` (F&B), `manager`, `finance`, `maintenance`, `spa`.
-- Room type & room setup (`room_types`, `rooms`, `floors`).
-- Rate plan configuration (`rate_plans`, `seasons`, `promotions`).
+- User management — roles: `admin`, `front_office`, `housekeeping`, `fb` (F&B), `manager`, `finance`, `maintenance`, `spa` — managed via `spatie/laravel-permission` (Stakeholder Decision Q1), not hand-rolled pivot tables.
+- **Property / hotel management (NEW — multi-property from Phase 1, Stakeholder Decision Q2)** — full CRUD on `hotels` (name, address, logo, base currency, timezone, check-in/out default times), restricted to super-admin (`users.hotel_id = null`); `hotel_user` grant rows for staff who need access to more than one property (regional managers, group finance).
+- Room type & room setup (`room_types`, `rooms`, `floors`) — `rooms`/`floors` scoped per property via `hotel_id`; `room_types` remain a shared, group-wide catalog.
+- Rate plan configuration (`rate_plans`, `seasons`, `promotions`) — property-specific or group-wide (`rate_plans.hotel_id` nullable).
 - Tax configuration (`tax_rules` — PPN, service charge, configurable %, applicability).
-- Hotel profile settings (`hotel_settings` — name, address, logo, currency, timezone, check-in/out default times).
+- **Currency & exchange rate management (NEW — multi-currency from Phase 1, Stakeholder Decision Q12)** — `currencies` (base IDR + active foreign currencies, e.g. USD) and `exchange_rates` (manual rate entry per effective date), restricted to `finance`/`admin` roles.
+- Hotel profile settings — now per-property via `Admin\HotelController` ([4.1](#41-identity--access--multi-property-foundation)), replacing the single-row `hotel_settings` concept.
 
 ### 2.10 Maintenance / Engineering
 
@@ -187,7 +191,7 @@ The accounting module is the financial backbone of the ERP — accrual-based, do
 - **Arus Kas (Cash Flow Statement)** — operating, investing, and financing activities, built via the indirect method from GL movements on cash/bank plus non-cash adjustments.
 - **Trial Balance (Neraca Saldo)** — all account balances pre-adjustment, the reconciliation checkpoint before finalizing statements.
 - **General Ledger Report** — per-account transaction history with running balance, drillable to source document.
-- All statements/reports filterable by date range, department (rooms/F&B/spa), and property (multi-property-ready, same scoping strategy as [10.6](#106-multi-tenancy-single-hotel-or-multi-property)).
+- All statements/reports filterable by date range, department (rooms/F&B/spa), and property (`hotel_id`, active multi-property scoping per [10.6](#106-multi-property-architecture-active-from-phase-1)) — plus a group-level consolidated view aggregating every property's GL.
 - Export to PDF (DomPDF) and Excel (`maatwebsite/excel`), matching the export conventions already used in Reporting & Analytics ([2.8](#28-reporting--analytics)).
 - Comparative periods built into every statement view: this month vs. last month, and YTD vs. last year YTD.
 
@@ -228,8 +232,8 @@ The accounting module is the financial backbone of the ERP — accrual-based, do
 
 **Tax Accounting**
 - **PPN (VAT) Input & Output** tracking — output tax from guest folios (already charged per [4.5](#45-billing--folio)), input tax from supplier invoices; both flow into `tax_transactions` for reconciliation.
-- PPN monthly reconciliation — output vs. input tax summary to support SPT Masa PPN preparation (manual filing in MVP; no direct e-Faktur API integration — see [Open Questions](#11-open-questions--decisions)).
-- **PPh 21** (employee income tax) — **placeholder**, awaiting the Payroll module scope decision ([Open Questions](#11-open-questions--decisions)); schema reserves a `pph21` tax type.
+- PPN monthly reconciliation — output vs. input tax summary to support SPT Masa PPN preparation (manual filing only — confirmed, Stakeholder Decision Q15; no direct e-Faktur/e-SPT API integration).
+- **PPh 21** (employee income tax) — **placeholder only** (confirmed, Stakeholder Decision Q14 — no full Payroll module in this plan); schema reserves a `pph21` tax type for a future dedicated Payroll module or external payroll provider.
 - **PPh 23** (service/rental withholding, 2%) on qualifying supplier payments — see Accounts Payable above.
 - **PPh 4(2)** (final tax on rent/land) where applicable — see Accounts Payable above.
 - **PBB** (property tax) — **placeholder** (annual expense entry only, no calculation engine).
@@ -240,20 +244,36 @@ The accounting module is the financial backbone of the ERP — accrual-based, do
 - Payments received → auto-post to GL: debit Cash/Bank, credit AR/Guest Ledger.
 - Supplier/purchase invoices → auto-post to GL: debit Expense or Inventory, credit AP, per [4.9](#49-inventory--purchasing).
 - Stock movements (consumption) → auto-post COGS to GL: debit COGS, credit Inventory asset account.
-- Payroll (future module) → auto-post salary expense journal entries once Payroll scope is decided.
+- Foreign-currency folio/AR settlement → auto-posts realized FX gain/loss to the **Selisih Kurs** account per [10.8](#108-multi-currency-accounting-conventions).
+- Payroll (future module) → auto-post salary expense journal entries once a dedicated Payroll module is scoped (placeholder only in this plan, Stakeholder Decision Q14).
 - Telegram bot commands: `/gl {account_code}`, `/trialbalance`, `/pnl {month}`, `/balancesheet` — see [6.3](#63-full-command-list).
 
 ---
 
 ## 3. ERD (Entity Relationship Diagram)
 
-> Full-system logical ERD. Some low-cardinality lookup tables (e.g., `permissions` pivot) are simplified for readability; full column lists are in [Section 4](#4-schema-design-per-module).
+> Full-system logical ERD. Some low-cardinality lookup tables (e.g., spatie's `permissions` pivots) are simplified for readability; full column lists are in [Section 4](#4-schema-design-per-module). `GUESTS` and `COMPANIES` are intentionally **not** scoped to a `HOTELS` row — they are group-wide entities (a returning guest or corporate account is recognized across every property); only their `RESERVATIONS`/`FOLIOS`/`AR_INVOICES` rows carry the `hotel_id` identifying *where* each stay/invoice happened. See [10.6](#106-multi-property-architecture-active-from-phase-1) for the full multi-property scoping strategy.
 
 ```mermaid
 erDiagram
+    HOTELS ||--o{ FLOORS : "has"
+    HOTELS ||--o{ ROOMS : "has (denormalized)"
+    HOTELS ||--o{ RESERVATIONS : "scopes"
+    HOTELS ||--o{ FOLIOS : "scopes"
+    HOTELS ||--o{ INVENTORY_ITEMS : "scopes"
+    HOTELS ||--o{ CHART_OF_ACCOUNTS : "scopes (nullable = group-wide)"
+    HOTELS ||--o{ GENERAL_LEDGER : "scopes"
+    HOTELS ||--o{ ACCOUNTING_PERIODS : "closes independently"
+    HOTELS }o--o{ USERS : "grants access (hotel_user)"
+    HOTELS ||--o| USERS : "home property"
+    HOTELS ||--o{ TELEGRAM_USERS : "resolves bot context"
+    CURRENCIES ||--o{ EXCHANGE_RATES : "has rate history"
+    HOTELS }o--|| CURRENCIES : "base currency"
+
     USERS ||--o| TELEGRAM_USERS : "links to"
-    USERS }o--o{ ROLES : "has (role_user)"
-    ROLES }o--o{ PERMISSIONS : "has (permission_role)"
+    USERS }o--o{ ROLES : "has (model_has_roles, spatie)"
+    ROLES }o--o{ PERMISSIONS : "has (role_has_permissions, spatie)"
+    USERS }o--o{ PERMISSIONS : "direct grants (model_has_permissions, spatie)"
     USERS ||--o{ HOUSEKEEPING_ASSIGNMENTS : "assigned as housekeeper"
     USERS ||--o{ RESERVATIONS : "created_by"
     USERS ||--o{ FOLIO_ITEMS : "posted_by"
@@ -280,6 +300,8 @@ erDiagram
     FOLIOS ||--o{ FOLIO_ITEMS : "line items"
     FOLIOS ||--o{ PAYMENTS : "settled by"
     FOLIOS }o--o| COMPANIES : "billed to (city ledger)"
+    FOLIO_ITEMS }o--o| EXCHANGE_RATES : "converted via (if foreign currency)"
+    PAYMENTS }o--o| EXCHANGE_RATES : "converted via (if foreign currency)"
 
     HOUSEKEEPING_ASSIGNMENTS ||--o{ HOUSEKEEPING_LOGS : "produces"
     ROOMS ||--o{ HOUSEKEEPING_ASSIGNMENTS : "assigned"
@@ -329,6 +351,7 @@ erDiagram
     COMPANIES ||--o{ AR_INVOICES : "billed (city ledger)"
     AR_INVOICES }o--o{ FOLIOS : "consolidates"
     AR_INVOICES ||--o{ PAYMENTS : "settled by"
+    AR_INVOICES }o--o| EXCHANGE_RATES : "converted via (if foreign currency)"
 
     BANK_ACCOUNTS ||--o{ BANK_RECONCILIATIONS : "reconciled periodically"
     BANK_RECONCILIATIONS ||--o{ BANK_RECONCILIATION_LINES : "contains"
@@ -349,14 +372,39 @@ erDiagram
 
 ## 4. Schema Design (Per Module)
 
-> Convention: all tables use `id` (unsigned bigint, PK), `created_at`/`updated_at` (and `deleted_at` where soft-deletes apply). FK columns follow `{singular_table}_id`. Money columns are `decimal(14,2)`. All monetary/tax config assumes **IDR** by default (configurable via `hotel_settings.currency`).
+> Convention: all tables use `id` (unsigned bigint, PK), `created_at`/`updated_at` (and `deleted_at` where soft-deletes apply). FK columns follow `{singular_table}_id`. Money columns are `decimal(14,2)` and, unless noted otherwise, are **always IDR** — the group's base currency ([4.11](#411-settings--admin), Stakeholder Decision Q12); foreign-currency capture is layered on top via `original_currency_code`/`original_amount`/`exchange_rate_id` columns where relevant ([4.5](#45-billing--folio), [4.12](#412-accounting-schema)), never by changing what the base money column means. Tables scoped to a property carry a `hotel_id` FK per [10.6](#106-multi-property-architecture-active-from-phase-1) — active from Phase 1, per Stakeholder Decision Q2.
 
-### 4.1 Identity & Access
+### 4.1 Identity & Access + Multi-Property Foundation
+
+> **Stakeholder Decision Q2 (2026-07-25):** multi-property is active from Phase 1, not deferred. `hotels` is a first-class table here in Identity & Access because every other hotel-scoped table ([4.2](#42-front-office--rooms) onward) FKs into it. **Stakeholder Decision Q1 (2026-07-25):** roles/permissions use `spatie/laravel-permission`'s standard migration/tables, replacing the hand-rolled `roles`/`permissions`/`role_user`/`permission_role` design from the prior draft.
+
+**`hotels`** (NEW)
+| Column | Type | Notes |
+|---|---|---|
+| id | bigint PK | |
+| name | varchar(150) | e.g. "Bali Sunset Resort" |
+| code | varchar(20) unique | short property code, e.g. `BSR`, used in document numbering prefixes |
+| address | text nullable | |
+| phone | varchar(30) nullable | |
+| email | varchar(150) nullable | |
+| logo_path | varchar(255) nullable | |
+| base_currency_code | varchar(3) default `IDR` FK → currencies.code | statutory reporting currency for this property — see [4.11](#411-settings--admin) |
+| timezone | varchar(50) default `Asia/Jakarta` | |
+| default_checkin_time | time default `14:00` | |
+| default_checkout_time | time default `12:00` | |
+| is_active | boolean default true | |
+
+Index: `hotels(code)`, `hotels(is_active)`.
+
+**`hotel_user`** (pivot, NEW) — grants a user *additional* property access beyond their home property. `id`, `hotel_id` FK, `user_id` FK, `is_default` boolean default false, composite unique(`hotel_id`,`user_id`).
+
+> **Business logic note:** a user's home property is `users.hotel_id`; most staff need no `hotel_user` rows at all (single-property staff). `hotel_user` is only populated for staff who legitimately work across properties (regional managers, group finance/audit). `users.hotel_id = null` denotes a **super-admin** with implicit access to every hotel and no scoping applied — see [10.6](#106-multi-property-architecture-active-from-phase-1).
 
 **`users`**
 | Column | Type | Notes |
 |---|---|---|
 | id | bigint PK | |
+| hotel_id | bigint FK → hotels, nullable | home/default property; **null = super-admin** (group-level, sees all properties) |
 | name | varchar(150) | |
 | email | varchar(150) unique | |
 | password | varchar(255) | |
@@ -365,21 +413,26 @@ erDiagram
 | is_active | boolean default true | |
 | last_login_at | timestamp nullable | |
 
-**`roles`** — `id`, `name` (unique, e.g. `admin`, `front_office`, `housekeeping`, `fb`, `manager`, `finance`, `maintenance`, `spa`), `label`, `description`.
+Index: `users(hotel_id)`.
 
-**`role_user`** (pivot) — `role_id` FK, `user_id` FK, composite unique(`role_id`,`user_id`).
+**Roles & Permissions — `spatie/laravel-permission` (Stakeholder Decision Q1)**
 
-**`permissions`** — `id`, `name` (unique, e.g. `reservations.create`), `label`, `module`.
+Installed via `composer require spatie/laravel-permission` and its published migration, which creates:
 
-**`permission_role`** (pivot) — `permission_id` FK, `role_id` FK.
+- **`roles`** — `id`, `name`, `guard_name`, `team_foreign_key` unused (single guard, `web`); seeded with this project's existing role set: `admin`, `front_office`, `housekeeping`, `fb`, `manager`, `finance`, `maintenance`, `spa`. Unique(`name`,`guard_name`).
+- **`permissions`** — `id`, `name` (e.g. `reservations.create`), `guard_name`. Unique(`name`,`guard_name`).
+- **`model_has_roles`** — `role_id` FK, `model_type`, `model_id` (polymorphic — always `App\Models\User` in this plan). Composite PK.
+- **`model_has_permissions`** — `permission_id` FK, `model_type`, `model_id` — direct permission grants to a user, bypassing roles, for one-off exceptions.
+- **`role_has_permissions`** — `permission_id` FK, `role_id` FK.
 
-> Index: `role_user(user_id)`, `permission_role(role_id)`. Business logic: prefer Laravel Gate/Policy backed by these two pivots; consider `spatie/laravel-permission` as an accelerant (see [Open Questions](#11-open-questions--decisions)).
+> **Business logic note:** `App\Models\User` uses Spatie's `HasRoles` trait; controllers/Actions authorize via Laravel Gates/Policies backed by `$user->can('reservations.create')`, exactly as the original hand-rolled design intended — Spatie replaces the storage/pivot layer and adds permission caching, it does not change the authorization call sites. No new service provider is registered (Spatie auto-registers via its own package service provider, consistent with this project's "no unnecessary service providers" preference — see [10.1](#101-code-organization)). A `RolePermissionSeeder` ships the role/permission matrix from [6.7](#67-permission-model-summary) as the source of truth.
 
 **`telegram_users`**
 | Column | Type | Notes |
 |---|---|---|
 | id | bigint PK | |
 | user_id | bigint FK → users, unique, nullable | null until linked |
+| hotel_id | bigint FK → hotels, nullable | resolved from the linked user's home property at `/link` time; used to scope bot commands per [10.6](#106-multi-property-architecture-active-from-phase-1) |
 | chat_id | bigint unique | Telegram chat id |
 | telegram_username | varchar(50) nullable | |
 | link_code | varchar(10) nullable | one-time linking code |
@@ -401,7 +454,7 @@ Index: `telegram_conversation_states(telegram_user_id)`.
 
 ### 4.2 Front Office / Rooms
 
-**`floors`** — `id`, `hotel_id` (nullable FK for future multi-property), `name`, `level` (int, for sort).
+**`floors`** — `id`, `hotel_id` FK → hotels **(required, not nullable — active multi-property scoping, Stakeholder Decision Q2)**, `name`, `level` (int, for sort).
 
 **`room_types`**
 | Column | Type | Notes |
@@ -414,27 +467,31 @@ Index: `telegram_conversation_states(telegram_user_id)`.
 | description | text nullable | |
 | amenities | json nullable | list of amenity codes |
 
+> `room_types` is intentionally **not** `hotel_id`-scoped — it is a shared, group-wide catalog (a "Deluxe" room type carries the same brand-standard definition across properties); per-property pricing differences are expressed via `rooms`/`rate_plans`, not by duplicating the type.
+
 **`rooms`**
 | Column | Type | Notes |
 |---|---|---|
 | id | bigint PK | |
+| hotel_id | bigint FK → hotels | denormalized from `floor.hotel_id` for query/scope simplicity — kept in sync via a model observer on `floors`/`rooms` save |
 | room_type_id | bigint FK | |
 | floor_id | bigint FK | |
-| number | varchar(10) unique | e.g. "204" |
+| number | varchar(10) | e.g. "204" — unique **per hotel**, not globally: unique(`hotel_id`,`number`) |
 | status | enum | `vacant_clean`,`vacant_dirty`,`occupied_clean`,`occupied_dirty`,`out_of_order`,`out_of_service`,`reserved` |
 | notes | text nullable | |
 
-Index: `rooms(room_type_id)`, `rooms(status)`. Business logic: `status` is a **derived cache**, source of truth is the latest `housekeeping_logs` row + active `reservation_rooms`; a model observer/event recalculates it on relevant changes.
+Index: `rooms(hotel_id, room_type_id)`, `rooms(hotel_id, status)`. Business logic: `status` is a **derived cache**, source of truth is the latest `housekeeping_logs` row + active `reservation_rooms`; a model observer/event recalculates it on relevant changes.
 
 **`rate_plans`**
 | Column | Type | Notes |
 |---|---|---|
 | id | bigint PK | |
+| hotel_id | bigint FK → hotels, nullable | **nullable** = group-wide rate plan template usable by any property; non-null = property-specific override |
 | room_type_id | bigint FK | |
 | season_id | bigint FK nullable | |
 | name | varchar(100) | e.g. "Weekend Rate", "Promo Merdeka" |
 | rate_type | enum | `standard`,`weekend`,`seasonal`,`promo`,`corporate` |
-| nightly_rate | decimal(14,2) | |
+| nightly_rate | decimal(14,2) | IDR — see [10.8](#108-multi-currency-accounting-conventions) for foreign-currency guest quoting |
 | day_of_week_mask | tinyint nullable | bitmask Mon..Sun for weekend rates |
 | valid_from | date nullable | |
 | valid_to | date nullable | |
@@ -478,8 +535,9 @@ Index: `guests(id_number)`, `guests(phone)`, `guests(vip_tier)`.
 | Column | Type | Notes |
 |---|---|---|
 | id | bigint PK | |
-| reservation_code | varchar(20) unique | human-friendly ref, e.g. `RES-20260722-0007` |
-| guest_id | bigint FK | primary/booking guest |
+| hotel_id | bigint FK → hotels | which property this stay is at — active scoping, Stakeholder Decision Q2 |
+| reservation_code | varchar(20) unique | human-friendly ref, e.g. `RES-20260722-0007` (prefixed per-property using `hotels.code` at generation time to avoid cross-property numbering collisions in reporting) |
+| guest_id | bigint FK | primary/booking guest — `guests` is group-wide, not hotel-scoped, per [Section 3](#3-erd-entity-relationship-diagram) |
 | company_id | bigint FK nullable | if corporate booking |
 | source | enum(`walkin`,`phone`,`ota`,`telegram`,`web`) | |
 | status | enum(`tentative`,`confirmed`,`checked_in`,`checked_out`,`cancelled`,`no_show`) | |
@@ -492,7 +550,7 @@ Index: `guests(id_number)`, `guests(phone)`, `guests(vip_tier)`.
 | created_via | enum(`web`,`telegram`,`ota_webhook`) | |
 | cancelled_reason | text nullable | |
 
-Index: `reservations(status)`, `reservations(arrival_date)`, `reservations(guest_id)`.
+Index: `reservations(hotel_id, status)`, `reservations(hotel_id, arrival_date)`, `reservations(guest_id)`.
 
 **`reservation_rooms`**
 | Column | Type | Notes |
@@ -519,12 +577,14 @@ Index: `reservation_rooms(room_id, check_in_at)` for overlap queries; unique con
 | Column | Type | Notes |
 |---|---|---|
 | id | bigint PK | |
+| hotel_id | bigint FK → hotels | inherited from `reservation.hotel_id` at creation — active scoping, Stakeholder Decision Q2 |
 | folio_no | varchar(20) unique | e.g. `FOL-20260722-0012` |
 | reservation_id | bigint FK | |
 | guest_id | bigint FK | |
 | company_id | bigint FK nullable | if billed to city ledger |
 | type | enum(`master`,`incidental`) default `master` | supports split-by-folio |
 | status | enum(`open`,`closed`,`voided`) | |
+| display_currency_code | varchar(3) FK → currencies.code, nullable | **presentation-only** — if set, guest-facing views render a converted total in this currency via `MoneyDisplay`; never affects `folio_items.amount` (always IDR) — see [10.8](#108-multi-currency-accounting-conventions) |
 | opened_at | timestamp | |
 | closed_at | timestamp nullable | |
 
@@ -539,22 +599,30 @@ Index: `reservation_rooms(room_id, check_in_at)` for overlap queries; unique con
 | reference_id | bigint nullable | polymorphic id |
 | quantity | decimal(10,2) default 1 | |
 | unit_price | decimal(14,2) | |
-| amount | decimal(14,2) | qty × unit_price, pre-tax |
+| amount | decimal(14,2) | qty × unit_price, pre-tax — **always IDR**, the GL-posting value |
 | tax_amount | decimal(14,2) default 0 | |
 | service_charge_amount | decimal(14,2) default 0 | |
+| original_currency_code | varchar(3) FK → currencies.code, nullable | **(NEW, multi-currency, Stakeholder Decision Q12)** set when the guest was quoted/charged in a foreign currency; null = charge originated in IDR |
+| original_amount | decimal(14,2) nullable | **(NEW)** the amount in `original_currency_code`, pre-conversion; null if `original_currency_code` is null |
+| exchange_rate_id | bigint FK → exchange_rates, nullable | **(NEW)** the rate used to convert `original_amount` → `amount` (IDR) at posting time |
 | posted_by | bigint FK users nullable | |
 | posted_at | timestamp | |
 
 Index: `folio_items(folio_id)`, `folio_items(reference_type, reference_id)`.
+
+> **Multi-currency note:** `amount`/`tax_amount`/`service_charge_amount` are the figures that flow to `GlPostingService` and never change meaning — they are always IDR. `original_currency_code`/`original_amount`/`exchange_rate_id` exist purely to preserve what the guest was actually quoted/charged in, for folio display and audit. See [10.8](#108-multi-currency-accounting-conventions).
 
 **`payments`**
 | Column | Type | Notes |
 |---|---|---|
 | id | bigint PK | |
 | folio_id | bigint FK | |
-| amount | decimal(14,2) | |
+| amount | decimal(14,2) | **always IDR** — the GL-posting value |
 | method | enum(`cash`,`card`,`transfer`,`ewallet_qris`,`city_ledger`) | |
 | reference_no | varchar(100) nullable | card auth code / transfer ref |
+| original_currency_code | varchar(3) FK → currencies.code, nullable | **(NEW, multi-currency, Stakeholder Decision Q12)** set when payment was received in a foreign currency (e.g. USD cash/card) |
+| original_amount | decimal(14,2) nullable | **(NEW)** the amount received in `original_currency_code` |
+| exchange_rate_id | bigint FK → exchange_rates, nullable | **(NEW)** rate used at settlement; if it differs from the rate captured on the `folio_items` being settled, the difference drives the realized FX gain/loss posting — see [10.8](#108-multi-currency-accounting-conventions) |
 | received_by | bigint FK users | |
 | paid_at | timestamp | |
 | is_refund | boolean default false | |
@@ -621,9 +689,9 @@ Index: `housekeeping_logs(room_id, changed_at)`.
 
 ### 4.9 Inventory & Purchasing
 
-**`inventory_items`** — `id`, `name`, `category` (`linen`,`amenity`,`fb_ingredient`,`spare_part`,`other`), `unit` (`pcs`,`kg`,`ltr`,`box`), `current_stock` decimal(12,2), `reorder_level` decimal(12,2), `location_type` (`floor`,`warehouse`,`kitchen`) nullable, `location_id` bigint nullable (polymorphic to floors/warehouses).
+**`inventory_items`** — `id`, `hotel_id` FK → hotels (required — stock is always physically located at one property, active scoping per Stakeholder Decision Q2), `name`, `category` (`linen`,`amenity`,`fb_ingredient`,`spare_part`,`other`), `unit` (`pcs`,`kg`,`ltr`,`box`), `current_stock` decimal(12,2), `reorder_level` decimal(12,2), `location_type` (`floor`,`warehouse`,`kitchen`) nullable, `location_id` bigint nullable (polymorphic to floors/warehouses).
 
-**`suppliers`** — `id`, `name`, `contact_person`, `phone`, `email`, `address`, `is_active`.
+**`suppliers`** — `id`, `hotel_id` FK → hotels, nullable, `name`, `contact_person`, `phone`, `email`, `address`, `is_active`. **`hotel_id` nullable** = a group-wide supplier contract usable by any property's purchasing (e.g. a national F&B distributor); non-null = a property-specific local supplier.
 
 **`purchase_requisitions`** — `id`, `requested_by` FK users, `department` (`housekeeping`,`fb`,`maintenance`,`admin`), `status` (`draft`,`pending_approval`,`approved`,`rejected`,`converted`), `approved_by` FK users nullable, `notes` nullable.
 
@@ -647,7 +715,34 @@ Index: `housekeeping_logs(room_id, changed_at)`.
 
 ### 4.11 Settings / Admin
 
-**`hotel_settings`** — key-value (`key`, `value`, `type`) OR single-row config table: `id`, `name`, `address`, `logo_path`, `currency` default `IDR`, `timezone` default `Asia/Jakarta`, `default_checkin_time`, `default_checkout_time`. (Design as single-row table now, architecture-ready to become `hotels` table for multi-property — see [Section 11](#11-open-questions--decisions).)
+> The single-row `hotel_settings` concept from the prior draft is **replaced** by the many-row `hotels` table, defined in [4.1](#41-identity--access--multi-property-foundation) since every other hotel-scoped table FKs into it — see that section for the full `hotels` schema. This section covers the remaining group-wide settings: currencies and exchange rates.
+
+**`currencies`** (NEW — multi-currency, Stakeholder Decision Q12)
+| Column | Type | Notes |
+|---|---|---|
+| id | bigint PK | |
+| code | varchar(3) unique | ISO 4217, e.g. `IDR`, `USD` |
+| name | varchar(60) | e.g. "Indonesian Rupiah" |
+| symbol | varchar(10) | e.g. `Rp`, `$` |
+| decimal_places | tinyint default 2 | |
+| is_base | boolean default false | **exactly one row** (`IDR`) has `is_base = true` — the group's statutory reporting currency; enforced in the `CurrencyExchangeService`/seeder, not a DB constraint |
+| is_active | boolean default true | |
+
+Seeded with `IDR` (`is_base = true`) and `USD` at minimum, per Stakeholder Decision Q12.
+
+**`exchange_rates`** (NEW — multi-currency, Stakeholder Decision Q12)
+| Column | Type | Notes |
+|---|---|---|
+| id | bigint PK | |
+| currency_code | varchar(3) FK → currencies.code | the foreign currency being priced (base `IDR` never needs a row against itself) |
+| rate_to_base | decimal(18,6) | units of base currency (IDR) per 1 unit of `currency_code` |
+| effective_date | date | |
+| source | varchar(50) nullable | e.g. `manual`, `bi_reference` — manual entry only for MVP, no live central-bank feed (consistent with the "manual over API integration" pattern chosen for Q8/Q15) |
+| created_by | bigint FK users nullable | |
+
+Unique(`currency_code`,`effective_date`). Index: `exchange_rates(currency_code, effective_date)` for efficient "most recent rate as of date" lookups.
+
+> **Business logic note:** `CurrencyExchangeService::convert()` is the only sanctioned path from a foreign-currency amount to its IDR equivalent — see [10.8](#108-multi-currency-accounting-conventions) for the full posting convention.
 
 ### 4.12 Accounting Schema
 
@@ -657,7 +752,8 @@ Index: `housekeeping_logs(room_id, changed_at)`.
 | Column | Type | Notes |
 |---|---|---|
 | id | bigint PK | |
-| code | varchar(20) unique | e.g. `4-1100` |
+| hotel_id | bigint FK → hotels, nullable | **(NEW, multi-property, Stakeholder Decision Q2)** nullable = group-wide/consolidation account (e.g. intercompany, group equity) shared by every property; non-null = property-specific postable account (e.g. "Room Revenue - Deluxe" at a specific resort) |
+| code | varchar(20) | e.g. `4-1100` — unique **per hotel** (and globally unique among `hotel_id IS NULL` rows): unique(`hotel_id`,`code`) |
 | name | varchar(150) | e.g. "Room Revenue - Deluxe" |
 | account_type | enum(`asset`,`liability`,`equity`,`revenue`,`cogs`,`expense`) | |
 | normal_balance | enum(`debit`,`credit`) | |
@@ -666,12 +762,13 @@ Index: `housekeeping_logs(room_id, changed_at)`.
 | is_active | boolean default true | |
 | description | text nullable | |
 
-Index: `chart_of_accounts(parent_id)`, `chart_of_accounts(account_type)`.
+Index: `chart_of_accounts(hotel_id, parent_id)`, `chart_of_accounts(hotel_id, account_type)`. The seeded default CoA ([2.12](#212-accounting--finance-new--must-have)) is cloned per-hotel at property creation (`HotelCreatedListener` → `ChartOfAccountsSeeder::forHotel($hotel)`), plus a small set of `hotel_id = null` group-consolidation accounts (equity, intercompany, and the **Selisih Kurs** FX gain/loss pair — `6-9100` Selisih Kurs Rugi / `4-9200` Selisih Kurs Laba — per [10.8](#108-multi-currency-accounting-conventions)).
 
 **`accounting_periods`**
 | Column | Type | Notes |
 |---|---|---|
 | id | bigint PK | |
+| hotel_id | bigint FK → hotels | **(NEW, multi-property, Stakeholder Decision Q2)** each property closes its own books on its own schedule |
 | name | varchar(20) | e.g. `2026-07` |
 | start_date | date | |
 | end_date | date | |
@@ -679,17 +776,18 @@ Index: `chart_of_accounts(parent_id)`, `chart_of_accounts(account_type)`.
 | closed_by | bigint FK users nullable | |
 | closed_at | timestamp nullable | |
 
-Unique: `accounting_periods(start_date, end_date)`.
+Unique: `accounting_periods(hotel_id, start_date, end_date)`.
 
 **`general_ledger`**
 | Column | Type | Notes |
 |---|---|---|
 | id | bigint PK | |
+| hotel_id | bigint FK → hotels | **(NEW, multi-property, Stakeholder Decision Q2)** every posting belongs to exactly one property's books, even if the target `chart_of_account_id` is a `hotel_id = null` group account |
 | accounting_period_id | bigint FK | |
 | chart_of_account_id | bigint FK | |
 | transaction_date | date | |
-| debit | decimal(14,2) default 0 | |
-| credit | decimal(14,2) default 0 | |
+| debit | decimal(14,2) default 0 | always IDR — [10.8](#108-multi-currency-accounting-conventions) |
+| credit | decimal(14,2) default 0 | always IDR |
 | description | varchar(255) | |
 | reference_no | varchar(50) nullable | folio_no / po_no / JV number |
 | source_type | varchar(60) | polymorphic: `folio_item`,`payment`,`supplier_invoice`,`stock_movement`,`journal_entry` |
@@ -697,7 +795,7 @@ Unique: `accounting_periods(start_date, end_date)`.
 | posted_by | bigint FK users nullable | null if system-auto-posted |
 | posted_at | timestamp | |
 
-Index: `general_ledger(chart_of_account_id, transaction_date)`, `general_ledger(source_type, source_id)`, `general_ledger(accounting_period_id)`.
+Index: `general_ledger(hotel_id, chart_of_account_id, transaction_date)`, `general_ledger(source_type, source_id)`, `general_ledger(hotel_id, accounting_period_id)`. Group-level consolidated statements aggregate across `hotel_id` rather than requiring a separate ledger — see [10.6](#106-multi-property-architecture-active-from-phase-1).
 
 > **Business logic note:** every row is inserted exclusively through `GlPostingService::post(array $lines)`, which validates `SUM(debit) == SUM(credit)` for the batch inside a DB transaction before committing — never inserted directly via Eloquent `create()` elsewhere in the codebase (see [10.7](#107-accounting--gl-posting-architecture)).
 
@@ -734,12 +832,16 @@ Index: `journal_entry_lines(journal_entry_id)`.
 | Column | Type | Notes |
 |---|---|---|
 | id | bigint PK | |
+| hotel_id | bigint FK → hotels | which property's folios this invoice consolidates — active scoping, Stakeholder Decision Q2 |
 | invoice_no | varchar(20) unique | e.g. `AR-INV-20260731-0004` |
 | company_id | bigint FK companies | |
 | period_start | date | |
 | period_end | date | |
-| total_amount | decimal(14,2) | |
+| total_amount | decimal(14,2) | **always IDR** — the GL-posting/statutory value |
 | paid_amount | decimal(14,2) default 0 | |
+| original_currency_code | varchar(3) FK → currencies.code, nullable | **(NEW, multi-currency, Stakeholder Decision Q12)** set when a corporate account is invoiced in USD per its contract terms |
+| original_amount | decimal(14,2) nullable | **(NEW)** the invoiced amount in `original_currency_code` |
+| exchange_rate_id | bigint FK → exchange_rates, nullable | **(NEW)** rate used at invoice issuance; settlement-time rate differences drive realized FX gain/loss per [10.8](#108-multi-currency-accounting-conventions) |
 | status | enum(`open`,`partially_paid`,`paid`,`overdue`,`void`) | |
 | due_date | date | |
 | issued_at | timestamp | |
@@ -764,7 +866,7 @@ Index: `journal_entry_lines(journal_entry_id)`.
 
 **`supplier_invoice_lines`** — `id`, `supplier_invoice_id` FK, `purchase_order_item_id` FK nullable, `inventory_item_id` FK nullable, `chart_of_account_id` FK (expense/inventory account to debit), `description`, `quantity` decimal(12,2), `unit_cost` decimal(14,2), `amount` decimal(14,2).
 
-**`bank_accounts`** — `id`, `bank_name`, `account_no`, `account_name`, `chart_of_account_id` FK (linked cash/bank GL account), `currency` default `IDR`, `is_active`.
+**`bank_accounts`** — `id`, `hotel_id` FK → hotels (each property holds its own bank accounts), `bank_name`, `account_no`, `account_name`, `chart_of_account_id` FK (linked cash/bank GL account), `currency_code` FK → currencies.code default `IDR` (supports a property holding a USD-denominated account for foreign-currency settlements, per Stakeholder Decision Q12), `is_active`.
 
 **`bank_reconciliations`** — `id`, `bank_account_id` FK, `period_end_date` date, `statement_balance` decimal(14,2), `book_balance` decimal(14,2), `status` (`in_progress`,`completed`), `reconciled_by` FK users, `reconciled_at`.
 
@@ -940,7 +1042,31 @@ flowchart TD
     O --> P[Statements archived / exported to PDF + Excel]
 ```
 
-> **Business logic note:** step O (period lock) is the enforcement point — `GlPostingService` and the Journal Entry approval workflow both check `accounting_periods.status` before allowing any write against a `transaction_date`/`entry_date` falling in a closed period; late adjustments must be dated in the next open period as reversing/correcting entries, never backdated into a closed one.
+> **Business logic note:** step O (period lock) is the enforcement point — `GlPostingService` and the Journal Entry approval workflow both check `accounting_periods.status` before allowing any write against a `transaction_date`/`entry_date` falling in a closed period; late adjustments must be dated in the next open period as reversing/correcting entries, never backdated into a closed one. Note period locking is now per-property (`accounting_periods.hotel_id`, [4.12](#412-accounting-schema)) — each property runs its own month-end close independently.
+
+### 5.7 Property Selection / Switch Flow (Multi-Property)
+
+> **NEW — Stakeholder Decision Q2 (2026-07-25):** every session (web and Telegram) resolves an active property context before any hotel-scoped data is shown, per [10.6](#106-multi-property-architecture-active-from-phase-1).
+
+```mermaid
+flowchart TD
+    A[User logs in] --> B{Does user have access to more than one hotel?}
+    B -- No - single home property --> C["session('current_hotel_id') set automatically to users.hotel_id"]
+    B -- Yes - super-admin or hotel_user grants --> D[Show Property Selector on first login this session]
+    D --> E[User picks a hotel from the list]
+    E --> F["session('current_hotel_id') updated"]
+    C --> G[Dashboard + all pages load scoped to current_hotel_id via BelongsToHotel global scope]
+    F --> G
+    G --> H{User wants to switch property mid-session?}
+    H -- Yes --> I[Click PropertySwitcher in topbar]
+    I --> J["POST /hotel-context/switch {hotel_id}"]
+    J --> K{Does user have access to that hotel_id?}
+    K -- No --> L[403 - reject switch]
+    K -- Yes --> F
+    H -- No --> M[Continue working in current property context]
+```
+
+> **Business logic note:** access is validated as: `users.hotel_id === requested` (home property) OR an `hotel_user` grant row exists OR `users.hotel_id === null` (super-admin, may switch to any active hotel). The Telegram bot has no session concept, so it resolves context from `telegram_users.hotel_id` per command; multi-property staff use `/switchproperty {hotel_code}` to change which property their bot commands operate against for the remainder of the linked chat, mirroring the web `PropertySwitcher`. `ResolveHotelContext` middleware ([10.6](#106-multi-property-architecture-active-from-phase-1)) performs steps B–G on every authenticated web request.
 
 ---
 
@@ -959,9 +1085,10 @@ flowchart TD
 | Command | Who | Description |
 |---|---|---|
 | `/start` | anyone | Welcome message + instructions to link account |
-| `/link {CODE}` | anyone | Links this Telegram chat to a `users` account via a 10-min-expiry code generated on the web profile page (`Profile → Telegram → Generate Link Code`) |
+| `/link {CODE}` | anyone | Links this Telegram chat to a `users` account via a 10-min-expiry code generated on the web profile page (`Profile → Telegram → Generate Link Code`); also sets `telegram_users.hotel_id` to the linked user's home property |
 | `/unlink` | linked user | Unlinks this chat (admin can also force-unlink via web) |
-| `/whoami` | linked user | Shows linked name, role(s), employee ID |
+| `/whoami` | linked user | Shows linked name, role(s), employee ID, and current property context |
+| `/switchproperty` | linked user with access to >1 hotel | Multi-step: shows accessible hotels, updates `telegram_users.hotel_id` for the remainder of the chat — bot equivalent of the web `PropertySwitcher` ([5.7](#57-property-selection--switch-flow-multi-property)) |
 
 ### 6.3 Full Command List
 
@@ -1051,7 +1178,7 @@ Bot:    Priority updated to High. Notified maintenance team.
 | maintenance | — | — | full | — | — | — | view own asset depreciation |
 | spa | — | — | — | — | — | — | — |
 
-Permission checks reuse the same `permissions`/`roles` tables as the web app — **no separate Telegram permission system**; the bot handler simply calls the same Laravel Policies/Gates as controllers, keyed off the linked `users` record.
+Permission checks reuse the same `spatie/laravel-permission` roles/permissions as the web app — **no separate Telegram permission system**; the bot handler simply calls the same Laravel Policies/Gates as controllers, keyed off the linked `users` record. All data returned/mutated by a command is additionally scoped to the chat's current `telegram_users.hotel_id`, exactly as web requests are scoped to `session('current_hotel_id')` — see [10.6](#106-multi-property-architecture-active-from-phase-1).
 
 ### 6.8 Webhook Setup Notes
 
@@ -1124,10 +1251,16 @@ Permission checks reuse the same `permissions`/`roles` tables as the web app —
 | GET | `/accounting/fixed-assets/depreciation` | `Accounting\DepreciationRunController@index` | `accounting.fixed-assets.depreciation` | `auth`, `can:accounting.manage` |
 | POST | `/accounting/fixed-assets/depreciation/run` | `Accounting\DepreciationRunController@store` | `accounting.fixed-assets.depreciation.run` | `auth`, `can:accounting.post` |
 | GET | `/admin/users` | `Admin\UserController@index` | `admin.users.index` | `auth`, `can:admin.manage` |
-| GET | `/admin/roles` | `Admin\RoleController@index` | `admin.roles.index` | `auth`, `can:admin.manage` |
+| GET | `/admin/roles` | `Admin\RoleController@index` | `admin.roles.index` | `auth`, `can:admin.manage` (spatie roles/permissions matrix) |
+| GET | `/admin/hotels` | `Admin\HotelController@index` | `admin.hotels.index` | `auth`, `can:hotels.manage` (super-admin only) |
+| GET | `/admin/hotels/create` | `Admin\HotelController@create` | `admin.hotels.create` | `auth`, `can:hotels.manage` |
+| GET | `/admin/hotels/{hotel}/edit` | `Admin\HotelController@edit` | `admin.hotels.edit` | `auth`, `can:hotels.manage` |
+| GET | `/admin/hotels/{hotel}/users` | `Admin\HotelUserAccessController@index` | `admin.hotels.users.index` | `auth`, `can:hotels.manage` (manage `hotel_user` grants) |
+| POST | `/hotel-context/switch` | `HotelContextController@switch` | `hotel-context.switch` | `auth` (any user with access to >1 hotel — see [5.7](#57-property-selection--switch-flow-multi-property)) |
 | GET | `/admin/rate-plans` | `Admin\RatePlanController@index` | `admin.rate-plans.index` | `auth`, `can:admin.manage` |
 | GET | `/admin/tax-rules` | `Admin\TaxRuleController@index` | `admin.tax-rules.index` | `auth`, `can:admin.manage` |
-| GET | `/admin/hotel-settings` | `Admin\HotelSettingController@edit` | `admin.hotel-settings.edit` | `auth`, `can:admin.manage` |
+| GET | `/admin/currencies` | `Admin\CurrencyController@index` | `admin.currencies.index` | `auth`, `can:currencies.manage` |
+| POST | `/admin/currencies/{currency}/exchange-rates` | `Admin\ExchangeRateController@store` | `admin.currencies.exchange-rates.store` | `auth`, `can:currencies.manage` |
 | GET | `/profile/telegram` | `Profile\TelegramLinkController@show` | `profile.telegram` | `auth` |
 | POST | `/profile/telegram/generate-code` | `Profile\TelegramLinkController@generate` | `profile.telegram.generate` | `auth` |
 
@@ -1152,6 +1285,7 @@ Permission checks reuse the same `permissions`/`roles` tables as the web app —
 | GET | `/api/reports/daily` | `Api\Reports\DailyController@show` | `api.reports.daily` | `auth:sanctum` |
 | GET | `/api/accounting/chart-of-accounts/{account}/ledger` | `Api\Accounting\GeneralLedgerController@forAccount` | `api.accounting.gl.for-account` | `auth:sanctum` |
 | POST | `/api/accounting/periods/{accountingPeriod}/close` | `Api\Accounting\AccountingPeriodController@close` | `api.accounting.periods.close` | `auth:sanctum`, `can:accounting.approve` |
+| GET | `/api/currencies/{currency}/rate` | `Api\CurrencyExchangeController@current` | `api.currencies.rate` | `auth:sanctum` (latest `exchange_rates` row as-of today, used by folio/order forms to live-convert a foreign-currency charge before posting) |
 | GET | `/api/broadcasting/auth` | Laravel built-in | `broadcasting.auth` | `auth:sanctum` (Reverb private channel auth) |
 
 > Internal Telegram command handlers call the **same underlying Service/Action classes** as the `Api\*` and web controllers (see [Section 10](#10-conventions--architecture)) rather than making HTTP calls to these API routes — the API routes exist for potential future mobile app / external integration reuse.
@@ -1231,24 +1365,30 @@ resources/js/
 │   │   ├── Occupancy.tsx
 │   │   └── AdrRevPar.tsx
 │   ├── Admin/
+│   │   ├── Hotels/                    (NEW — multi-property, Stakeholder Decision Q2)
+│   │   │   ├── Index.tsx              (ProTable list of properties, super-admin only)
+│   │   │   ├── Edit.tsx               (per-hotel profile: name, address, logo, base currency, timezone, check-in/out defaults)
+│   │   │   └── UserAccess.tsx         (manage hotel_user grants for multi-property staff)
 │   │   ├── Users/Index.tsx
-│   │   ├── Roles/Index.tsx
+│   │   ├── Roles/Index.tsx            (spatie roles/permissions matrix editor)
 │   │   ├── RatePlans/Index.tsx
 │   │   ├── TaxRules/Index.tsx
-│   │   └── HotelSettings/Edit.tsx
+│   │   └── Currencies/                (NEW — multi-currency, Stakeholder Decision Q12)
+│   │       └── Index.tsx              (currency list + exchange rate entry/history)
 │   └── Profile/
 │       ├── Edit.tsx
 │       └── TelegramLink.tsx           (shows/generates linking code + QR)
 └── Components/
     ├── StatusBadge.tsx                (shared room/order/reservation status chips)
     ├── ProTableWrapper.tsx            (wraps AntD ProTable w/ Inertia pagination adapter)
-    ├── MoneyDisplay.tsx               (IDR formatting)
+    ├── MoneyDisplay.tsx               (IDR formatting; accepts optional currencyCode for foreign-currency display, e.g. folio display_currency_code)
+    ├── PropertySwitcher.tsx           (NEW — topbar hotel dropdown, only rendered when the user has access to >1 hotel; posts to /hotel-context/switch)
     └── NotificationBell.tsx           (Reverb-subscribed live alerts, mirrors Telegram alerts)
 ```
 
 ### 8.2 Shared Layouts
 
-- **AuthenticatedLayout** — role-aware sidebar (menu items filtered by `permissions` shared via Inertia), topbar with hotel name/logo (from `hotel_settings`), notification bell (Reverb `PrivateChannel('users.{id}')`).
+- **AuthenticatedLayout** — role-aware sidebar (menu items filtered by `permissions` shared via Inertia, spatie-backed), topbar with current property name/logo (from `currentHotel`, resolved by `ResolveHotelContext` middleware) plus `PropertySwitcher` when the user has access to more than one hotel, notification bell (Reverb `PrivateChannel('users.{id}')`).
 - **GuestLayout** — minimal, used only for `/login`.
 
 ### 8.3 Key Ant Design Components Used
@@ -1273,10 +1413,13 @@ resources/js/
 ```php
 'auth' => [
     'user' => $request->user()?->only(['id', 'name', 'email']),
-    'roles' => $request->user()?->roles->pluck('name'),
-    'permissions' => $request->user()?->getAllPermissionNames(), // flattened for frontend gating
+    'roles' => $request->user()?->roles->pluck('name'),                    // spatie relation, same call shape as before
+    'permissions' => $request->user()?->getAllPermissions()->pluck('name'), // spatie API — flattened for frontend gating
 ],
-'hotelSettings' => Cache::rememberForever('hotel_settings', fn () => HotelSetting::first()),
+// currentHotel/availableHotels resolved by ResolveHotelContext middleware ahead of this middleware in the stack (10.6)
+'currentHotel' => fn () => $request->attributes->get('currentHotel')?->only(['id', 'name', 'logo_path', 'base_currency_code']),
+'availableHotels' => fn () => $request->user()?->accessibleHotels()->get(['id', 'name'/* for PropertySwitcher */]),
+'currencies' => fn () => Cache::rememberForever('currencies.active', fn () => Currency::where('is_active', true)->get(['code', 'symbol', 'name'])),
 'flash' => [
     'success' => fn () => $request->session()->get('success'),
     'error' => fn () => $request->session()->get('error'),
@@ -1287,13 +1430,15 @@ resources/js/
 ],
 ```
 
+> `User::accessibleHotels()` returns the user's home hotel plus any `hotel_user` grant rows (or every active hotel, if `hotel_id` is null / super-admin) — the single source of truth `PropertySwitcher.tsx` and `/hotel-context/switch` both validate against, per [10.6](#106-multi-property-architecture-active-from-phase-1).
+
 ---
 
 ## 9. Implementation Phases
 
 | # | Phase | Goal | Delivers | Dependencies | Complexity | Order |
 |---|---|---|---|---|---|---|
-| 1 | **Project Scaffold + Auth + Roles + Basic Room Setup** | Establish foundation | Laravel 13 + Inertia/React/AntD scaffold, `users`/`roles`/`permissions`, login, `room_types`/`rooms`/`floors` CRUD, base layouts | None | Low | 1st |
+| 1 | **Project Scaffold + Multi-Property Foundation + Auth (spatie) + Basic Room Setup** | Establish foundation across properties from day one | Laravel 13 + Inertia/React/AntD scaffold; `spatie/laravel-permission` install + `RolePermissionSeeder`; `hotels` + `hotel_user` tables + CRUD (super-admin); `currencies` + `exchange_rates` tables + IDR/USD seeder; `BelongsToHotel` global scope trait + `ResolveHotelContext` middleware + `PropertySwitcher` UI + `/hotel-context/switch`; `users.hotel_id`; login; `room_types`/`rooms`/`floors` CRUD (hotel-scoped); base layouts | None | Medium-High | 1st |
 | 2 | **Reservation Core** | Book & manage stays | `reservations`, `reservation_rooms`, availability engine, reservation calendar UI, walk-in flow, rate_plans/seasons basic | Phase 1 | Medium | 2nd |
 | 3 | **Check-in/Check-out + Folio/Billing** | Revenue capture | `folios`, `folio_items`, `payments`, tax_rules + TaxCalculator service, check-in/out flows, PDF invoice | Phase 2 | High | 3rd |
 | 4 | **Housekeeping** | Room readiness ops | `housekeeping_assignments`, `housekeeping_logs`, room status board, daily schedule generation | Phase 1 (rooms), loosely Phase 3 (checkout triggers) | Medium | 4th |
@@ -1301,13 +1446,13 @@ resources/js/
 | 6 | **Guest CRM + Corporate/City Ledger** | Guest intelligence & B2B billing | `guests`, `guest_preferences`, `guest_stays`, `guest_incidents`, `companies`, city ledger billing on folios, VIP alerting (web + Telegram) | Phase 3 | Medium | 6th |
 | 7 | **F&B / Restaurant Module** | Revenue center #2 | `menu_items`, `orders`, `order_items`, KDS (Reverb), charge-to-room integration, Telegram kitchen alerts | Phase 3 (folio posting) | Medium-High | 7th |
 | 8 | **Inventory & Purchasing + Maintenance/Engineering** | Back-of-house ops | `inventory_items`, `stock_movements`, `suppliers`, `purchase_requisitions`/`purchase_orders`, `maintenance_requests`/`work_orders`/`assets`, Telegram `/maint`, `/stock`, `/approve` | Phase 1 (rooms/assets), Phase 5 (bot infra) | Medium | 8th |
-| 8b | **Accounting Core** | Books of record | `chart_of_accounts` + seeder, `accounting_periods`, `general_ledger`, `GlPostingService`, `journal_entries`/`journal_entry_lines` + approval workflow, GL auto-posting listeners retrofitted onto folio/payment (Phase 3), purchase invoice (Phase 8), and stock movement (Phase 8) events, Trial Balance, Balance Sheet, P&L, `/gl`, `/trialbalance`, `/pnl`, `/balancesheet` Telegram commands | Phases 3, 5, 8 (posts against their events; reuses bot infra) | High | 9th |
+| 8b | **Accounting Core** | Books of record, per property | `chart_of_accounts` (hotel-scoped + group-wide accounts) + per-hotel seeder, `accounting_periods` (hotel-scoped), `general_ledger` (hotel-scoped), `GlPostingService`, `journal_entries`/`journal_entry_lines` + approval workflow, GL auto-posting listeners retrofitted onto folio/payment (Phase 3), purchase invoice (Phase 8), and stock movement (Phase 8) events, Trial Balance, Balance Sheet, P&L (per-property + group-consolidated view), `/gl`, `/trialbalance`, `/pnl`, `/balancesheet` Telegram commands | Phases 1 (multi-property foundation), 3, 5, 8 (posts against their events; reuses bot infra) | High | 9th |
 | 9a | **Reporting & Analytics** | Cross-module insight | Daily revenue/occupancy/ADR/RevPAR reports, Excel/PDF export, `/report` Telegram command | Phases 3, 4, 7 | Medium | 10th |
 | 9b | **Spa & Wellness** | Resort completeness | `spa_treatments`/`spa_appointments`/`spa_therapists`, charge-to-room reuse | Phase 3 | Medium | 11th |
-| 10 | **Accounting Extensions** | Full finance close cycle | `ar_invoices` (city ledger formalization), AR/AP aging, `supplier_invoices`/`supplier_invoice_lines` + 3-way match, `bank_accounts`/`bank_reconciliations`, `fixed_assets` + depreciation runs, `budgets`/`budget_lines` + Budget vs Actual, `tax_transactions` (PPN/PPh 23/PPh 4(2)) | Phase 8b (requires GL/CoA/periods) | High | 12th |
-| 11 | **Hardening, Multi-Property Readiness, Polish** | Production readiness | Full test coverage pass, performance tuning (indexes, query caching), audit logging, admin settings polish, OTA webhook stub finalize, multi-property schema readiness review (incl. accounting `hotel_id` scoping) | All prior phases | Medium | 13th |
+| 10 | **Accounting Extensions** | Full finance close cycle | `ar_invoices` (city ledger formalization, incl. foreign-currency invoicing columns), AR/AP aging, `supplier_invoices`/`supplier_invoice_lines` + 3-way match, `bank_accounts` (hotel-scoped, multi-currency) /`bank_reconciliations`, `fixed_assets` + depreciation runs, `budgets`/`budget_lines` + Budget vs Actual, `tax_transactions` (PPN/PPh 23/PPh 4(2)), `CurrencyExchangeService` FX gain/loss posting on settlement | Phase 8b (requires GL/CoA/periods) | High | 12th |
+| 11 | **Hardening & Polish** | Production readiness | Full test coverage pass, performance tuning (indexes, query caching — incl. `hotel_id`-scoped composite indexes), audit logging, admin settings polish, OTA webhook stub finalize, cross-property group-consolidated reporting review | All prior phases | Medium | 13th |
 
-> **Recommended order rationale:** Phases 1→4 build the operational spine (rooms → reservations → money → cleanliness) that every other module depends on for realistic data. The Telegram bot (Phase 5) is placed immediately after because it is explicitly the differentiator and should be demoed early with real reservation/room/checkin data already in place — it should **not** be pushed to the end. F&B, Inventory, Maintenance are largely independent of each other and can be resequenced or parallelized by different developers once Phase 5 lands. **Accounting Core (Phase 8b)** is deliberately placed *after* Billing (3), the Telegram bot (5), and Inventory/Purchasing (8) — those phases must already emit the operational events (folio charges, payments, purchase invoices, stock movements) that the GL posting listeners hook into; building the GL before those sources exist would mean testing it against nothing. **Accounting Extensions (Phase 10)** — AR/AP subledgers, bank reconciliation, fixed assets, budgeting, tax — depend on Phase 8b's CoA/GL/period-lock foundation and are lower urgency than getting a basic, auditable GL live, so they land after Reporting (9a) and Spa (9b) rather than blocking the rest of the resort's feature completeness.
+> **Recommended order rationale:** Phase 1 now carries the multi-property foundation (`hotels`, `currencies`, `BelongsToHotel`, property context middleware) in addition to auth/rooms, per Stakeholder Decisions Q1/Q2/Q12 — every table and query from Phase 2 onward is written hotel-scoped from the start, which is deliberately front-loaded here rather than retrofitted later, since retrofitting `hotel_id` onto live reservation/folio/GL data is far riskier than building it in from the first migration. Phases 1→4 build the operational spine (rooms → reservations → money → cleanliness) that every other module depends on for realistic data. The Telegram bot (Phase 5) is placed immediately after because it is explicitly the differentiator and should be demoed early with real reservation/room/checkin data already in place — it should **not** be pushed to the end. F&B, Inventory, Maintenance are largely independent of each other and can be resequenced or parallelized by different developers once Phase 5 lands. **Accounting Core (Phase 8b)** is deliberately placed *after* Billing (3), the Telegram bot (5), and Inventory/Purchasing (8) — those phases must already emit the operational events (folio charges, payments, purchase invoices, stock movements) that the GL posting listeners hook into; building the GL before those sources exist would mean testing it against nothing. **Accounting Extensions (Phase 10)** — AR/AP subledgers, bank reconciliation, fixed assets, budgeting, tax — depend on Phase 8b's CoA/GL/period-lock foundation and are lower urgency than getting a basic, auditable GL live, so they land after Reporting (9a) and Spa (9b) rather than blocking the rest of the resort's feature completeness.
 
 ---
 
@@ -1351,8 +1496,8 @@ app/
 ### 10.2 Naming Conventions
 
 - Tables: `snake_case`, plural (`reservation_rooms`).
-- Pivot tables: alphabetical singular order (`permission_role`, `role_user`) per existing project convention.
-- Enums: PHP backed enums in `App\Enums`, e.g. `App\Enums\ReservationStatus::Confirmed`; DB columns store the enum's string value (not native MySQL `ENUM` type, for easier future value additions via migration rather than schema alter — **decision needed**, see Open Questions).
+- Pivot tables: alphabetical singular order (e.g. `hotel_user`) per existing project convention; package-defined pivots (`spatie/laravel-permission`'s `model_has_roles`, `model_has_permissions`, `role_has_permissions`) keep their package-standard names and are not subject to this convention.
+- Enums: PHP backed enums in `App\Enums`, e.g. `App\Enums\ReservationStatus::Confirmed`; DB columns store the enum's string value, **confirmed** `varchar` not native MySQL `ENUM` (Stakeholder Decision Q3, 2026-07-25), for easier future value additions via migration rather than schema alter.
 - Routes: `kebab-case` URIs, dot-notation names matching folder structure (`reservations.calendar`).
 - React components: `PascalCase.tsx`, colocated `components/` folder per page for page-specific pieces; genuinely shared components live in top-level `Components/`.
 - Telegram command classes: `App\Telegram\Commands\{Verb}{Noun}Command`, e.g. `CheckInCommand`, `NewReservationCommand`.
@@ -1379,14 +1524,20 @@ app/
 - Telegram command tests mock the Telegram SDK's outbound calls and assert on the resulting DB state + reply payload, reusing the same Action-layer tests' fixtures where possible (proving bot and web produce identical results).
 - Frontend: component-level tests optional for MVP (React Testing Library) — prioritized lower than backend business-logic coverage given CPA/finance-correctness emphasis; recommend at minimum smoke tests on ProTable pages loading without console errors.
 
-### 10.6 Multi-Tenancy: Single Hotel or Multi-Property?
+### 10.6 Multi-Property Architecture (Active from Phase 1)
 
-**Recommendation: Single-property for MVP, architecture-ready for multi-property.**
+> **Stakeholder Decision Q2 (2026-07-25): multi-property from Phase 1 — decided.** The prior draft's "single-property MVP, multi-ready later" recommendation is superseded; multi-property scoping is enforced from the first migration, not deferred.
 
-- MVP ships with a single implicit "hotel" context — `hotel_settings` is a single-row table, and no `hotel_id` scoping is enforced at the query layer.
-- However, schema is deliberately kept **multi-property-friendly**: `floors` already carries a nullable `hotel_id` column reserved (unused/null in MVP) so that a future migration can (a) rename `hotel_settings` → `hotels` (many rows), (b) backfill `hotel_id` on `floors`/`rooms` (via `floors`) /`inventory_items`/`suppliers`, and (c) add a global scope (`BelongsToHotel` trait + Eloquent global scope) without restructuring foreign keys from scratch.
-- Reservations, folios, orders, etc. don't need direct `hotel_id` — they inherit hotel context transitively through `room`/`floor`. This keeps the MVP schema lean while avoiding a full rewrite later.
-- **This is a recommendation, not yet a decision** — confirm with stakeholder before Phase 1 migrations are finalized (see Open Questions).
+- `hotels` is a first-class, many-row table ([4.1](#41-identity--access--multi-property-foundation)) — there is no single implicit "hotel" context and no unscoped query path for hotel-scoped models.
+- **`BelongsToHotel` trait + Eloquent global scope** (`app/Models/Concerns/BelongsToHotel.php`) is applied to every hotel-scoped model: `Floor`, `Room`, `RatePlan`, `Reservation`, `Folio`, `InventoryItem`, `Supplier`, `ChartOfAccount`, `AccountingPeriod`, `GeneralLedger`, `TelegramUser`, plus operational tables not spelled out in [Section 4](#4-schema-design-per-module) but following the same pattern (`restaurant_tables`, `assets`, `spa_therapists`, `bank_accounts`). The scope constrains every query to `session('current_hotel_id')` (web) or the resolved Telegram user's `hotel_id` (bot) automatically — controllers/Actions/Telegram handlers never need to remember to filter by hotel manually.
+- **Nullable-aware scoping**: models where `hotel_id` is nullable (`rate_plans`, `suppliers`, `chart_of_accounts`) treat `null` as a group-wide/shared record visible to *every* property; their global scope is `where('hotel_id', $current)->orWhereNull('hotel_id')` rather than strict equality, so a property automatically sees both its own records and group templates.
+- **Super-admin bypass**: a user with `users.hotel_id === null` is a super-admin — the global scope is not applied for that user's requests, and cross-property/group-level views (e.g. consolidated financial statements) explicitly require/accept a `hotel_id` filter parameter rather than silently defaulting to one property.
+- **Transitively-scoped tables** do **not** carry their own `hotel_id` column — they inherit hotel context through their parent FK, avoiding a redundant column that could drift out of sync: `reservation_rooms`/`reservation_payments` (via `reservation_id`), `folio_items`/`payments` (via `folio_id`), `orders`/`order_items` (via `reservation_id`/`restaurant_table_id`), `guest_stays` (via `reservation_id`), `journal_entry_lines` (via `journal_entry_id`, and `journal_entries` itself inherits from the finance user's active property at creation). This is the same transitive-scoping principle the prior draft used for the (then-inactive) multi-property design — it is now the **enforced** rule, not just a lean-schema convenience.
+- **`guests` and `companies` are intentionally group-wide, not hotel-scoped** — a returning guest or corporate account is recognized across every property in the group (shared VIP tier, blacklist, credit limit); only their `reservations`/`folios`/`ar_invoices` rows carry the `hotel_id` identifying *where* each stay/invoice happened. See [Section 3](#3-erd-entity-relationship-diagram).
+- **Property context resolution middleware** — `App\Http\Middleware\ResolveHotelContext`, registered in `bootstrap/app.php` (no Kernel.php, per this project's Laravel 11+ conventions) and run immediately after `auth` on every web request: reads `session('current_hotel_id')`, validates the authenticated user still has access to it (home `hotel_id` match, a `hotel_user` grant row, or super-admin), defaults to the user's home hotel on first login of a session, and shares the resolved hotel to Inertia via `HandleInertiaRequests` ([8.4](#84-inertia-shared-data-handleinertiarequests-middleware)).
+- **Property switching** — `PropertySwitcher.tsx` renders in the topbar only for users with access to more than one hotel; it posts to `/hotel-context/switch`, which re-validates access and updates the session. See [5.7](#57-property-selection--switch-flow-multi-property) for the full flow, and [6.2](#62-linking-staff-accounts)/[6.3](#63-full-command-list) for the Telegram equivalent (`/switchproperty`, backed by `telegram_users.hotel_id` since bot chats have no session).
+- **Accounting is hotel-scoped**: `accounting_periods` and `general_ledger` both carry `hotel_id` ([4.12](#412-accounting-schema)) — each property closes its own books independently on its own schedule ([5.6](#56-month-end-closing-flow-accounting)). `chart_of_accounts` supports both property-specific postable accounts and `hotel_id = null` group-consolidation accounts (equity, intercompany, FX gain/loss). Group-level consolidated financial statements aggregate across every property's `general_ledger` rows rather than requiring a separate consolidation ledger.
+- **Document numbering** (`reservation_code`, `folio_no`, `JV-*`, etc.) is prefixed/scoped per property using `hotels.code` where collision avoidance across properties matters for reporting, per [4.4](#44-reservations).
 
 ### 10.7 Accounting & GL Posting Architecture
 
@@ -1398,29 +1549,43 @@ app/
 - **Audit trail via polymorphic source reference** — every `general_ledger` row carries `source_type`/`source_id` (mirroring the existing `folio_items.reference_type`/`reference_id` pattern from [4.5](#45-billing--folio) and the trade-off already documented in [11.2](#112-trade-offs-documented)), so any GL line can be traced back to the exact folio item, payment, supplier invoice, stock movement, or journal entry that produced it — a non-negotiable requirement for CPA-grade auditability.
 - **Idempotent posting**: each source event carries a unique reference (e.g. `folio_item_id`) that `GlPostingService` checks before posting, so retried queue jobs (per the existing idempotency convention in [10.4](#104-error-handling)) never double-post the same transaction.
 
+### 10.8 Multi-Currency Accounting Conventions
+
+> **Stakeholder Decision Q12 (2026-07-25): multi-currency (IDR + USD) from Phase 1 — decided.** Guest-facing currency capture is layered onto the existing IDR-only GL, not a replacement for it.
+
+- **Base currency is IDR** for all statutory GL/reporting — `chart_of_accounts`, `general_ledger`, `journal_entry_lines`, and every financial statement in [2.12](#212-accounting--finance-new--must-have) remain denominated in IDR only. There is no dual-currency ledger in this plan; `GlPostingService`'s posting contract is unchanged and still IDR-only.
+- **Foreign-currency transactions are captured at the document layer, converted at posting**: `folio_items`, `payments`, and `ar_invoices` carry `original_currency_code`/`original_amount`/`exchange_rate_id` ([4.5](#45-billing--folio), [4.12](#412-accounting-schema)); their existing `amount`/`tax_amount`/`total_amount` columns always hold the IDR-converted value that actually posts to the GL.
+- **`exchange_rates`** ([4.11](#411-settings--admin)) stores a `rate_to_base` per `currency_code` and `effective_date`. `CurrencyExchangeService::convert(Money $amount, string $fromCurrency, ?Carbon $asOf = null)` resolves the most recent effective rate on or before the transaction date and is the **only** sanctioned conversion path in the codebase — no ad-hoc rate math inside controllers, Actions, or React components.
+- **Realized FX gain/loss on settlement**: when a `payments` row settles a `folio_items`/`ar_invoices` balance originally quoted in a foreign currency, and the exchange rate in effect at payment time differs from the rate captured at charge/invoice time, `CurrencyExchangeService` computes the realized difference and `GlPostingService` posts it to a dedicated **Selisih Kurs** account pair in the seeded CoA (`6-9100` Selisih Kurs — Rugi / `4-9200` Selisih Kurs — Laba, [4.12](#412-accounting-schema)) — the difference is never silently absorbed into the revenue or cash/bank account.
+- **Unrealized FX revaluation** of open foreign-currency AR/AP balances at period-end is a manual, `finance`-role-triggered recurring journal entry ([2.12](#212-accounting--finance-new--must-have) Journal Entries) reviewed/approved like any other recurring entry — not an automatic listener, consistent with this plan's existing convention that judgment-based period-end adjustments are draft-and-approve, never silent (mirrors the depreciation-run pattern in [10.7](#107-accounting--gl-posting-architecture)).
+- **Rate entry is manual** for MVP — `Admin\ExchangeRateController` lets `finance`/`admin` roles record a new `rate_to_base` per currency per effective date; no live central-bank (Bank Indonesia) rate feed integration, consistent with the "manual over live API integration" pattern already chosen for payments (Q8) and tax filing (Q15).
+- **Display vs. posting currency**: a folio's optional `display_currency_code` ([4.5](#45-billing--folio)) drives a **presentation-only** conversion in `MoneyDisplay`/guest-facing views — it never changes what is written to `folio_items.amount` or posted to the GL, which are always IDR.
+
 ---
 
 ## 11. Open Questions & Decisions
 
-### 11.1 Needs user decision before implementation
+### 11.1 Decisions Log (All 15 Resolved, 2026-07-25)
 
-| # | Question | Options / Trade-offs | Recommendation |
-|---|---|---|---|
-| 1 | Use `spatie/laravel-permission` package or hand-rolled `roles`/`permissions` tables? | Package = faster, battle-tested, has caching built-in, extra dependency. Hand-rolled = full control, matches "no unnecessary service providers" preference, more code to maintain. | Hand-rolled (matches user's stated Laravel 11+ minimalism preference); revisit if permission complexity grows. |
-| 2 | Single-property vs multi-property architecture commitment? | Confirmed in [10.6](#106-multi-tenancy-single-hotel-or-multi-property) as single-property MVP, multi-ready schema — needs explicit sign-off since it affects `floors`/`rooms` migrations from day one. | Proceed with recommendation unless multi-property is imminent (<6 months), in which case build `hotels` table from Phase 1. |
-| 3 | Native MySQL `ENUM` columns vs `varchar` + PHP backed Enum validation? | Native `ENUM` = DB-level integrity, harder to alter (requires migration + potential downtime on large tables). `varchar` = flexible, integrity enforced only at app layer. | `varchar` + backed PHP enums + app-level validation, for easier iteration during early phases. |
-| 4 | Physical door lock / key card integration (e.g., Onity, Salto)? | Explicitly out of scope per current spec (logical key assignment only) — confirm this is acceptable for MVP or if a specific vendor API must be stubbed now. | Out of scope for MVP; revisit as Phase 11+ if hardware vendor is chosen. |
-| 5 | OCR for ID scanning (KTP/Passport auto-fill)? | Adds third-party OCR service dependency (cost + complexity) vs. manual data entry with photo attached. | Manual entry + photo upload for MVP; OCR as post-MVP enhancement. |
-| 6 | Online booking / OTA channel manager — which OTAs first (Traveloka, Agoda, Booking.com) and via which channel manager (or direct API per OTA)? | Direct integration effort varies significantly by OTA; a channel manager (e.g., Staah, SiteMinder) simplifies but adds subscription cost. | Ship generic webhook placeholder only in MVP ([Section 2.1](#21-front-office--reservation-must-have)); decide specific OTA/channel manager in a dedicated follow-up phase. |
-| 7 | SMS/WhatsApp alerting alongside Telegram, for staff without Telegram adoption? | Adds Twilio/WhatsApp Business API integration & cost. | Out of scope for MVP — Telegram is the mandated channel; revisit only if staff adoption of Telegram proves insufficient. |
-| 8 | Payment gateway integration (Midtrans/Xendit) for guest self-pay / deposit online, vs. manual payment recording only? | Manual recording (cashier enters payment received) is simplest and matches "front desk cashier" framing in spec; gateway adds online guest-facing payment capability. | Manual recording for MVP (matches spec's Billing & Front Desk Cashier framing); gateway integration flagged as a clean future Action-layer addition (`RecordPaymentAction` already abstracts the payment source). |
-| 9 | Reverb vs polling for real-time (KDS, room status, notifications)? Spec allows either. | Reverb = true real-time, requires a persistent WebSocket server process in deployment. Polling = simpler ops, higher latency, more DB/API load. | Reverb — deployment complexity is justified by KDS and notification UX quality; polling as a fallback config toggle if hosting constraints (e.g., shared hosting without persistent process support) emerge. |
-| 10 | Excel export library: `maatwebsite/excel` vs custom CSV? | `maatwebsite/excel` = richer (styling, multi-sheet), extra dependency. CSV = zero-dependency, less polished. | `maatwebsite/excel` for Reporting module ([Section 2.8](#28-reporting--analytics)) given finance-grade export expectations from a CPA-led team. |
-| 11 | PSAK 73 (IFRS 16) lease accounting for hotel property leases — in scope or out? | PSAK 73 requires recognizing right-of-use assets/lease liabilities for most leases (equipment, leased retail space in a resort, land lease). Full compliance adds a dedicated lease-accounting sub-module (ROU asset schedule, discount rate, liability amortization). | Out of scope for MVP Accounting Core/Extensions ([2.12](#212-accounting--finance-new--must-have)); revisit as a targeted follow-up phase if the property has material lease exposure — confirm with stakeholder which leases (if any) exist. |
-| 12 | Multi-currency accounting (USD guest folios + IDR reporting)? | Resorts with international guests sometimes quote/settle in USD; statutory reporting must still be in IDR, requiring FX rate capture per transaction + realized/unrealized FX gain/loss postings. | IDR-only for MVP (matches `hotel_settings.currency` single-value design); flag multi-currency as a Phase 10+ enhancement if USD settlement is a hard requirement. |
-| 13 | Integration with external accounting software (Accurate, Jurnal.id, SAP) vs. standalone? | Standalone GL (this plan) gives full control and avoids per-seat SaaS accounting fees, but the CPA/finance team may already have institutional workflows in an external tool. | Standalone by default, given the explicit request for a built-in Chart of Accounts/GL/Financial Statements; if an external system must remain the system of record, this module can be scoped down to an export/sync layer instead — needs explicit confirmation before Phase 8b. |
-| 14 | Payroll module scope — full payroll with PPh 21 calculation, or placeholder only? | Full payroll (gross-to-net, BPJS, PPh 21 progressive brackets, THR) is a substantial module on its own; a placeholder just reserves the GL account and `tax_transactions.pph21` type for a future phase. | Placeholder only for this plan's scope ([2.12](#212-accounting--finance-new--must-have) Tax Accounting); confirm whether a dedicated Payroll module should be added as a future phase or is handled by an external payroll provider. |
-| 15 | Tax e-Filing integration (e-SPT, e-Faktur) or manual export only? | Direct API integration with DJP's e-Faktur/e-SPT systems is a significant, separately-scoped integration (certificate-based auth, strict schema) vs. this plan's manual export of tax reports for the finance team to file externally. | Manual export only for MVP (per [2.12](#212-accounting--finance-new--must-have) Tax Accounting); flag e-Filing API integration as a distinct future initiative, not bundled into Accounting Core/Extensions phases. |
+> All Open Questions from the prior draft have been reviewed with the stakeholder and decided. The table below records the chosen answer and rationale for each; the "Recommendation" column from the prior draft has been retired in favor of a "Decision" column, since there is nothing left to recommend — **decisions B (Q2, multi-property) and C (Q12, multi-currency) are architecture-changing** and are reflected throughout this plan (ERD, schema, routes, frontend, phases, conventions), not just noted here.
+
+| # | Question | Decision | Rationale / Impact | Date Decided |
+|---|---|---|---|---|
+| 1 | Use `spatie/laravel-permission` or hand-rolled `roles`/`permissions` tables? | **`spatie/laravel-permission`** — replaces the hand-rolled `roles`/`permissions`/`role_user`/`permission_role` design. | Battle-tested, built-in permission caching; the multi-property access model (Q2) adds enough authorization complexity (home property, `hotel_user` grants, super-admin bypass) that a hand-rolled pivot layer was no longer the simpler option. See [4.1](#41-identity--access--multi-property-foundation). | 2026-07-25 |
+| 2 | Single-property vs multi-property architecture commitment? | **Multi-property, active from Phase 1** — `hotels` table, `hotel_id` scoping, `BelongsToHotel` global scope, property context middleware, `PropertySwitcher`. | Confirmed imminent business need; retrofitting `hotel_id` onto live reservation/folio/GL data later is far riskier than building it in from the first migration. This is the most significant architectural change in this revision — see [10.6](#106-multi-property-architecture-active-from-phase-1) and every schema table touched in [Section 4](#4-schema-design-per-module). | 2026-07-25 |
+| 3 | Native MySQL `ENUM` vs `varchar` + PHP backed Enum? | **`varchar` + backed PHP enums**, app-level validation. | Matches original recommendation — easier to add/alter enum values via a simple seed/migration than an `ALTER TABLE ... MODIFY ENUM` on a large table. | 2026-07-25 |
+| 4 | Physical door lock / key card integration (Onity, Salto, etc.)? | **Out of scope** — logical key assignment only. | Matches original recommendation; no hardware vendor chosen. Revisit post-MVP if/when a vendor is selected. | 2026-07-25 |
+| 5 | OCR for ID scanning (KTP/Passport auto-fill)? | **Out of scope** — manual entry + photo upload only. | Matches original recommendation; avoids third-party OCR service cost/complexity for MVP. | 2026-07-25 |
+| 6 | Online booking / OTA channel manager — which OTAs, which integration path? | **Webhook placeholder only** — no live OTA/channel manager integration. | Matches original recommendation; generic inbound webhook stub ([2.1](#21-front-office--reservation-must-have)) ships, specific OTA/channel manager selection deferred to a dedicated follow-up phase. | 2026-07-25 |
+| 7 | SMS/WhatsApp alerting alongside Telegram? | **Telegram-only** — no SMS/WhatsApp Business API integration. | Matches original recommendation; Telegram remains the mandated staff channel for MVP. | 2026-07-25 |
+| 8 | Payment gateway (Midtrans/Xendit) vs. manual payment recording? | **Manual payment recording only** — no online gateway integration. | Matches original recommendation; `RecordPaymentAction` already abstracts the payment source cleanly enough to add a gateway later without rework. | 2026-07-25 |
+| 9 | Reverb vs polling for real-time (KDS, room status, notifications)? | **Reverb** — WebSocket real-time. | Matches original recommendation; justified by KDS and notification UX quality despite the added deployment complexity of a persistent WebSocket process. | 2026-07-25 |
+| 10 | Excel export: `maatwebsite/excel` vs custom CSV? | **`maatwebsite/excel`** for report exports. | Matches original recommendation; richer output (styling, multi-sheet) fits the finance-grade export expectations of a CPA-led team. | 2026-07-25 |
+| 11 | PSAK 73 (IFRS 16) lease accounting — in or out of scope? | **Out of scope for MVP** — revisit post-MVP. | Matches original recommendation; no material lease exposure flagged that would justify building a dedicated ROU-asset/lease-liability sub-module now. | 2026-07-25 |
+| 12 | Multi-currency accounting (USD guest folios + IDR reporting)? | **Multi-currency from Phase 1** — base currency IDR; `currencies`/`exchange_rates` tables; `original_currency_code`/`original_amount`/`exchange_rate_id` added to `folio_items`, `payments`, `ar_invoices`; FX gain/loss posts to a dedicated Selisih Kurs GL account pair on settlement. | Confirmed international-guest USD settlement is a hard requirement now, not a future enhancement. GL posting itself stays IDR-only (no dual-currency ledger) — currency is captured and converted at the transaction layer, not baked into the chart of accounts. See [10.8](#108-multi-currency-accounting-conventions) and [4.5](#45-billing--folio)/[4.12](#412-accounting-schema). | 2026-07-25 |
+| 13 | Integration with external accounting software (Accurate, Jurnal.id, SAP) vs. standalone? | **Standalone** — no export/sync layer to external accounting software. | Matches original recommendation; this plan's built-in Chart of Accounts/GL/Financial Statements remains the system of record, per the explicit stakeholder request. | 2026-07-25 |
+| 14 | Payroll module — full payroll or placeholder only? | **Placeholder only** — GL account + `tax_transactions.pph21` type reserved; no full payroll module (gross-to-net, BPJS, PPh 21 brackets, THR) in this plan. | Matches original recommendation; a dedicated Payroll module or external payroll provider is a distinct future initiative, out of this plan's scope. | 2026-07-25 |
+| 15 | Tax e-Filing (e-SPT, e-Faktur) API integration vs. manual export? | **Manual export only** — no e-Faktur/e-SPT API integration. | Matches original recommendation; tax reports export for the finance team to file externally. Consistent with the "manual over live API integration" pattern also chosen for Q8 and the exchange-rate feed in Q12. | 2026-07-25 |
 
 ### 11.2 Trade-offs documented
 
@@ -1433,24 +1598,29 @@ app/
 
 **In scope (MVP, Phases 1–11):**
 - All modules listed in [Section 2](#2-core-modules-feature-list) except explicitly flagged placeholders.
-- Telegram bot core command set ([6.3](#63-full-command-list)) and alerting ([6.4](#64-alerts-push-notifications-no-reply-needed)).
+- Telegram bot core command set ([6.3](#63-full-command-list)) and alerting ([6.4](#64-alerts-push-notifications-no-reply-needed)), including `/switchproperty`.
 - PPN 11% + Service Charge 10% tax engine, configurable rates.
-- Single-property operation with multi-property-ready schema.
+- **Multi-property operation, active from Phase 1** — `hotels`, `hotel_user`, `BelongsToHotel` scoping, `PropertySwitcher` (Decision Q2).
+- **Multi-currency (IDR + USD) guest-facing capture, active from Phase 1** — `currencies`, `exchange_rates`, foreign-currency columns on `folio_items`/`payments`/`ar_invoices`, realized FX gain/loss posting; GL remains IDR-only (Decision Q12).
+- Roles/permissions via `spatie/laravel-permission` (Decision Q1).
 - PDF invoices, Excel/PDF report exports.
 - Reverb-based real-time for KDS, room status, notifications.
-- Full accrual-based accounting: Chart of Accounts, General Ledger, Journal Entries, Neraca/Laba Rugi/Arus Kas, Trial Balance, AR/AP aging, bank reconciliation, fixed assets & depreciation, budgeting, PPN/PPh 23/PPh 4(2) tax accounting ([2.12](#212-accounting--finance-new--must-have)).
+- Full accrual-based accounting: Chart of Accounts, General Ledger, Journal Entries, Neraca/Laba Rugi/Arus Kas, Trial Balance, AR/AP aging, bank reconciliation, fixed assets & depreciation, budgeting, PPN/PPh 23/PPh 4(2) tax accounting — all hotel-scoped with group-consolidated views ([2.12](#212-accounting--finance-new--must-have)).
 
 **Out of scope (explicitly deferred, tracked as future phases):**
-- OCR-based ID scanning (manual entry only).
-- Physical door lock/key card hardware integration.
-- Live OTA channel manager integration (webhook placeholder only).
-- Online payment gateway for guest self-service payment.
+- OCR-based ID scanning (manual entry only) — Decision Q5.
+- Physical door lock/key card hardware integration — Decision Q4.
+- Live OTA channel manager integration (webhook placeholder only) — Decision Q6.
+- Online payment gateway for guest self-service payment — Decision Q8.
+- SMS/WhatsApp alerting alongside Telegram — Decision Q7.
 - Email/SMS marketing campaign sending (schema stub only, per [2.6](#26-guest-management-crm)).
-- Multi-property operation (architecture-ready, not activated).
 - Native mobile app (Telegram bot serves the "staff mobility" need for MVP).
-- Full Payroll module (PPh 21 calculation, BPJS, THR) — placeholder only, per [Open Questions](#111-needs-user-decision-before-implementation).
-- PSAK 73 (IFRS 16) lease accounting, multi-currency accounting, external accounting software integration, and tax e-Filing (e-SPT/e-Faktur) API integration — all pending stakeholder decisions, per [Open Questions](#111-needs-user-decision-before-implementation).
+- Full Payroll module (PPh 21 calculation, BPJS, THR) — placeholder only, Decision Q14.
+- PSAK 73 (IFRS 16) lease accounting — Decision Q11.
+- External accounting software integration (Accurate/Jurnal.id/SAP) — standalone GL only, Decision Q13.
+- Tax e-Filing (e-SPT/e-Faktur) API integration — manual export only, Decision Q15.
+- Live central-bank (BI) exchange-rate feed — manual rate entry only, per Decision Q12.
 
 ---
 
-*End of plan. Next step: review [Section 11.1](#111-needs-user-decision-before-implementation) decisions with stakeholder before starting Phase 1 scaffolding.*
+*End of plan. All 15 stakeholder decisions are resolved and reflected throughout this document (see [Section 11.1](#111-decisions-log-all-15-resolved-2026-07-25) for the log). Next step: begin Phase 1 scaffolding per [Section 9](#9-implementation-phases).*

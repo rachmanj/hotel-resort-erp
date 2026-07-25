@@ -54,12 +54,15 @@ Include relevant context in brackets to help with future AI-assisted coding:
 
 - `[blocked] P2: Add payment integration [waiting for Stripe API keys]`
 
+## Up Next (This Week)
+
+- `[ ] P0: Begin Phase 1 scaffolding per docs/plan.md Section 9 - multi-property foundation + spatie auth + basic room setup [Laravel 13 scaffold, spatie/laravel-permission, hotels/hotel_user/currencies/exchange_rates tables, BelongsToHotel scope, ResolveHotelContext middleware]`
+
 ## Recently Completed
 
-- `[done] P0: Set up database schema [users table, profiles table] (completed: 2025-01-15)`
-- `[done] P1: Create basic routing [React Router setup] (completed: 2025-01-14)`
+- `[done] P0: Resolve all 15 stakeholder Open Questions in docs/plan.md; rewrite plan for multi-property + multi-currency + spatie architecture [docs/plan.md Sections 1-11, .cursorrules Auth/Multi-property/Multi-currency lines] (completed: 2026-07-25)`
 
 ## Quick Notes
 
-[Any important discoveries, decisions, or context for current work]
+- Plan is v2.0 as of 2026-07-25 — all Open Questions decided, no remaining blockers before Phase 1 migrations. See docs/decisions.md for the full decision record and MEMORY.md [M001] for the summary.
 ```

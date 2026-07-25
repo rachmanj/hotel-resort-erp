@@ -27,4 +27,12 @@
 
 ## Project Memory Entries
 
-[Your memory entries go here, following the format above]
+### [M001] Plan v2.0: All 15 Open Questions resolved, multi-property + multi-currency now active (2026-07-25) ✅ COMPLETE
+
+- **Challenge/Decision**: `docs/plan.md` had 15 unresolved Open Questions; 3 were architecture-changing (spatie/laravel-permission, multi-property, multi-currency) and touched nearly every section of the plan.
+- **Solution**: Rewrote `docs/plan.md` end-to-end for internal consistency — `hotels`/`hotel_user`/`currencies`/`exchange_rates` tables, `hotel_id` scoping on every property-level table, foreign-currency columns on `folio_items`/`payments`/`ar_invoices`, spatie schema replacing hand-rolled roles/permissions, new Section 5.7 (property switch flow) and 10.8 (multi-currency conventions), Section 10.6 rewritten, Section 11 rewritten as a resolved decisions log. Also updated `.cursorrules` (Auth, Multi-property, Multi-currency lines) which had contradicted the new decisions.
+- **Key Learning**: When a plan doc's Open Questions include architecture-changing decisions (not just scope decisions), resolving them requires a full consistency pass across ERD/schema/routes/frontend/phases/conventions — marking the decision alone in one table is not sufficient; every table that would need a schema-breaking retrofit later (e.g. `hotel_id`, currency columns) should be built into the *first* migration instead.
+
+---
+
+[Add new memory entries below, following the format above]

@@ -15,7 +15,7 @@ YOUR ROLES:
 - **Queue:** Laravel Queue (database driver)
 - **PDF:** DomPDF
 - **Excel:** `maatwebsite/excel`
-- **Auth:** Hand-rolled roles/permissions (NOT spatie/laravel-permission per plan decision)
+- **Auth:** `spatie/laravel-permission` for roles/permissions (Stakeholder Decision Q1, 2026-07-25 — supersedes the earlier hand-rolled pivot design)
 
 ## Architecture Conventions (from docs/plan.md Section 10)
 - **Controllers stay thin** — validate (FormRequest) → call Action/Service → return Inertia response
@@ -29,7 +29,8 @@ YOUR ROLES:
 - **Double-entry accounting:** enforced at service layer via `GlPostingService`; no direct `GeneralLedger::create()`
 - **Period locking:** `accounting_periods` table — closed periods reject all new postings
 - **Audit trail:** every GL row has polymorphic `source_type`/`source_id` back to origin document
-- **Multi-property ready schema:** `hotel_id` columns nullable in MVP, not active
+- **Multi-property, active from Phase 1:** `hotels` first-class table, `hotel_id` scoping enforced via `BelongsToHotel` global scope (Stakeholder Decision Q2, 2026-07-25 — supersedes the earlier "nullable, not active" MVP framing)
+- **Multi-currency, active from Phase 1:** base currency IDR; guest-facing IDR/USD capture via `currencies`/`exchange_rates` + `original_currency_code`/`original_amount` columns; GL posting remains IDR-only (Stakeholder Decision Q12, 2026-07-25)
 
 ## Core Modules
 1. Front Office / Reservation — room calendar, check-in/out, rate plans
@@ -147,6 +148,6 @@ Periodically (when todo.md gets cluttered):
 5. **Tax calculation order:** Service Charge 10% first, then PPN 11% on (gross + SC) — configurable via `tax_rules.is_compounding`, not hardcoded
 
 ## Project Status
-🚧 **Planning Phase** — implementation not yet started. The master plan is at `docs/plan.md` (1,456 lines, 11 phases). All architectural decisions defer to `docs/plan.md` as the source of truth until implementation begins.
+🚧 **Planning Phase** — implementation not yet started. The master plan is at `docs/plan.md` (v2.0, ~1,626 lines, 11 phases) — all 15 stakeholder Open Questions are resolved (see plan Section 11.1), including multi-property (Q2) and multi-currency (Q12) as active architecture from Phase 1, and `spatie/laravel-permission` for auth (Q1). All architectural decisions defer to `docs/plan.md` as the source of truth until implementation begins.
 
 Remember: These documents should provide comprehensive context for future development and AI assistance, evolving as living documentation that stays current with your codebase.
