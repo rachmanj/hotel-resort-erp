@@ -4,111 +4,149 @@ YOUR ROLES:
 2. senior UI/UX designer with 10+ years of experience in designing enterprise Software UI/UX,
 3. senior n8n engineer with 10+ years experience in automation
 
-# Enhanced Project Documentation Automation
+# Hotel & Resort ERP — Project Rules
+
+## Tech Stack
+- **Backend:** Laravel 13+ (PHP 8.5)
+- **Frontend:** Inertia.js + React + Ant Design ProTable
+- **Database:** MySQL 8 — database name: `hotel_resort`
+- **Real-time:** Laravel Reverb
+- **Telegram:** `irazasyed/telegram-bot-sdk` (webhook-based, not polling)
+- **Queue:** Laravel Queue (database driver)
+- **PDF:** DomPDF
+- **Excel:** `maatwebsite/excel`
+- **Auth:** Hand-rolled roles/permissions (NOT spatie/laravel-permission per plan decision)
+
+## Architecture Conventions (from docs/plan.md Section 10)
+- **Controllers stay thin** — validate (FormRequest) → call Action/Service → return Inertia response
+- **Actions:** Single-purpose invokable classes in `App\Actions\` for discrete business operations
+- **Services:** Cross-cutting domain logic in `App\Services\` (e.g. `TaxCalculator`, `GlPostingService`, `AvailabilityService`, `FolioPostingService`)
+- **Telegram handlers call same Actions/Services as web controllers** — never duplicate business logic
+- **DTOs:** used when input shape is shared between web and Telegram (e.g., reservation draft)
+- **Enums:** PHP 8.1+ backed enums in `App\Enums\`; DB stores varchar (not native ENUM) for easier iteration
+- **Table naming:** `snake_case`, plural
+- **Money columns:** `decimal(14,2)`, default currency IDR
+- **Double-entry accounting:** enforced at service layer via `GlPostingService`; no direct `GeneralLedger::create()`
+- **Period locking:** `accounting_periods` table — closed periods reject all new postings
+- **Audit trail:** every GL row has polymorphic `source_type`/`source_id` back to origin document
+- **Multi-property ready schema:** `hotel_id` columns nullable in MVP, not active
+
+## Core Modules
+1. Front Office / Reservation — room calendar, check-in/out, rate plans
+2. Telegram Bot — 18+ commands for staff operations
+3. Housekeeping — assignments, room status pipeline
+4. F&B / Restaurant — orders, KDS (Reverb), charge-to-room
+5. Billing & Cashier — folios, PPN 11% + Service 10%, split billing, city ledger, PDF invoices
+6. Guest CRM — profiles, preferences, VIP, blacklist
+7. Inventory & Purchasing — stock, PR→PO, suppliers
+8. Accounting & Finance — CoA, GL, Journal, Financial Statements, AR/AP, Bank Rec, Fixed Assets, Budget, Tax
+9. Maintenance & Engineering — work orders, PM, asset tracking
+10. Spa & Wellness — treatments, appointments, therapists
+11. Reporting & Analytics — daily revenue, occupancy, ADR/RevPAR, Excel/PDF export
+12. Administration — users, roles, tax config, hotel settings
+
+## Database Access Preferences
+
+### MySQL MCP Integration
+- **ALWAYS use MySQL MCP** for database queries instead of Laravel Tinker commands
+- MCP provides direct, safe, read-only access to the `hotel_resort` database
+- Key tables include: rooms, reservations, guests, folios, folio_items, payments, housekeeping_logs,
+  orders, order_items, inventory_items, chart_of_accounts, general_ledger, journal_entries, users, roles,
+  telegram_users, telegram_conversation_states, maintenance_requests, assets, spa_appointments, suppliers
+- Query the database directly using natural language requests
+
+### Database Query Guidelines
+- Use direct SQL queries via MCP for data exploration and analysis
+- Prefer MCP queries over `php artisan tinker` commands for database inspection
+- Examples:
+    - Instead of: "Run `Room::count()` in tinker"
+    - Use: "How many rooms are in the database?"
+    - Instead of: "Check today's check-ins with tinker"
+    - Use: "Show me reservations with status=checked_in created today"
+
+### When to Use Each Tool
+- **MySQL MCP**: Data inspection, analysis, counts, structure exploration
+- **Laravel Artisan**: Migrations, seeding, cache clearing, queue management
+- **Manual file editing**: Code changes, configuration updates
 
 ## Core Documentation Maintenance
 
 After every significant code change, you MUST update the relevant documentation:
 
 ### Architecture Changes
-
 When modifying system structure, components, or data flow:
-
 1. Update `docs/architecture.md` with current state
 2. Add/update Mermaid diagrams if data flow changed
 3. Log architectural decisions in `docs/decisions.md`
 4. Note any important discoveries in `MEMORY.md`
 
 ### Feature Development
-
 When working on tasks:
-
 1. Update progress in `docs/todo.md`
 2. Move completed items to the "Recently Completed" section
 3. Update `docs/backlog.md` if scope or priorities change
 4. Document any technical decisions made
 
 ### Bug Fixes & Issues
-
 When resolving problems:
-
 1. Log the issue and solution in `MEMORY.md`
 2. Update task status in `docs/todo.md`
 3. Update architecture docs if the fix reveals structural changes
 
 ### Regular Maintenance
-
 Periodically (when todo.md gets cluttered):
-
 1. Archive old completed items from `docs/todo.md`
 2. Move future ideas from todo to `docs/backlog.md`
 3. Reprioritize based on what you've learned
 
-## Database Access Preferences
-
-### MySQL MCP Integration
-
--   **ALWAYS use MySQL MCP** for database queries instead of Laravel Tinker commands
--   MCP provides direct, safe, read-only access to the `dds_backend` database
--   Available tables include: users, departments, additional_documents, distributions, invoices, etc.
--   Query the database directly using natural language requests
-
-### Database Query Guidelines
-
--   Use direct SQL queries via MCP for data exploration and analysis
--   Prefer MCP queries over `php artisan tinker` commands for database inspection
--   Examples:
-    -   Instead of: "Run `User::count()` in tinker"
-    -   Use: "How many users are in the database?"
-    -   Instead of: "Check recent distributions with tinker"
-    -   Use: "Show me distributions created in the last 7 days"
-
-### When to Use Each Tool
-
--   **MySQL MCP**: Data inspection, analysis, counts, structure exploration
--   **Laravel Artisan**: Migrations, seeding, cache clearing, queue management
--   **Manual file editing**: Code changes, configuration updates
-
 ## Documentation Standards
 
 ### Architecture Documentation
-
--   Document CURRENT state, not intended state
--   Include working code examples and patterns
--   Generate Mermaid diagrams for complex data flows
--   Reference specific files and functions when relevant
+- Document CURRENT state, not intended state
+- Include working code examples and patterns
+- Generate Mermaid diagrams for complex data flows
+- Reference specific files and functions when relevant
 
 ### Task Management
-
--   Include sufficient context for future AI assistance
--   Reference specific files, functions, and error messages
--   Update status and completion dates accurately
--   Note blockers and dependencies clearly
--   Keep focus on immediate work, move future ideas to backlog
+- Include sufficient context for future AI assistance
+- Reference specific files, functions, and error messages
+- Update status and completion dates accurately
+- Note blockers and dependencies clearly
+- Keep focus on immediate work, move future ideas to backlog
 
 ### Memory Entries
-
--   Focus on significant decisions and learnings
--   Include actionable insights, not just descriptions
--   Keep entries concise but informative
--   Archive old entries when file gets too long
+- Focus on significant decisions and learnings
+- Include actionable insights, not just descriptions
+- Keep entries concise but informative
+- Archive old entries when file gets too long
 
 ### Decision Records
-
--   Capture context that led to the decision
--   Document alternatives that were considered
--   Include implementation implications
--   Set review dates for revisiting decisions
+- Capture context that led to the decision
+- Document alternatives that were considered
+- Include implementation implications
+- Set review dates for revisiting decisions
 
 ## Cross-Referencing Rules
+- Always check existing documentation before adding new content
+- Link related decisions, tasks, and architecture changes
+- Update multiple files when changes affect multiple areas
+- Maintain consistency between memory, architecture, and task tracking
 
--   Always check existing documentation before adding new content
--   Link related decisions, tasks, and architecture changes
--   Update multiple files when changes affect multiple areas
--   Maintain consistency between memory, architecture, and task tracking
+## Testing
+- Backend: **Pest** (or PHPUnit) — feature tests per module (happy path + auth denial + validation failure)
+- High-risk areas (AvailabilityService, TaxCalculator, GlPostingService) need heavy data-provider tests
+- Telegram commands: mock SDK, assert DB state + reply payload
+- Frontend: smoke tests on ProTable pages, prioritize backend coverage
+- Dev server: `php artisan serve` on `http://localhost:8000`
 
-after making changes, do test using cursor's Browser Automation feature at http://localhost:8000. assume that server already running
+## CRITICAL Business Rules
+1. **Room overlap prevention:** ALL booking paths (web, Telegram, OTA webhook) MUST route through the same `AvailabilityService` — never raw Eloquent creates on `reservation_rooms`
+2. **Double-entry balance:** Every GL post MUST have `SUM(debit) === SUM(credit)`, enforced inside a DB transaction by `GlPostingService`
+3. **Period locking:** NEVER allow posting into a closed `accounting_periods` row — enforced in `GlPostingService` and Journal Entry approval Action
+4. **Telegram permission model:** bot MUST check role permissions via the same Laravel Policies/Gates as web, keyed off the linked `users` record
+5. **Tax calculation order:** Service Charge 10% first, then PPN 11% on (gross + SC) — configurable via `tax_rules.is_compounding`, not hardcoded
 
-this application has been launched, any update or improvement or fix must consider application live condition
+## Project Status
+🚧 **Planning Phase** — implementation not yet started. The master plan is at `docs/plan.md` (1,456 lines, 11 phases). All architectural decisions defer to `docs/plan.md` as the source of truth until implementation begins.
 
 Remember: These documents should provide comprehensive context for future development and AI assistance, evolving as living documentation that stays current with your codebase.
