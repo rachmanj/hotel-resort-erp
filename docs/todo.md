@@ -60,9 +60,10 @@ Include relevant context in brackets to help with future AI-assisted coding:
 
 ## Recently Completed
 
+- `[done] P0: Resequence docs/plan.md Section 9 so Room Reservation (Phase 2) + Telegram Bot (Phase 3) ship before Billing/Housekeeping; split Telegram command rollout across Phases 3-9a [docs/plan.md Sections 6.2, 6.3, 6.3 (new), 6.4, 9, 11.3] (completed: 2026-07-26)`
 - `[done] P0: Resolve all 15 stakeholder Open Questions in docs/plan.md; rewrite plan for multi-property + multi-currency + spatie architecture [docs/plan.md Sections 1-11, .cursorrules Auth/Multi-property/Multi-currency lines] (completed: 2026-07-25)`
 
 ## Quick Notes
 
-- Plan is v2.0 as of 2026-07-25 — all Open Questions decided, no remaining blockers before Phase 1 migrations. See docs/decisions.md for the full decision record and MEMORY.md [M001] for the summary.
+- Plan is v2.1 as of 2026-07-26 — phases resequenced so Room Reservation + Telegram (core differentiator) land by Phase 3; Telegram bot now ships in 5 incremental slices (Phases 3/4/5/6/7, plus 8/9a for accounting/reporting commands) instead of one monolithic phase. See docs/decisions.md for the full decision record and MEMORY.md [M002] for the summary.
 ```

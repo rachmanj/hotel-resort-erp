@@ -148,6 +148,6 @@ Periodically (when todo.md gets cluttered):
 5. **Tax calculation order:** Service Charge 10% first, then PPN 11% on (gross + SC) — configurable via `tax_rules.is_compounding`, not hardcoded
 
 ## Project Status
-🚧 **Planning Phase** — implementation not yet started. The master plan is at `docs/plan.md` (v2.0, ~1,626 lines, 11 phases) — all 15 stakeholder Open Questions are resolved (see plan Section 11.1), including multi-property (Q2) and multi-currency (Q12) as active architecture from Phase 1, and `spatie/laravel-permission` for auth (Q1). All architectural decisions defer to `docs/plan.md` as the source of truth until implementation begins.
+🚧 **Planning Phase** — implementation not yet started. The master plan is at `docs/plan.md` (v2.1, ~1,650 lines, 11 phases) — all 15 stakeholder Open Questions are resolved (see plan Section 11.1), including multi-property (Q2) and multi-currency (Q12) as active architecture from Phase 1, and `spatie/laravel-permission` for auth (Q1). **Phases resequenced 2026-07-26 — Room Reservation (Phase 2) + Telegram Bot (Phase 3) now ship before Billing/Housekeeping**, with the Telegram command set delivered incrementally across Phases 3–9a instead of one monolithic phase (see plan Section 9). All architectural decisions defer to `docs/plan.md` as the source of truth until implementation begins.
 
 Remember: These documents should provide comprehensive context for future development and AI assistance, evolving as living documentation that stays current with your codebase.

@@ -52,3 +52,26 @@ Decision: Resolve all 15 stakeholder Open Questions in docs/plan.md; adopt multi
 **Review Date**: Before Phase 1 migrations are written — confirm `hotels` seed data (initial properties) and `currencies` seed data (IDR + USD rate) with the stakeholder.
 
 ---
+
+Decision: Resequence Section 9 phases so Room Reservation + Telegram ship by Phase 3, splitting the Telegram bot into five incremental phase-slices instead of one monolithic phase - 2026-07-26
+
+**Context**: The prior sequencing (v2.0) placed the Telegram bot at Phase 5, blocked behind Billing (Phase 3) and Housekeeping (Phase 4). The stakeholder wants Room Reservation + Telegram — the product's core differentiator — live and usable as early as possible, without waiting for the rest of the operational stack.
+
+**Options Considered**:
+
+1. **Keep Telegram as one monolithic phase, just move it earlier**: relocate old Phase 5 (full bot: rooms, reservations, check-in/out) to right after Reservation Core.
+   - ✅ Pros: simplest edit, no command-list restructuring.
+   - ❌ Cons: would still require Billing (folios) to exist first, since the old Phase 5 bundled `/checkin`/`/checkout` (which post folio charges) together with pure reservation commands — doesn't actually unblock Telegram until Billing lands either way.
+2. **Split the Telegram bot into phase-aligned slices (chosen)**: Phase 3 ships only the reservation-dependent commands (`/rooms`, `/available`, `/newres`, `/editres`, `/cancelres`, basic `/roomstatus`/`/myrooms`, linking); later phases (4–7) each add their own small command slice as the underlying module (Billing, Housekeeping, F&B, Inventory/Maintenance) lands.
+   - ✅ Pros: bot ships genuinely early (Phase 3, right after web reservations) with zero dependency on Billing/Housekeeping; spreads bot integration risk across the project instead of one late big-bang phase; each later slice is a small addition to already-proven webhook/router infra.
+   - ❌ Cons: command list/roadmap needs an explicit phase mapping to avoid confusion about which commands exist at which point; `/roomstatus` and `/myrooms` need a documented "basic → full" transition (Phase 3 → Phase 5) since they exist before housekeeping data does.
+
+**Decision**: Reorganize `docs/plan.md` Section 9 to: Phase 1 (unchanged) → Phase 2 Reservation Core (now also carries bare-minimum `guests`) → Phase 3 Telegram Bot: Room Reservation (new) → Phase 4 Check-in/out + Folio/Billing + Guest CRM (merges old Phase 3 + old Phase 6) → Phase 5 Housekeeping → Phase 6 F&B → Phase 7 Inventory/Purchasing/Maintenance → Phase 8 Accounting Core (was 8b) → 9a Reporting → 9b Spa → 10 Accounting Extensions → 11 Hardening. Telegram commands are delivered across Phases 3/4/5/6/7/8/9a per the new [Telegram Delivery Roadmap](../docs/plan.md#631-telegram-delivery-roadmap).
+
+**Rationale**: Getting a usable, demoable reservation + Telegram workflow live by Phase 3 (vs. Phase 5) is worth splitting the bot's command set across phases and moving `guests` bare-minimum fields earlier — the alternative (wait for the full command set in one late phase) delays the differentiator without any corresponding benefit, since most bot commands are trivially separable by the module they call into.
+
+**Implementation**: `docs/plan.md` Section 9 (phases table + rationale) rewritten; Section 6.2/6.3 command tables got a `Phase` column; new Section 6.3.1 (Telegram Delivery Roadmap) added; Section 6.4 alerts table got a `Phase` column; Section 11.3 in-scope bullet updated to reference the phased rollout. ERD, schema (Section 4), routes, and frontend sections were **not** changed — feature content is identical, only sequencing and the `guests` table's two-stage delivery (bare-minimum in Phase 2, full profile in Phase 4) changed.
+
+**Review Date**: Before Phase 2 migrations are written — confirm the bare-minimum `guests` columns (Phase 2) vs. full profile columns (Phase 4) split doesn't require two separate migrations that fight each other (should be additive, not destructive).
+
+---

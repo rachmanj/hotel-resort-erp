@@ -1082,51 +1082,69 @@ flowchart TD
 
 ### 6.2 Linking Staff Accounts
 
-| Command | Who | Description |
-|---|---|---|
-| `/start` | anyone | Welcome message + instructions to link account |
-| `/link {CODE}` | anyone | Links this Telegram chat to a `users` account via a 10-min-expiry code generated on the web profile page (`Profile → Telegram → Generate Link Code`); also sets `telegram_users.hotel_id` to the linked user's home property |
-| `/unlink` | linked user | Unlinks this chat (admin can also force-unlink via web) |
-| `/whoami` | linked user | Shows linked name, role(s), employee ID, and current property context |
-| `/switchproperty` | linked user with access to >1 hotel | Multi-step: shows accessible hotels, updates `telegram_users.hotel_id` for the remainder of the chat — bot equivalent of the web `PropertySwitcher` ([5.7](#57-property-selection--switch-flow-multi-property)) |
+> **Delivered in Phase 3** — account linking ships together with the reservation command set, since every other command depends on the chat already being linked to a `users` record.
+
+| Command | Who | Description | Phase |
+|---|---|---|---|
+| `/start` | anyone | Welcome message + instructions to link account | 3 |
+| `/link {CODE}` | anyone | Links this Telegram chat to a `users` account via a 10-min-expiry code generated on the web profile page (`Profile → Telegram → Generate Link Code`); also sets `telegram_users.hotel_id` to the linked user's home property | 3 |
+| `/unlink` | linked user | Unlinks this chat (admin can also force-unlink via web) | 3 |
+| `/whoami` | linked user | Shows linked name, role(s), employee ID, and current property context | 3 |
+| `/switchproperty` | linked user with access to >1 hotel | Multi-step: shows accessible hotels, updates `telegram_users.hotel_id` for the remainder of the chat — bot equivalent of the web `PropertySwitcher` ([5.7](#57-property-selection--switch-flow-multi-property)) | 3 |
 
 ### 6.3 Full Command List
 
-| Command | Syntax | Roles allowed | Example | Description |
-|---|---|---|---|---|
-| `/rooms` | `/rooms [status]` | front_office, housekeeping, manager | `/rooms dirty` | List rooms filtered by status; no arg = all |
-| `/available` | `/available {checkin} {checkout} [room_type]` | front_office, manager | `/available 2026-07-25 2026-07-27 deluxe` | Show room availability & rate for date range |
-| `/newres` | `/newres` (starts guided flow) | front_office, manager | `/newres` | Multi-step: dates → room type → guest info → confirm |
-| `/editres` | `/editres {reservation_code}` | front_office, manager | `/editres RES-20260722-0007` | Starts guided edit flow (dates/room/guest) |
-| `/cancelres` | `/cancelres {reservation_code} {reason}` | front_office, manager | `/cancelres RES-20260722-0007 guest request` | Cancels a reservation |
-| `/checkin` | `/checkin {reservation_code or room_number}` | front_office | `/checkin RES-20260722-0007` | Executes check-in, posts folio room charge |
-| `/checkout` | `/checkout {room_number}` | front_office | `/checkout 204` | Shows outstanding folio balance, confirms checkout |
-| `/roomstatus` | `/roomstatus {room_number} {status}` | housekeeping, front_office | `/roomstatus 204 clean` | Updates housekeeping status |
-| `/myrooms` | `/myrooms` | housekeeping | `/myrooms` | Lists today's assigned rooms for the requester |
-| `/maint` | `/maint {room_number} {description}` | housekeeping, front_office, maintenance | `/maint 204 AC not cooling` | Raises a maintenance_requests ticket |
-| `/workorders` | `/workorders [open\|mine]` | maintenance, manager | `/workorders mine` | Lists work orders |
-| `/stock` | `/stock {item_name}` | housekeeping, fb, finance | `/stock towel` | Checks current stock level of an inventory item |
-| `/loworders` | `/loworders` | finance, manager | `/loworders` | Lists items at/below reorder level |
-| `/approve` | `/approve {requisition_no}` | manager, finance | `/approve PR-2026-0031` | Approves a pending purchase requisition |
-| `/kds` | `/kds` | fb | `/kds` | Shows current active kitchen orders summary |
-| `/report` | `/report {daily\|occupancy\|revenue} [date]` | manager, finance | `/report daily 2026-07-21` | Sends summary report (text + optional PDF) |
-| `/gl` | `/gl {account_code}` | finance, manager | `/gl 4-1100` | Shows recent GL transactions & running balance for an account |
-| `/trialbalance` | `/trialbalance [period]` | finance, manager | `/trialbalance 2026-07` | Shows trial balance (Neraca Saldo) summary for a period |
-| `/pnl` | `/pnl {month}` | finance, manager | `/pnl 2026-07` | Shows Laba Rugi (P&L) summary for the month |
-| `/balancesheet` | `/balancesheet [date]` | finance, manager | `/balancesheet 2026-07-31` | Shows Neraca (Balance Sheet) snapshot as of date |
-| `/help` | `/help` | anyone linked | `/help` | Lists commands available to the caller's role |
+> The **Phase** column shows which [implementation phase](#9-implementation-phases) delivers each command — see [6.3.1](#631-telegram-delivery-roadmap) for the phased rollout summarized by phase instead of by command.
+
+| Command | Syntax | Roles allowed | Example | Description | Phase |
+|---|---|---|---|---|---|
+| `/rooms` | `/rooms [status]` | front_office, housekeeping, manager | `/rooms dirty` | List rooms filtered by status; no arg = all | 3 |
+| `/available` | `/available {checkin} {checkout} [room_type]` | front_office, manager | `/available 2026-07-25 2026-07-27 deluxe` | Show room availability & rate for date range | 3 |
+| `/newres` | `/newres` (starts guided flow) | front_office, manager | `/newres` | Multi-step: dates → room type → guest info → confirm | 3 |
+| `/editres` | `/editres {reservation_code}` | front_office, manager | `/editres RES-20260722-0007` | Starts guided edit flow (dates/room/guest) | 3 |
+| `/cancelres` | `/cancelres {reservation_code} {reason}` | front_office, manager | `/cancelres RES-20260722-0007 guest request` | Cancels a reservation | 3 |
+| `/roomstatus` | `/roomstatus {room_number} [status]` | housekeeping, front_office | `/roomstatus 204 clean` | Phase 3: read-only vacant/occupied lookup only (no `status` arg, no write). Phase 5: full read/write against real housekeeping status once `housekeeping_logs` exists | 3 (basic) → 5 (full) |
+| `/myrooms` | `/myrooms` | housekeeping | `/myrooms` | Phase 3: rooms with reservation activity relevant to the requester (no housekeeping data yet). Phase 5: backed by real `housekeeping_assignments`; command usage is unchanged for staff | 3 (basic) → 5 (full) |
+| `/checkin` | `/checkin {reservation_code or room_number}` | front_office | `/checkin RES-20260722-0007` | Executes check-in, posts folio room charge | 4 |
+| `/checkout` | `/checkout {room_number}` | front_office | `/checkout 204` | Shows outstanding folio balance, confirms checkout | 4 |
+| `/kds` | `/kds` | fb | `/kds` | Shows current active kitchen orders summary | 6 |
+| `/maint` | `/maint {room_number} {description}` | housekeeping, front_office, maintenance | `/maint 204 AC not cooling` | Raises a maintenance_requests ticket | 7 |
+| `/workorders` | `/workorders [open\|mine]` | maintenance, manager | `/workorders mine` | Lists work orders | 7 |
+| `/stock` | `/stock {item_name}` | housekeeping, fb, finance | `/stock towel` | Checks current stock level of an inventory item | 7 |
+| `/loworders` | `/loworders` | finance, manager | `/loworders` | Lists items at/below reorder level | 7 |
+| `/approve` | `/approve {requisition_no}` | manager, finance | `/approve PR-2026-0031` | Approves a pending purchase requisition | 7 |
+| `/gl` | `/gl {account_code}` | finance, manager | `/gl 4-1100` | Shows recent GL transactions & running balance for an account | 8 |
+| `/trialbalance` | `/trialbalance [period]` | finance, manager | `/trialbalance 2026-07` | Shows trial balance (Neraca Saldo) summary for a period | 8 |
+| `/pnl` | `/pnl {month}` | finance, manager | `/pnl 2026-07` | Shows Laba Rugi (P&L) summary for the month | 8 |
+| `/balancesheet` | `/balancesheet [date]` | finance, manager | `/balancesheet 2026-07-31` | Shows Neraca (Balance Sheet) snapshot as of date | 8 |
+| `/report` | `/report {daily\|occupancy\|revenue} [date]` | manager, finance | `/report daily 2026-07-21` | Sends summary report (text + optional PDF) | 9a |
+| `/help` | `/help` | anyone linked | `/help` | Lists commands available to the caller's role, filtered to whichever phases have shipped | 3 (grows every phase) |
+
+### 6.3.1 Telegram Delivery Roadmap
+
+> Read this table top-to-bottom as the bot's capability growing phase over phase — each row is additive on top of the previous one, using the same webhook/router/conversation-state infrastructure built once in Phase 3.
+
+| Phase | New commands added | Cumulative bot capability after this phase |
+|---|---|---|
+| **3 — Room Reservation** 🤖 | `/start`, `/link`, `/unlink`, `/whoami`, `/switchproperty`, `/rooms`, `/available`, `/newres`, `/editres`, `/cancelres`, `/roomstatus` (basic), `/myrooms` (basic), `/help` | Staff can link their account, check room availability, and create/edit/cancel reservations entirely from Telegram — no web access required for day-to-day room sales |
+| **4 — Check-in/out + Billing + Guest CRM** | `/checkin`, `/checkout` | Staff can run the full guest arrival/departure cycle from Telegram, with VIP/blacklist alerts now available since full guest profiles exist |
+| **5 — Housekeeping** | *(no new commands)* — `/roomstatus` and `/myrooms` upgraded from basic to full | Room status updates and cleaning assignments are now real housekeeping data, not just reservation-derived vacant/occupied |
+| **6 — F&B / KDS** | `/kds` | Kitchen staff can monitor active orders from Telegram; room-service order alerts go live |
+| **7 — Inventory + Purchasing + Maintenance** | `/maint`, `/workorders`, `/stock`, `/loworders`, `/approve` | Maintenance tickets, stock checks, and purchase approvals can all be handled from Telegram |
+| **8 — Accounting Core** | `/gl`, `/trialbalance`, `/pnl`, `/balancesheet` | Finance/management can pull GL and financial statement snapshots on demand from Telegram |
+| **9a — Reporting & Analytics** | `/report` | Daily/occupancy/revenue summary reports available on demand from Telegram |
 
 ### 6.4 Alerts (Push Notifications, No Reply Needed)
 
-| Event | Recipients (role) | Example message |
-|---|---|---|
-| VIP guest checked in | manager, front_office | "🌟 VIP (Gold) John Doe checked into Room 501." |
-| Room marked ready | front_office | "✅ Room 204 is now Vacant Clean & ready to sell." |
-| Maintenance ticket raised (priority=urgent) | maintenance, manager | "🚨 Urgent: Room 310 — water leak reported by Rina." |
-| Low stock threshold reached | finance, requesting department head | "⚠️ Bath Towel stock at 12 (reorder level 20)." |
-| Purchase requisition pending approval | manager, finance | "📋 PR-2026-0031 from Housekeeping awaiting your approval." |
-| New room-service order | fb | "🍽️ New room service order for Room 204 — 2 items." |
-| Guest no-show detected (past arrival, still tentative) | front_office, manager | "⏰ Reservation RES-... marked as potential no-show." |
+| Event | Recipients (role) | Example message | Phase |
+|---|---|---|---|
+| Guest no-show detected (past arrival, still tentative) | front_office, manager | "⏰ Reservation RES-... marked as potential no-show." | 3 |
+| VIP guest checked in | manager, front_office | "🌟 VIP (Gold) John Doe checked into Room 501." | 4 |
+| Room marked ready | front_office | "✅ Room 204 is now Vacant Clean & ready to sell." | 5 |
+| New room-service order | fb | "🍽️ New room service order for Room 204 — 2 items." | 6 |
+| Maintenance ticket raised (priority=urgent) | maintenance, manager | "🚨 Urgent: Room 310 — water leak reported by Rina." | 7 |
+| Low stock threshold reached | finance, requesting department head | "⚠️ Bath Towel stock at 12 (reorder level 20)." | 7 |
+| Purchase requisition pending approval | manager, finance | "📋 PR-2026-0031 from Housekeeping awaiting your approval." | 7 |
 
 ### 6.5 Sample Conversation Script — `/newres`
 
@@ -1436,23 +1454,30 @@ resources/js/
 
 ## 9. Implementation Phases
 
+> **Resequencing note (2026-07-26):** Room Reservation and the Telegram bot are the product's core differentiator and are now sequenced as early as physically possible — **Telegram moves from Phase 5 to Phase 3**, immediately after the web reservation core, instead of waiting behind Billing and Housekeeping. The Telegram bot itself is no longer a single monolithic phase; it is split into five incremental slices (Phases 3, 4, 5, 6, 7) that each add a handful of commands as the module they depend on lands, so staff get *some* bot capability as early as Phase 3 rather than the full command set arriving all at once late in the project. See the rationale note below the table and [Section 6.3.1](#631-telegram-delivery-roadmap) for the full phased command rollout.
+
 | # | Phase | Goal | Delivers | Dependencies | Complexity | Order |
 |---|---|---|---|---|---|---|
 | 1 | **Project Scaffold + Multi-Property Foundation + Auth (spatie) + Basic Room Setup** | Establish foundation across properties from day one | Laravel 13 + Inertia/React/AntD scaffold; `spatie/laravel-permission` install + `RolePermissionSeeder`; `hotels` + `hotel_user` tables + CRUD (super-admin); `currencies` + `exchange_rates` tables + IDR/USD seeder; `BelongsToHotel` global scope trait + `ResolveHotelContext` middleware + `PropertySwitcher` UI + `/hotel-context/switch`; `users.hotel_id`; login; `room_types`/`rooms`/`floors` CRUD (hotel-scoped); base layouts | None | Medium-High | 1st |
-| 2 | **Reservation Core** | Book & manage stays | `reservations`, `reservation_rooms`, availability engine, reservation calendar UI, walk-in flow, rate_plans/seasons basic | Phase 1 | Medium | 2nd |
-| 3 | **Check-in/Check-out + Folio/Billing** | Revenue capture | `folios`, `folio_items`, `payments`, tax_rules + TaxCalculator service, check-in/out flows, PDF invoice | Phase 2 | High | 3rd |
-| 4 | **Housekeeping** | Room readiness ops | `housekeeping_assignments`, `housekeeping_logs`, room status board, daily schedule generation | Phase 1 (rooms), loosely Phase 3 (checkout triggers) | Medium | 4th |
-| 5 | **Telegram Bot — Core (Linking, Rooms, Reservations, Check-in/out)** | Core differentiator live | `telegram_users`, `telegram_conversation_states`, webhook, command router, `/link`, `/rooms`, `/available`, `/newres`, `/checkin`, `/checkout`, `/roomstatus` | Phases 1–4 (reuses same services) | High | 5th |
-| 6 | **Guest CRM + Corporate/City Ledger** | Guest intelligence & B2B billing | `guests`, `guest_preferences`, `guest_stays`, `guest_incidents`, `companies`, city ledger billing on folios, VIP alerting (web + Telegram) | Phase 3 | Medium | 6th |
-| 7 | **F&B / Restaurant Module** | Revenue center #2 | `menu_items`, `orders`, `order_items`, KDS (Reverb), charge-to-room integration, Telegram kitchen alerts | Phase 3 (folio posting) | Medium-High | 7th |
-| 8 | **Inventory & Purchasing + Maintenance/Engineering** | Back-of-house ops | `inventory_items`, `stock_movements`, `suppliers`, `purchase_requisitions`/`purchase_orders`, `maintenance_requests`/`work_orders`/`assets`, Telegram `/maint`, `/stock`, `/approve` | Phase 1 (rooms/assets), Phase 5 (bot infra) | Medium | 8th |
-| 8b | **Accounting Core** | Books of record, per property | `chart_of_accounts` (hotel-scoped + group-wide accounts) + per-hotel seeder, `accounting_periods` (hotel-scoped), `general_ledger` (hotel-scoped), `GlPostingService`, `journal_entries`/`journal_entry_lines` + approval workflow, GL auto-posting listeners retrofitted onto folio/payment (Phase 3), purchase invoice (Phase 8), and stock movement (Phase 8) events, Trial Balance, Balance Sheet, P&L (per-property + group-consolidated view), `/gl`, `/trialbalance`, `/pnl`, `/balancesheet` Telegram commands | Phases 1 (multi-property foundation), 3, 5, 8 (posts against their events; reuses bot infra) | High | 9th |
-| 9a | **Reporting & Analytics** | Cross-module insight | Daily revenue/occupancy/ADR/RevPAR reports, Excel/PDF export, `/report` Telegram command | Phases 3, 4, 7 | Medium | 10th |
-| 9b | **Spa & Wellness** | Resort completeness | `spa_treatments`/`spa_appointments`/`spa_therapists`, charge-to-room reuse | Phase 3 | Medium | 11th |
-| 10 | **Accounting Extensions** | Full finance close cycle | `ar_invoices` (city ledger formalization, incl. foreign-currency invoicing columns), AR/AP aging, `supplier_invoices`/`supplier_invoice_lines` + 3-way match, `bank_accounts` (hotel-scoped, multi-currency) /`bank_reconciliations`, `fixed_assets` + depreciation runs, `budgets`/`budget_lines` + Budget vs Actual, `tax_transactions` (PPN/PPh 23/PPh 4(2)), `CurrencyExchangeService` FX gain/loss posting on settlement | Phase 8b (requires GL/CoA/periods) | High | 12th |
-| 11 | **Hardening & Polish** | Production readiness | Full test coverage pass, performance tuning (indexes, query caching — incl. `hotel_id`-scoped composite indexes), audit logging, admin settings polish, OTA webhook stub finalize, cross-property group-consolidated reporting review | All prior phases | Medium | 13th |
+| 2 | **Reservation Core** | Book & manage stays — the web half of the core differentiator | `reservations`, `reservation_rooms`, `AvailabilityService` (overlap-safe booking engine shared by every booking path — web, Telegram, future OTA), reservation calendar UI, walk-in flow, `rate_plans`/`seasons` basic CRUD; **`guests` bare-minimum** (`full_name`, `phone`, `id_number` only — just enough to attach a guest to a reservation; full CRM profile, VIP tier, blacklist, preferences deferred to Phase 4) | Phase 1 | Medium | 2nd |
+| 3 | **🤖 Telegram Bot — Room Reservation** | Core differentiator live on Telegram — moved up from old Phase 5 | `telegram_users`, `telegram_conversation_states`, webhook (`POST /api/telegram/webhook`), `TelegramCommandRouter`, `TelegramConversationManager`; commands `/start`, `/link`, `/unlink`, `/whoami`, `/switchproperty`, `/rooms`, `/available`, `/newres`, `/editres`, `/cancelres`, `/roomstatus` (basic — vacant/occupied only, no housekeeping status yet), `/myrooms` (basic — rooms with reservation activity relevant to the requester), `/help`; alerts: guest no-show detection (uses `reservations`/bare-minimum `guests` from Phase 2). **Not yet included** (arrive in later phases): `/checkin`, `/checkout` (Phase 4), housekeeping-aware `/roomstatus` (Phase 5), `/kds` (Phase 6), `/maint`/`/stock`/`/approve` (Phase 7), `/report` (Phase 9a), `/gl`/`/trialbalance`/`/pnl`/`/balancesheet` (Phase 8) | Phases 1–2 (reuses `AvailabilityService`, `rooms`, bare-minimum `guests`) | Medium-High | 3rd |
+| 4 | **Check-in/Check-out + Folio/Billing + Guest CRM** | Revenue capture + guest intelligence, in one phase | *(from old Phase 3 — Billing)* `folios`, `folio_items`, `payments`, `tax_rules` + `TaxCalculator` service, check-in/out flows, PDF invoice; *(from old Phase 6 — Guest CRM, now merged in)* full `guests` profile fields (`vip_tier`, `is_blacklisted`, `id_document_path`, etc.), `guest_preferences`, `guest_stays`, `guest_incidents`, `companies`, city ledger billing on folios, VIP alerting (web + Telegram); **Telegram extension:** add `/checkin`, `/checkout` | Phase 2 (reservations to check in), Phase 3 (bot infra reused for the `/checkin`/`/checkout` extension) | High | 4th |
+| 5 | **Housekeeping** | Room readiness ops | `housekeeping_assignments`, `housekeeping_logs`, room status board, daily schedule generation; **Telegram extension:** `/roomstatus` upgraded to full (reads/writes real housekeeping status, not just vacant/occupied), `/myrooms` now backed by real `housekeeping_assignments` (no staff-facing behavior change from Phase 3) | Phase 1 (rooms), Phase 4 (checkout triggers), Phase 3 (bot infra) | Medium | 5th |
+| 6 | **F&B / Restaurant Module** | Revenue center #2 | `menu_items`, `orders`, `order_items`, KDS (Reverb), charge-to-room integration; **Telegram extension:** add `/kds` | Phase 4 (folio posting), Phase 3 (bot infra) | Medium-High | 6th |
+| 7 | **Inventory & Purchasing + Maintenance/Engineering** | Back-of-house ops | `inventory_items`, `stock_movements`, `suppliers`, `purchase_requisitions`/`purchase_orders`, `maintenance_requests`/`work_orders`/`assets`; **Telegram extension:** add `/maint`, `/workorders`, `/stock`, `/loworders`, `/approve` | Phase 1 (rooms/assets), Phase 3 (bot infra) | Medium | 7th |
+| 8 | **Accounting Core** | Books of record, per property | `chart_of_accounts` (hotel-scoped + group-wide accounts) + per-hotel seeder, `accounting_periods` (hotel-scoped), `general_ledger` (hotel-scoped), `GlPostingService`, `journal_entries`/`journal_entry_lines` + approval workflow, GL auto-posting listeners retrofitted onto folio/payment (Phase 4), purchase invoice (Phase 7), and stock movement (Phase 7) events, Trial Balance, Balance Sheet, P&L (per-property + group-consolidated view); **Telegram extension:** add `/gl`, `/trialbalance`, `/pnl`, `/balancesheet` | Phase 1 (multi-property foundation), Phase 4, Phase 7 (posts against their events), Phase 3 (bot infra) | High | 8th |
+| 9a | **Reporting & Analytics** | Cross-module insight | Daily revenue/occupancy/ADR/RevPAR reports, Excel/PDF export; **Telegram extension:** add `/report` | Phases 4, 5, 6 | Medium | 9th |
+| 9b | **Spa & Wellness** | Resort completeness | `spa_treatments`/`spa_appointments`/`spa_therapists`, charge-to-room reuse | Phase 4 (folio charge-to-room) | Medium | 10th |
+| 10 | **Accounting Extensions** | Full finance close cycle | `ar_invoices` (city ledger formalization, incl. foreign-currency invoicing columns), AR/AP aging, `supplier_invoices`/`supplier_invoice_lines` + 3-way match, `bank_accounts` (hotel-scoped, multi-currency) /`bank_reconciliations`, `fixed_assets` + depreciation runs, `budgets`/`budget_lines` + Budget vs Actual, `tax_transactions` (PPN/PPh 23/PPh 4(2)), `CurrencyExchangeService` FX gain/loss posting on settlement | Phase 8 (requires GL/CoA/periods) | High | 11th |
+| 11 | **Hardening & Polish** | Production readiness | Full test coverage pass, performance tuning (indexes, query caching — incl. `hotel_id`-scoped composite indexes), audit logging, admin settings polish, OTA webhook stub finalize, cross-property group-consolidated reporting review | All prior phases | Medium | 12th |
 
-> **Recommended order rationale:** Phase 1 now carries the multi-property foundation (`hotels`, `currencies`, `BelongsToHotel`, property context middleware) in addition to auth/rooms, per Stakeholder Decisions Q1/Q2/Q12 — every table and query from Phase 2 onward is written hotel-scoped from the start, which is deliberately front-loaded here rather than retrofitted later, since retrofitting `hotel_id` onto live reservation/folio/GL data is far riskier than building it in from the first migration. Phases 1→4 build the operational spine (rooms → reservations → money → cleanliness) that every other module depends on for realistic data. The Telegram bot (Phase 5) is placed immediately after because it is explicitly the differentiator and should be demoed early with real reservation/room/checkin data already in place — it should **not** be pushed to the end. F&B, Inventory, Maintenance are largely independent of each other and can be resequenced or parallelized by different developers once Phase 5 lands. **Accounting Core (Phase 8b)** is deliberately placed *after* Billing (3), the Telegram bot (5), and Inventory/Purchasing (8) — those phases must already emit the operational events (folio charges, payments, purchase invoices, stock movements) that the GL posting listeners hook into; building the GL before those sources exist would mean testing it against nothing. **Accounting Extensions (Phase 10)** — AR/AP subledgers, bank reconciliation, fixed assets, budgeting, tax — depend on Phase 8b's CoA/GL/period-lock foundation and are lower urgency than getting a basic, auditable GL live, so they land after Reporting (9a) and Spa (9b) rather than blocking the rest of the resort's feature completeness.
+> **Recommended order rationale (revised 2026-07-26):** Phase 1 still carries the multi-property foundation (`hotels`, `currencies`, `BelongsToHotel`, property context middleware) in addition to auth/rooms, per Stakeholder Decisions Q1/Q2/Q12 — every table and query from Phase 2 onward is written hotel-scoped from the start, front-loaded here rather than retrofitted later, since retrofitting `hotel_id` onto live reservation/folio/GL data is far riskier than building it in from the first migration.
+>
+> **Room Reservation + Telegram are the core differentiator, so they now come first, together.** Phase 2 builds the web reservation engine (`AvailabilityService`, calendar, walk-in) with just enough `guests` data (name/phone/ID) to attach a booking — deliberately deferring the richer CRM profile (VIP tiers, preferences, incidents, blacklist, companies) that Phase 2 doesn't actually need yet. Phase 3 then puts that same reservation engine on Telegram immediately, rather than waiting behind Billing (old Phase 3) and Housekeeping (old Phase 4) as in the prior sequencing. **By the end of Phase 3, staff can already run day-to-day room sales end-to-end — browse availability, create/edit/cancel reservations, and check room status — from either the web calendar or Telegram, which is a demoable, usable product milestone on its own**, well before folios, housekeeping, F&B, or accounting exist.
+>
+> **The Telegram bot is deliberately no longer one big phase — it ships in five incremental slices** (3 → 4 → 5 → 6 → 7), each adding the small set of commands that the newly-landed module makes possible: reservation commands at Phase 3, `/checkin`/`/checkout` once Billing lands at Phase 4, full housekeeping-aware `/roomstatus` at Phase 5, `/kds` once F&B lands at Phase 6, and `/maint`/`/stock`/`/approve` once Inventory/Maintenance land at Phase 7. This spreads the bot's integration risk across the whole project instead of concentrating it in one late "build the entire bot" phase, and it means every later phase's Telegram slice is a small, low-risk addition to already-proven webhook/router/conversation-state infrastructure rather than new plumbing. See [6.3.1](#631-telegram-delivery-roadmap) for the full rollout table.
+>
+> **Billing, Guest CRM, Housekeeping, F&B, Inventory, and Accounting build on the reservation+Telegram foundation incrementally, without disrupting it.** Phase 4 merges the old Phase 3 (Billing) and old Phase 6 (Guest CRM) into one phase — both need to exist before check-in/checkout is genuinely useful (checking in a guest and knowing who they are/whether they're VIP or blacklisted are the same moment in the workflow), and combining them also means the `guests` table only gets touched by a real migration twice (bare-minimum in Phase 2, full profile in Phase 4) instead of three times. Housekeeping (5), F&B (6), and Inventory/Maintenance (7) remain largely independent of each other downstream of Phase 4 and can still be resequenced or parallelized by different developers if needed. **Accounting Core (Phase 8)** is unchanged in its placement logic — it still comes *after* Billing (4) and Inventory/Purchasing (7), because those phases emit the operational events (folio charges, payments, purchase invoices, stock movements) that the GL posting listeners hook into; building the GL before those sources exist would mean testing it against nothing. **Accounting Extensions (Phase 10)** still depend on Phase 8's CoA/GL/period-lock foundation and remain lower urgency than a basic, auditable GL, so they land after Reporting (9a) and Spa (9b), same as before.
 
 ---
 
@@ -1598,7 +1623,7 @@ app/
 
 **In scope (MVP, Phases 1–11):**
 - All modules listed in [Section 2](#2-core-modules-feature-list) except explicitly flagged placeholders.
-- Telegram bot core command set ([6.3](#63-full-command-list)) and alerting ([6.4](#64-alerts-push-notifications-no-reply-needed)), including `/switchproperty`.
+- Telegram bot core command set ([6.3](#63-full-command-list)) and alerting ([6.4](#64-alerts-push-notifications-no-reply-needed)), including `/switchproperty` — delivered incrementally starting at Phase 3 (reservation commands) rather than as a single late phase; see the [Telegram Delivery Roadmap](#631-telegram-delivery-roadmap) for the phase-by-phase rollout. Room Reservation (Phase 2) + Telegram (Phase 3) are sequenced as early as possible per the [Section 9 resequencing note](#9-implementation-phases), since they are the product's core differentiator.
 - PPN 11% + Service Charge 10% tax engine, configurable rates.
 - **Multi-property operation, active from Phase 1** — `hotels`, `hotel_user`, `BelongsToHotel` scoping, `PropertySwitcher` (Decision Q2).
 - **Multi-currency (IDR + USD) guest-facing capture, active from Phase 1** — `currencies`, `exchange_rates`, foreign-currency columns on `folio_items`/`payments`/`ar_invoices`, realized FX gain/loss posting; GL remains IDR-only (Decision Q12).

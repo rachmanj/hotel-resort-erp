@@ -35,4 +35,12 @@
 
 ---
 
+### [M002] Plan resequenced: Room Reservation + Telegram moved to Phase 3, bot split into 5 phase-slices (2026-07-26) ✅ COMPLETE
+
+- **Challenge/Decision**: Stakeholder wants Room Reservation + Telegram (the core differentiator) usable before other modules; old sequencing put Telegram at Phase 5, blocked behind Billing and Housekeeping.
+- **Solution**: Rewrote `docs/plan.md` Section 9 — Phase 2 now includes bare-minimum `guests`; new Phase 3 ships a reservation-only Telegram bot; old Phase 3 (Billing) + old Phase 6 (Guest CRM) merged into new Phase 4; Housekeeping/F&B/Inventory shifted to 5/6/7; Accounting Core renumbered 8b→8. Telegram command set split across Phases 3/4/5/6/7/8/9a via a new Section 6.3.1 roadmap table instead of shipping all at once.
+- **Key Learning**: A "ship the differentiator early" resequencing request usually also implies *splitting* whichever feature was previously bundled into one late phase (here, the Telegram bot) — moving the phase number alone isn't enough if that phase's deliverables still transitively depend on later phases (old Phase 5 bundled `/checkin` which needs Billing). Also: when a table's full column set isn't needed by the earliest consumer, split it (bare-minimum now, full profile later) rather than front-loading unused columns.
+
+---
+
 [Add new memory entries below, following the format above]
