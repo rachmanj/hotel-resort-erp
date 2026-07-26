@@ -24,8 +24,23 @@ A full-featured ERP system for hotels and resorts — Front Office, Housekeeping
 ## Documentation
 - [Full Implementation Plan](docs/plan.md) — 11 sections, ERD, schema design, UX flows, Telegram bot spec, implementation phases
 
+## Telegram Bot Setup
+
+1. Create a bot via [@BotFather](https://t.me/BotFather) and copy the token.
+2. Add to `.env`:
+   ```
+   TELEGRAM_BOT_TOKEN=your-bot-token
+   TELEGRAM_WEBHOOK_SECRET=your-random-secret
+   TELEGRAM_BOT_USERNAME=YourBotUsername
+   ```
+3. Register the webhook (requires a public HTTPS URL):
+   ```bash
+   php artisan telegram:webhook set https://your-domain.com/api/telegram/webhook
+   ```
+4. Staff link their account from **Profile → Telegram Link** in the web app, then send `/link <code>` to the bot.
+
 ## Status
-🚧 **Planning Phase** — Implementation not yet started.
+🚧 **In Development** — Phase 1–3 implemented (auth, reservations, Telegram bot).
 
 ---
 

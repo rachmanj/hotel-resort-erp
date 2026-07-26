@@ -8,6 +8,7 @@ import {
     DollarOutlined,
     HomeOutlined,
     LogoutOutlined,
+    SendOutlined,
     SettingOutlined,
     TagsOutlined,
 } from '@ant-design/icons';
@@ -126,13 +127,20 @@ export default function AuthenticatedLayout({ children, title }: AuthenticatedLa
                     key="user-menu"
                     menu={{
                         items: [
+                            can('profile.telegram.view') && {
+                                key: 'telegram',
+                                icon: <SendOutlined />,
+                                label: (
+                                    <Link href="/profile/telegram">Telegram Link</Link>
+                                ),
+                            },
                             {
                                 key: 'logout',
                                 icon: <LogoutOutlined />,
                                 label: 'Logout',
                                 onClick: () => router.post('/logout'),
                             },
-                        ],
+                        ].filter(Boolean),
                     }}
                 >
                     <span style={{ cursor: 'pointer', padding: '0 12px' }}>{auth.user?.name}</span>

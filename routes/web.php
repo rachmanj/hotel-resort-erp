@@ -9,6 +9,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FloorController;
 use App\Http\Controllers\GuestController;
 use App\Http\Controllers\HotelContextController;
+use App\Http\Controllers\Profile\TelegramLinkController;
 use App\Http\Controllers\ReservationCalendarController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\RoomController;
@@ -72,4 +73,11 @@ Route::middleware(['auth', 'hotel.context'])->group(function (): void {
     });
 
     Route::post('/hotel-context/switch', [HotelContextController::class, 'switch'])->name('hotel-context.switch');
+
+    Route::get('/profile/telegram', [TelegramLinkController::class, 'show'])
+        ->name('profile.telegram')
+        ->middleware('can:profile.telegram.view');
+    Route::post('/profile/telegram/generate-code', [TelegramLinkController::class, 'generate'])
+        ->name('profile.telegram.generate')
+        ->middleware('can:telegram.link');
 });

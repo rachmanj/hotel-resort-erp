@@ -14,6 +14,7 @@ class RolePermissionSeeder extends Seeder
      */
     private array $rolePermissions = [
         'admin' => [
+            'telegram.link', 'profile.telegram.view',
             'rooms.view', 'rooms.manage',
             'reservations.view', 'reservations.create', 'reservations.edit', 'reservations.cancel', 'reservations.checkin', 'reservations.checkout',
             'housekeeping.view', 'housekeeping.manage', 'housekeeping.update_status',
@@ -29,6 +30,7 @@ class RolePermissionSeeder extends Seeder
             'spa.view', 'spa.manage',
         ],
         'manager' => [
+            'telegram.link', 'profile.telegram.view',
             'rooms.view',
             'reservations.view', 'reservations.cancel',
             'housekeeping.view',
@@ -41,6 +43,7 @@ class RolePermissionSeeder extends Seeder
             'accounting.view',
         ],
         'front_office' => [
+            'telegram.link', 'profile.telegram.view',
             'rooms.view',
             'reservations.view', 'reservations.create', 'reservations.edit', 'reservations.cancel', 'reservations.checkin', 'reservations.checkout',
             'housekeeping.view', 'housekeeping.update_status',
@@ -49,17 +52,20 @@ class RolePermissionSeeder extends Seeder
             'reports.view',
         ],
         'housekeeping' => [
+            'telegram.link', 'profile.telegram.view',
             'rooms.view',
             'housekeeping.view', 'housekeeping.manage',
             'maintenance.create',
             'inventory.view',
         ],
         'fb' => [
+            'telegram.link', 'profile.telegram.view',
             'fb.view', 'fb.manage',
             'inventory.view',
             'reports.fb_sales',
         ],
         'finance' => [
+            'telegram.link', 'profile.telegram.view',
             'rooms.view',
             'reservations.view',
             'inventory.view', 'purchasing.view', 'purchasing.approve',
@@ -68,10 +74,12 @@ class RolePermissionSeeder extends Seeder
             'accounting.view', 'accounting.manage', 'accounting.post', 'accounting.approve',
         ],
         'maintenance' => [
+            'telegram.link', 'profile.telegram.view',
             'maintenance.view', 'maintenance.manage',
             'accounting.view',
         ],
         'spa' => [
+            'telegram.link', 'profile.telegram.view',
             'spa.view', 'spa.manage',
         ],
     ];
