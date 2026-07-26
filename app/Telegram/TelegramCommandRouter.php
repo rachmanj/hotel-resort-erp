@@ -6,6 +6,8 @@ use App\Models\TelegramConversationState;
 use App\Models\TelegramUser;
 use App\Telegram\Commands\AvailableCommand;
 use App\Telegram\Commands\CancelReservationCommand;
+use App\Telegram\Commands\CheckInCommand;
+use App\Telegram\Commands\CheckOutCommand;
 use App\Telegram\Commands\EditReservationCommand;
 use App\Telegram\Commands\HelpCommand;
 use App\Telegram\Commands\LinkCommand;
@@ -37,6 +39,8 @@ class TelegramCommandRouter
         '/cancelres' => ['class' => CancelReservationCommand::class, 'description' => 'Cancel reservation'],
         '/roomstatus' => ['class' => RoomStatusCommand::class, 'description' => 'Check room status'],
         '/myrooms' => ['class' => MyRoomsCommand::class, 'description' => "Today's rooms"],
+        '/checkin' => ['class' => CheckInCommand::class, 'description' => 'Check in a guest'],
+        '/checkout' => ['class' => CheckOutCommand::class, 'description' => 'Check out a guest'],
         '/help' => ['class' => HelpCommand::class, 'description' => 'Show available commands'],
     ];
 

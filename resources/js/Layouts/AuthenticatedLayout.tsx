@@ -11,6 +11,8 @@ import {
     SendOutlined,
     SettingOutlined,
     TagsOutlined,
+    TeamOutlined,
+    UserOutlined,
 } from '@ant-design/icons';
 import { ProLayout } from '@ant-design/pro-layout';
 import { Button, Dropdown, message } from 'antd';
@@ -56,6 +58,16 @@ export default function AuthenticatedLayout({ children, title }: AuthenticatedLa
             name: 'Rooms',
             icon: <HomeOutlined />,
         },
+        can('guests.view') && {
+            path: '/guests',
+            name: 'Guests',
+            icon: <UserOutlined />,
+        },
+        can('companies.view') && {
+            path: '/companies',
+            name: 'Companies',
+            icon: <TeamOutlined />,
+        },
         can('rooms.manage') && {
             path: '/room-types',
             name: 'Room Types',
@@ -85,6 +97,11 @@ export default function AuthenticatedLayout({ children, title }: AuthenticatedLa
             path: '/admin/seasons',
             name: 'Seasons',
             icon: <TagsOutlined />,
+        },
+        can('tax.manage') && {
+            path: '/admin/tax-rules',
+            name: 'Tax Rules',
+            icon: <DollarOutlined />,
         },
     ].filter(Boolean) as Array<{ path: string; name: string; icon: ReactNode }>;
 

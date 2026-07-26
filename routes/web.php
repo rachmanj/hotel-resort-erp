@@ -4,11 +4,17 @@ use App\Http\Controllers\Admin\CurrencyController;
 use App\Http\Controllers\Admin\HotelController;
 use App\Http\Controllers\Admin\RatePlanController;
 use App\Http\Controllers\Admin\SeasonController;
+use App\Http\Controllers\Admin\TaxRuleController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\CheckInController;
+use App\Http\Controllers\CheckOutController;
+use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FloorController;
+use App\Http\Controllers\FolioController;
 use App\Http\Controllers\GuestController;
 use App\Http\Controllers\HotelContextController;
+use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\Profile\TelegramLinkController;
 use App\Http\Controllers\ReservationCalendarController;
 use App\Http\Controllers\ReservationController;
@@ -41,8 +47,28 @@ Route::middleware(['auth', 'hotel.context'])->group(function (): void {
     Route::post('/reservations', [ReservationController::class, 'store'])->name('reservations.store')->middleware('can:reservations.create');
     Route::get('/reservations/{reservation}', [ReservationController::class, 'show'])->name('reservations.show')->middleware('can:reservations.view');
     Route::post('/reservations/{reservation}/cancel', [ReservationController::class, 'cancel'])->name('reservations.cancel')->middleware('can:reservations.cancel');
+    Route::post('/reservations/{reservation}/checkin', [CheckInController::class, 'store'])->name('reservations.checkin')->middleware('can:reservations.checkin');
+    Route::post('/reservation-rooms/{reservationRoom}/checkout', [CheckOutController::class, 'store'])->name('reservations.checkout')->middleware('can:reservations.checkout');
 
+    Route::get('/folios/{folio}', [FolioController::class, 'show'])->name('folios.show')->middleware('can:folios.view');
+    Route::post('/folios/{folio}/payments', [FolioController::class, 'postPayment'])->name('folios.payments.store')->middleware('can:billing.payment');
+    Route::get('/folios/{folio}/invoice', [InvoiceController::class, 'show'])->name('folios.invoice')->middleware('can:billing.invoice');
+    Route::get('/folios/{folio}/invoice/download', [InvoiceController::class, 'download'])->name('folios.invoice.download')->middleware('can:billing.invoice');
+
+    Route::get('/guests', [GuestController::class, 'index'])->name('guests.index')->middleware('can:guests.view');
+    Route::get('/guests/create', [GuestController::class, 'create'])->name('guests.create')->middleware('can:guests.create');
+    Route::post('/guests', [GuestController::class, 'store'])->name('guests.store')->middleware('can:guests.create');
+    Route::get('/guests/{guest}', [GuestController::class, 'show'])->name('guests.show')->middleware('can:guests.view');
+    Route::get('/guests/{guest}/edit', [GuestController::class, 'edit'])->name('guests.edit')->middleware('can:guests.edit');
+    Route::put('/guests/{guest}', [GuestController::class, 'update'])->name('guests.update')->middleware('can:guests.edit');
     Route::get('/guests/search', [GuestController::class, 'search'])->name('guests.search')->middleware('can:reservations.create');
+
+    Route::get('/companies', [CompanyController::class, 'index'])->name('companies.index')->middleware('can:companies.view');
+    Route::get('/companies/create', [CompanyController::class, 'create'])->name('companies.create')->middleware('can:companies.manage');
+    Route::post('/companies', [CompanyController::class, 'store'])->name('companies.store')->middleware('can:companies.manage');
+    Route::get('/companies/{company}', [CompanyController::class, 'show'])->name('companies.show')->middleware('can:companies.view');
+    Route::get('/companies/{company}/edit', [CompanyController::class, 'edit'])->name('companies.edit')->middleware('can:companies.manage');
+    Route::put('/companies/{company}', [CompanyController::class, 'update'])->name('companies.update')->middleware('can:companies.manage');
 
     Route::get('/floors', [FloorController::class, 'index'])->name('floors.index')->middleware('can:floors.manage');
     Route::post('/floors', [FloorController::class, 'store'])->name('floors.store')->middleware('can:floors.manage');
@@ -70,6 +96,9 @@ Route::middleware(['auth', 'hotel.context'])->group(function (): void {
         Route::post('/seasons', [SeasonController::class, 'store'])->name('seasons.store')->middleware('can:seasons.manage');
         Route::put('/seasons/{season}', [SeasonController::class, 'update'])->name('seasons.update')->middleware('can:seasons.manage');
         Route::delete('/seasons/{season}', [SeasonController::class, 'destroy'])->name('seasons.destroy')->middleware('can:seasons.manage');
+
+        Route::get('/tax-rules', [TaxRuleController::class, 'index'])->name('tax-rules.index')->middleware('can:tax.manage');
+        Route::put('/tax-rules/{taxRule}', [TaxRuleController::class, 'update'])->name('tax-rules.update')->middleware('can:tax.manage');
     });
 
     Route::post('/hotel-context/switch', [HotelContextController::class, 'switch'])->name('hotel-context.switch');

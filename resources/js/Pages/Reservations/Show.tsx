@@ -2,6 +2,8 @@ import { Head, Link, useForm } from '@inertiajs/react';
 import { Button, Descriptions, Form, Input, Modal, Space, Table, Tag } from 'antd';
 import { useState } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import CheckInModal from './components/CheckInModal';
+import CheckOutModal from './components/CheckOutModal';
 
 interface ReservationShowProps {
     reservation: {
@@ -28,6 +30,8 @@ interface ReservationShowProps {
             id_type?: string;
             nationality?: string;
             address?: string;
+            vip_tier?: string;
+            is_blacklisted?: boolean;
         };
         reservation_rooms: Array<{
             id: number;
@@ -39,11 +43,24 @@ interface ReservationShowProps {
             rate_plan?: { id: number; name: string } | null;
         }>;
     };
+    folio?: { id: number; folio_no: string; status: string } | null;
     canCancel: boolean;
+    canCheckIn: boolean;
+    canCheckOut: boolean;
+    canViewFolio: boolean;
 }
 
-export default function ReservationShow({ reservation, canCancel }: ReservationShowProps) {
+export default function ReservationShow({
+    reservation,
+    folio,
+    canCancel,
+    canCheckIn,
+    canCheckOut,
+    canViewFolio,
+}: ReservationShowProps) {
     const [cancelOpen, setCancelOpen] = useState(false);
+    const [checkInOpen, setCheckInOpen] = useState(false);
+    const [checkOutRoom, setCheckOutRoom] = useState<ReservationShowProps['reservation']['reservation_rooms'][0] | null>(null);
     const cancelForm = useForm({ cancelled_reason: '' });
 
     const submitCancel = () => {
@@ -55,10 +72,20 @@ export default function ReservationShow({ reservation, canCancel }: ReservationS
     return (
         <AuthenticatedLayout title={reservation.reservation_code}>
             <Head title={reservation.reservation_code} />
-            <Space style={{ marginBottom: 16 }}>
+            <Space style={{ marginBottom: 16 }} wrap>
                 <Link href="/reservations">
                     <Button>Back to list</Button>
                 </Link>
+                {canCheckIn && reservation.status === 'confirmed' && (
+                    <Button type="primary" onClick={() => setCheckInOpen(true)}>
+                        Check In
+                    </Button>
+                )}
+                {canViewFolio && folio && (
+                    <Link href={`/folios/${folio.id}`}>
+                        <Button>View Folio ({folio.folio_no})</Button>
+                    </Link>
+                )}
                 {canCancel && reservation.status !== 'cancelled' && (
                     <Button danger onClick={() => setCancelOpen(true)}>
                         Cancel reservation
@@ -89,7 +116,17 @@ export default function ReservationShow({ reservation, canCancel }: ReservationS
 
             <h3>Guest</h3>
             <Descriptions bordered column={2} size="small" style={{ marginBottom: 24 }}>
-                <Descriptions.Item label="Name">{reservation.guest?.full_name}</Descriptions.Item>
+                <Descriptions.Item label="Name">
+                    {reservation.guest?.full_name}
+                    {reservation.guest?.vip_tier && reservation.guest.vip_tier !== 'none' && (
+                        <Tag color="gold" style={{ marginLeft: 8 }}>
+                            {reservation.guest.vip_tier.toUpperCase()}
+                        </Tag>
+                    )}
+                    {reservation.guest?.is_blacklisted && (
+                        <Tag color="red" style={{ marginLeft: 8 }}>BLACKLISTED</Tag>
+                    )}
+                </Descriptions.Item>
                 <Descriptions.Item label="Phone">{reservation.guest?.phone ?? '—'}</Descriptions.Item>
                 <Descriptions.Item label="Email">{reservation.guest?.email ?? '—'}</Descriptions.Item>
                 <Descriptions.Item label="ID">{reservation.guest?.id_number ?? '—'}</Descriptions.Item>
@@ -111,6 +148,15 @@ export default function ReservationShow({ reservation, canCancel }: ReservationS
                         render: (v) => `Rp ${Number(v).toLocaleString('id-ID')}`,
                     },
                     { title: 'Status', dataIndex: 'status_label' },
+                    {
+                        title: 'Actions',
+                        render: (_, record) =>
+                            canCheckOut && record.status === 'checked_in' ? (
+                                <Button size="small" onClick={() => setCheckOutRoom(record)}>
+                                    Check Out
+                                </Button>
+                            ) : null,
+                    },
                 ]}
             />
 
@@ -130,6 +176,20 @@ export default function ReservationShow({ reservation, canCancel }: ReservationS
                     </Form.Item>
                 </Form>
             </Modal>
+
+            <CheckInModal
+                open={checkInOpen}
+                reservation={reservation}
+                onClose={() => setCheckInOpen(false)}
+            />
+
+            {checkOutRoom && (
+                <CheckOutModal
+                    open={!!checkOutRoom}
+                    reservationRoom={checkOutRoom}
+                    onClose={() => setCheckOutRoom(null)}
+                />
+            )}
         </AuthenticatedLayout>
     );
 }

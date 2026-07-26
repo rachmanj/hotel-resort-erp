@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Actions\Reservations\CancelReservationAction;
 use App\Actions\Reservations\CreateReservationAction;
+use App\Enums\FolioType;
 use App\Enums\ReservationSource;
 use App\Enums\ReservationStatus;
 use App\Exceptions\RoomNotAvailableException;
@@ -151,7 +152,10 @@ class ReservationController extends Controller
             'reservationRooms.room',
             'reservationRooms.roomType',
             'reservationRooms.ratePlan',
+            'folios',
         ]);
+
+        $masterFolio = $reservation->folios->first(fn ($f) => $f->type === FolioType::Master);
 
         return Inertia::render('Reservations/Show', [
             'reservation' => [
@@ -171,6 +175,7 @@ class ReservationController extends Controller
                 'created_by' => $reservation->createdBy?->only(['id', 'name']),
                 'guest' => $reservation->guest?->only([
                     'id', 'full_name', 'phone', 'email', 'id_number', 'id_type', 'nationality', 'address',
+                    'vip_tier', 'is_blacklisted',
                 ]),
                 'reservation_rooms' => $reservation->reservationRooms->map(fn ($rr) => [
                     'id' => $rr->id,
@@ -182,7 +187,15 @@ class ReservationController extends Controller
                     'rate_plan' => $rr->ratePlan?->only(['id', 'name']),
                 ]),
             ],
+            'folio' => $masterFolio ? [
+                'id' => $masterFolio->id,
+                'folio_no' => $masterFolio->folio_no,
+                'status' => $masterFolio->status->value,
+            ] : null,
             'canCancel' => request()->user()?->can('reservations.cancel') ?? false,
+            'canCheckIn' => request()->user()?->can('reservations.checkin') ?? false,
+            'canCheckOut' => request()->user()?->can('reservations.checkout') ?? false,
+            'canViewFolio' => request()->user()?->can('folios.view') ?? false,
         ]);
     }
 

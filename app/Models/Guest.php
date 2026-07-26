@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\GuestIdType;
+use App\Enums\VipTier;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -15,6 +16,10 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
     'email',
     'address',
     'nationality',
+    'id_document_path',
+    'vip_tier',
+    'is_blacklisted',
+    'blacklist_reason',
 ])]
 class Guest extends Model
 {
@@ -22,11 +27,33 @@ class Guest extends Model
     {
         return [
             'id_type' => GuestIdType::class,
+            'vip_tier' => VipTier::class,
+            'is_blacklisted' => 'boolean',
         ];
     }
 
     public function reservations(): HasMany
     {
         return $this->hasMany(Reservation::class);
+    }
+
+    public function preferences(): HasMany
+    {
+        return $this->hasMany(GuestPreference::class);
+    }
+
+    public function stays(): HasMany
+    {
+        return $this->hasMany(GuestStay::class);
+    }
+
+    public function incidents(): HasMany
+    {
+        return $this->hasMany(GuestIncident::class);
+    }
+
+    public function folios(): HasMany
+    {
+        return $this->hasMany(Folio::class);
     }
 }
