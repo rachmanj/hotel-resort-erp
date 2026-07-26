@@ -12,8 +12,9 @@ use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FloorController;
 use App\Http\Controllers\FolioController;
-use App\Http\Controllers\GuestController;
 use App\Http\Controllers\HotelContextController;
+use App\Http\Controllers\HousekeepingAssignmentController;
+use App\Http\Controllers\HousekeepingController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\Profile\TelegramLinkController;
 use App\Http\Controllers\ReservationCalendarController;
@@ -54,6 +55,12 @@ Route::middleware(['auth', 'hotel.context'])->group(function (): void {
     Route::post('/folios/{folio}/payments', [FolioController::class, 'postPayment'])->name('folios.payments.store')->middleware('can:billing.payment');
     Route::get('/folios/{folio}/invoice', [InvoiceController::class, 'show'])->name('folios.invoice')->middleware('can:billing.invoice');
     Route::get('/folios/{folio}/invoice/download', [InvoiceController::class, 'download'])->name('folios.invoice.download')->middleware('can:billing.invoice');
+
+    Route::get('/housekeeping', [HousekeepingController::class, 'index'])->name('housekeeping.index')->middleware('can:housekeeping.view');
+    Route::get('/housekeeping/assignments', [HousekeepingAssignmentController::class, 'index'])->name('housekeeping.assignments')->middleware('can:housekeeping.view');
+    Route::post('/housekeeping/assignments', [HousekeepingAssignmentController::class, 'store'])->name('housekeeping.assignments.store')->middleware('can:housekeeping.manage');
+    Route::put('/housekeeping/assignments/{assignment}', [HousekeepingAssignmentController::class, 'update'])->name('housekeeping.assignments.update')->middleware('can:housekeeping.manage');
+    Route::post('/housekeeping/assignments/generate', [HousekeepingAssignmentController::class, 'generate'])->name('housekeeping.assignments.generate')->middleware('can:housekeeping.manage');
 
     Route::get('/guests', [GuestController::class, 'index'])->name('guests.index')->middleware('can:guests.view');
     Route::get('/guests/create', [GuestController::class, 'create'])->name('guests.create')->middleware('can:guests.create');

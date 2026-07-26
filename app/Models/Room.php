@@ -7,6 +7,8 @@ use App\Models\Concerns\BelongsToHotel;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 #[Fillable([
     'hotel_id',
@@ -40,5 +42,20 @@ class Room extends Model
     public function floor(): BelongsTo
     {
         return $this->belongsTo(Floor::class);
+    }
+
+    public function housekeepingLogs(): HasMany
+    {
+        return $this->hasMany(HousekeepingLog::class);
+    }
+
+    public function latestHousekeepingLog(): HasOne
+    {
+        return $this->hasOne(HousekeepingLog::class)->latestOfMany('changed_at');
+    }
+
+    public function housekeepingAssignments(): HasMany
+    {
+        return $this->hasMany(HousekeepingAssignment::class);
     }
 }

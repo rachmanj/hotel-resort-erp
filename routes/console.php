@@ -9,3 +9,4 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 Schedule::command('hotel:check-no-shows')->hourly();
+Schedule::command('housekeeping:generate-assignments')->dailyAt('06:00');

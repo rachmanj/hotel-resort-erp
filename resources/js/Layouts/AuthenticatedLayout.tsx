@@ -13,6 +13,7 @@ import {
     TagsOutlined,
     TeamOutlined,
     UserOutlined,
+    ClearOutlined,
 } from '@ant-design/icons';
 import { ProLayout } from '@ant-design/pro-layout';
 import { Button, Dropdown, message } from 'antd';
@@ -57,6 +58,16 @@ export default function AuthenticatedLayout({ children, title }: AuthenticatedLa
             path: '/rooms',
             name: 'Rooms',
             icon: <HomeOutlined />,
+        },
+        can('housekeeping.view') && {
+            path: '/housekeeping',
+            name: 'HK Status Board',
+            icon: <ClearOutlined />,
+        },
+        can('housekeeping.view') && {
+            path: '/housekeeping/assignments',
+            name: 'HK Assignments',
+            icon: <ClearOutlined />,
         },
         can('guests.view') && {
             path: '/guests',

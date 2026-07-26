@@ -36,7 +36,7 @@ class RolePermissionSeeder extends Seeder
             'telegram.link', 'profile.telegram.view',
             'rooms.view',
             'reservations.view', 'reservations.cancel',
-            'housekeeping.view',
+            'housekeeping.view', 'housekeeping.manage',
             'maintenance.view', 'maintenance.escalate',
             'fb.view',
             'inventory.view', 'purchasing.view', 'purchasing.approve',
@@ -63,7 +63,7 @@ class RolePermissionSeeder extends Seeder
         'housekeeping' => [
             'telegram.link', 'profile.telegram.view',
             'rooms.view',
-            'housekeeping.view', 'housekeeping.manage',
+            'housekeeping.view', 'housekeeping.manage', 'housekeeping.update_status',
             'maintenance.create',
             'inventory.view',
             'guests.view',

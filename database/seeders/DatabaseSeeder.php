@@ -13,6 +13,7 @@ class DatabaseSeeder extends Seeder
             HotelCurrencySeeder::class,
             BillingDemoSeeder::class,
             ReservationDemoSeeder::class,
+            HousekeepingDemoSeeder::class,
         ]);
     }
 }

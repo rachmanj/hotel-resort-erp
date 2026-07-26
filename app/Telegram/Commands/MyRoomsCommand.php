@@ -2,14 +2,26 @@
 
 namespace App\Telegram\Commands;
 
+use App\Enums\HousekeepingAssignmentStatus;
+use App\Enums\HousekeepingStatus;
 use App\Enums\ReservationStatus;
 use App\Models\Reservation;
 use App\Models\TelegramConversationState;
 use App\Models\TelegramUser;
+use App\Models\User;
+use App\Services\HousekeepingService;
+use App\Telegram\TelegramResponder;
 use Carbon\Carbon;
 
 class MyRoomsCommand extends BaseCommand
 {
+    public function __construct(
+        TelegramResponder $responder,
+        private HousekeepingService $housekeepingService,
+    ) {
+        parent::__construct($responder);
+    }
+
     public function authorize(TelegramUser $tgUser): bool
     {
         return parent::authorize($tgUser) && ($tgUser->user?->can('rooms.view') ?? false);
@@ -23,6 +35,74 @@ class MyRoomsCommand extends BaseCommand
 
         $this->setHotelContext($tgUser);
 
+        $user = $tgUser->user;
+
+        if ($user !== null && $user->hasRole('housekeeping')) {
+            $this->showHousekeepingAssignments($tgUser, $user);
+
+            return;
+        }
+
+        $this->showFrontOfficeRooms($tgUser);
+    }
+
+    private function showHousekeepingAssignments(TelegramUser $tgUser, User $user): void
+    {
+        $assignments = $this->housekeepingService->getAssignmentsFor($user);
+
+        if ($assignments->isEmpty()) {
+            $this->reply($tgUser, '📋 No housekeeping assignments for today.');
+
+            return;
+        }
+
+        $shift = $assignments->first()?->shift?->label() ?? 'Morning';
+
+        $lines = $assignments->map(function ($assignment, int $index) {
+            $room = $assignment->room;
+            $hkStatus = $room !== null
+                ? $this->housekeepingService->resolveHousekeepingStatus($room)
+                : HousekeepingStatus::Dirty;
+
+            $statusEmoji = match ($assignment->status) {
+                HousekeepingAssignmentStatus::Done => '✅',
+                HousekeepingAssignmentStatus::InProgress => '🟡',
+                HousekeepingAssignmentStatus::Skipped => '⏭️',
+                default => match ($hkStatus) {
+                    HousekeepingStatus::Dirty => '🔴',
+                    HousekeepingStatus::Cleaning => '🟡',
+                    HousekeepingStatus::Clean, HousekeepingStatus::Ready => '✅',
+                    default => '',
+                },
+            };
+
+            $roomNumber = $room?->number ?? '?';
+            $roomType = $room?->roomType?->name ?? '';
+            $statusLabel = $assignment->status === HousekeepingAssignmentStatus::Done
+                ? 'Done'
+                : $hkStatus->label();
+
+            return sprintf(
+                '%d. %s Room %s (%s) — %s',
+                $index + 1,
+                $statusEmoji,
+                $roomNumber,
+                $roomType,
+                $statusLabel,
+            );
+        })->implode("\n");
+
+        $doneCount = $assignments->where('status', HousekeepingAssignmentStatus::Done)->count();
+        $total = $assignments->count();
+
+        $this->reply(
+            $tgUser,
+            "📋 Today's assignments ({$shift} shift):\n\n{$lines}\n\nProgress: {$doneCount}/{$total} done",
+        );
+    }
+
+    private function showFrontOfficeRooms(TelegramUser $tgUser): void
+    {
         $today = Carbon::today()->toDateString();
 
         $reservations = Reservation::query()
