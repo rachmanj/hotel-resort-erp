@@ -1,11 +1,13 @@
 import { Link, router, usePage } from '@inertiajs/react';
 import {
     BankOutlined,
+    CalendarOutlined,
     DashboardOutlined,
     DollarOutlined,
     HomeOutlined,
     LogoutOutlined,
     SettingOutlined,
+    TagsOutlined,
 } from '@ant-design/icons';
 import { ProLayout } from '@ant-design/pro-layout';
 import { Dropdown, message } from 'antd';
@@ -34,6 +36,16 @@ export default function AuthenticatedLayout({ children, title }: AuthenticatedLa
     }, [flash]);
 
     const menuItems = [
+        can('reservations.view') && {
+            path: '/reservations',
+            name: 'Reservations',
+            icon: <CalendarOutlined />,
+        },
+        can('reservations.view') && {
+            path: '/reservations/calendar',
+            name: 'Calendar',
+            icon: <CalendarOutlined />,
+        },
         can('rooms.view') && {
             path: '/rooms',
             name: 'Rooms',
@@ -58,6 +70,16 @@ export default function AuthenticatedLayout({ children, title }: AuthenticatedLa
             path: '/admin/currencies',
             name: 'Currencies',
             icon: <DollarOutlined />,
+        },
+        can('rates.manage') && {
+            path: '/admin/rate-plans',
+            name: 'Rate Plans',
+            icon: <TagsOutlined />,
+        },
+        can('seasons.manage') && {
+            path: '/admin/seasons',
+            name: 'Seasons',
+            icon: <TagsOutlined />,
         },
     ].filter(Boolean) as Array<{ path: string; name: string; icon: ReactNode }>;
 

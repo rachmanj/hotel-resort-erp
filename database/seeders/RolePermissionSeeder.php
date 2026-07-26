@@ -25,6 +25,7 @@ class RolePermissionSeeder extends Seeder
             'reports.view', 'reports.fb_sales',
             'accounting.view', 'accounting.manage', 'accounting.post', 'accounting.approve',
             'admin.manage', 'hotels.manage', 'currencies.manage', 'floors.manage',
+            'rates.manage', 'seasons.manage',
             'spa.view', 'spa.manage',
         ],
         'manager' => [

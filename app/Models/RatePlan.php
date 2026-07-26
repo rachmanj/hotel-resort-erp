@@ -2,23 +2,25 @@
 
 namespace App\Models;
 
+use App\Enums\RatePlanType;
 use App\Models\Concerns\BelongsToHotel;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 #[Fillable([
     'hotel_id',
+    'room_type_id',
+    'season_id',
     'name',
-    'code',
-    'max_occupancy',
-    'base_rate',
-    'description',
-    'amenities',
+    'rate_type',
+    'nightly_rate',
+    'day_of_week_mask',
+    'valid_from',
+    'valid_to',
     'is_active',
 ])]
-class RoomType extends Model
+class RatePlan extends Model
 {
     use BelongsToHotel;
 
@@ -30,8 +32,10 @@ class RoomType extends Model
     protected function casts(): array
     {
         return [
-            'base_rate' => 'decimal:2',
-            'amenities' => 'array',
+            'rate_type' => RatePlanType::class,
+            'nightly_rate' => 'decimal:2',
+            'valid_from' => 'date',
+            'valid_to' => 'date',
             'is_active' => 'boolean',
         ];
     }
@@ -41,8 +45,13 @@ class RoomType extends Model
         return $this->belongsTo(Hotel::class);
     }
 
-    public function rooms(): HasMany
+    public function roomType(): BelongsTo
     {
-        return $this->hasMany(Room::class);
+        return $this->belongsTo(RoomType::class);
+    }
+
+    public function season(): BelongsTo
+    {
+        return $this->belongsTo(Season::class);
     }
 }

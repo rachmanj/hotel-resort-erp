@@ -2,10 +2,15 @@
 
 use App\Http\Controllers\Admin\CurrencyController;
 use App\Http\Controllers\Admin\HotelController;
+use App\Http\Controllers\Admin\RatePlanController;
+use App\Http\Controllers\Admin\SeasonController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FloorController;
+use App\Http\Controllers\GuestController;
 use App\Http\Controllers\HotelContextController;
+use App\Http\Controllers\ReservationCalendarController;
+use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\RoomTypeController;
 use Illuminate\Support\Facades\Route;
@@ -29,6 +34,15 @@ Route::middleware(['auth', 'hotel.context'])->group(function (): void {
     Route::put('/room-types/{roomType}', [RoomTypeController::class, 'update'])->name('room-types.update')->middleware('can:rooms.manage');
     Route::delete('/room-types/{roomType}', [RoomTypeController::class, 'destroy'])->name('room-types.destroy')->middleware('can:rooms.manage');
 
+    Route::get('/reservations', [ReservationController::class, 'index'])->name('reservations.index')->middleware('can:reservations.view');
+    Route::get('/reservations/calendar', [ReservationCalendarController::class, 'index'])->name('reservations.calendar')->middleware('can:reservations.view');
+    Route::get('/reservations/create', [ReservationController::class, 'create'])->name('reservations.create')->middleware('can:reservations.create');
+    Route::post('/reservations', [ReservationController::class, 'store'])->name('reservations.store')->middleware('can:reservations.create');
+    Route::get('/reservations/{reservation}', [ReservationController::class, 'show'])->name('reservations.show')->middleware('can:reservations.view');
+    Route::post('/reservations/{reservation}/cancel', [ReservationController::class, 'cancel'])->name('reservations.cancel')->middleware('can:reservations.cancel');
+
+    Route::get('/guests/search', [GuestController::class, 'search'])->name('guests.search')->middleware('can:reservations.create');
+
     Route::get('/floors', [FloorController::class, 'index'])->name('floors.index')->middleware('can:floors.manage');
     Route::post('/floors', [FloorController::class, 'store'])->name('floors.store')->middleware('can:floors.manage');
     Route::put('/floors/{floor}', [FloorController::class, 'update'])->name('floors.update')->middleware('can:floors.manage');
@@ -45,6 +59,16 @@ Route::middleware(['auth', 'hotel.context'])->group(function (): void {
 
         Route::get('/currencies', [CurrencyController::class, 'index'])->name('currencies.index')->middleware('can:currencies.manage');
         Route::post('/currencies/{currency}/exchange-rates', [CurrencyController::class, 'updateRate'])->name('currencies.exchange-rates.store')->middleware('can:currencies.manage');
+
+        Route::get('/rate-plans', [RatePlanController::class, 'index'])->name('rate-plans.index')->middleware('can:rates.manage');
+        Route::post('/rate-plans', [RatePlanController::class, 'store'])->name('rate-plans.store')->middleware('can:rates.manage');
+        Route::put('/rate-plans/{ratePlan}', [RatePlanController::class, 'update'])->name('rate-plans.update')->middleware('can:rates.manage');
+        Route::delete('/rate-plans/{ratePlan}', [RatePlanController::class, 'destroy'])->name('rate-plans.destroy')->middleware('can:rates.manage');
+
+        Route::get('/seasons', [SeasonController::class, 'index'])->name('seasons.index')->middleware('can:seasons.manage');
+        Route::post('/seasons', [SeasonController::class, 'store'])->name('seasons.store')->middleware('can:seasons.manage');
+        Route::put('/seasons/{season}', [SeasonController::class, 'update'])->name('seasons.update')->middleware('can:seasons.manage');
+        Route::delete('/seasons/{season}', [SeasonController::class, 'destroy'])->name('seasons.destroy')->middleware('can:seasons.manage');
     });
 
     Route::post('/hotel-context/switch', [HotelContextController::class, 'switch'])->name('hotel-context.switch');

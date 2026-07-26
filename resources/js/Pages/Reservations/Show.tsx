@@ -1,0 +1,135 @@
+import { Head, Link, useForm } from '@inertiajs/react';
+import { Button, Descriptions, Form, Input, Modal, Space, Table, Tag } from 'antd';
+import { useState } from 'react';
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+
+interface ReservationShowProps {
+    reservation: {
+        id: number;
+        reservation_code: string;
+        status: string;
+        status_label: string;
+        status_color: string;
+        source: string;
+        source_label: string;
+        arrival_date: string;
+        departure_date: string;
+        adults: number;
+        children: number;
+        special_requests?: string | null;
+        cancelled_reason?: string | null;
+        created_by?: { id: number; name: string } | null;
+        guest?: {
+            id: number;
+            full_name: string;
+            phone?: string;
+            email?: string;
+            id_number?: string;
+            id_type?: string;
+            nationality?: string;
+            address?: string;
+        };
+        reservation_rooms: Array<{
+            id: number;
+            status: string;
+            status_label: string;
+            nightly_rate: string;
+            room?: { id: number; number: string } | null;
+            room_type?: { id: number; name: string; code: string } | null;
+            rate_plan?: { id: number; name: string } | null;
+        }>;
+    };
+    canCancel: boolean;
+}
+
+export default function ReservationShow({ reservation, canCancel }: ReservationShowProps) {
+    const [cancelOpen, setCancelOpen] = useState(false);
+    const cancelForm = useForm({ cancelled_reason: '' });
+
+    const submitCancel = () => {
+        cancelForm.post(`/reservations/${reservation.id}/cancel`, {
+            onSuccess: () => setCancelOpen(false),
+        });
+    };
+
+    return (
+        <AuthenticatedLayout title={reservation.reservation_code}>
+            <Head title={reservation.reservation_code} />
+            <Space style={{ marginBottom: 16 }}>
+                <Link href="/reservations">
+                    <Button>Back to list</Button>
+                </Link>
+                {canCancel && reservation.status !== 'cancelled' && (
+                    <Button danger onClick={() => setCancelOpen(true)}>
+                        Cancel reservation
+                    </Button>
+                )}
+            </Space>
+
+            <Descriptions bordered column={2} size="small" style={{ marginBottom: 24 }}>
+                <Descriptions.Item label="Status">
+                    <Tag color={reservation.status_color}>{reservation.status_label}</Tag>
+                </Descriptions.Item>
+                <Descriptions.Item label="Source">{reservation.source_label}</Descriptions.Item>
+                <Descriptions.Item label="Arrival">{reservation.arrival_date}</Descriptions.Item>
+                <Descriptions.Item label="Departure">{reservation.departure_date}</Descriptions.Item>
+                <Descriptions.Item label="Adults">{reservation.adults}</Descriptions.Item>
+                <Descriptions.Item label="Children">{reservation.children}</Descriptions.Item>
+                {reservation.special_requests && (
+                    <Descriptions.Item label="Special requests" span={2}>
+                        {reservation.special_requests}
+                    </Descriptions.Item>
+                )}
+                {reservation.cancelled_reason && (
+                    <Descriptions.Item label="Cancel reason" span={2}>
+                        {reservation.cancelled_reason}
+                    </Descriptions.Item>
+                )}
+            </Descriptions>
+
+            <h3>Guest</h3>
+            <Descriptions bordered column={2} size="small" style={{ marginBottom: 24 }}>
+                <Descriptions.Item label="Name">{reservation.guest?.full_name}</Descriptions.Item>
+                <Descriptions.Item label="Phone">{reservation.guest?.phone ?? '—'}</Descriptions.Item>
+                <Descriptions.Item label="Email">{reservation.guest?.email ?? '—'}</Descriptions.Item>
+                <Descriptions.Item label="ID">{reservation.guest?.id_number ?? '—'}</Descriptions.Item>
+            </Descriptions>
+
+            <h3>Rooms</h3>
+            <Table
+                rowKey="id"
+                size="small"
+                pagination={false}
+                dataSource={reservation.reservation_rooms}
+                columns={[
+                    { title: 'Room', dataIndex: ['room', 'number'], render: (v) => v ?? '—' },
+                    { title: 'Type', dataIndex: ['room_type', 'name'] },
+                    { title: 'Rate plan', dataIndex: ['rate_plan', 'name'], render: (v) => v ?? 'Base' },
+                    {
+                        title: 'Nightly rate',
+                        dataIndex: 'nightly_rate',
+                        render: (v) => `Rp ${Number(v).toLocaleString('id-ID')}`,
+                    },
+                    { title: 'Status', dataIndex: 'status_label' },
+                ]}
+            />
+
+            <Modal
+                title="Cancel reservation"
+                open={cancelOpen}
+                onCancel={() => setCancelOpen(false)}
+                onOk={submitCancel}
+                confirmLoading={cancelForm.processing}
+            >
+                <Form layout="vertical">
+                    <Form.Item label="Reason">
+                        <Input.TextArea
+                            value={cancelForm.data.cancelled_reason}
+                            onChange={(e) => cancelForm.setData('cancelled_reason', e.target.value)}
+                        />
+                    </Form.Item>
+                </Form>
+            </Modal>
+        </AuthenticatedLayout>
+    );
+}
