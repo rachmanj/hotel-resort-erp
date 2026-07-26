@@ -44,6 +44,15 @@ class LinkCommand extends BaseCommand
         }
 
         $hotelId = $user->hotel_id;
+        $pendingId = $pending->id;
+
+        if ($pendingId !== $tgUser->id) {
+            $pending->update([
+                'user_id' => null,
+                'link_code' => null,
+                'link_code_expires_at' => null,
+            ]);
+        }
 
         $tgUser->update([
             'user_id' => $user->id,
@@ -54,13 +63,8 @@ class LinkCommand extends BaseCommand
             'is_active' => true,
         ]);
 
-        if ($pending->id !== $tgUser->id && $pending->chat_id === null) {
+        if ($pendingId !== $tgUser->id && $pending->chat_id === null) {
             $pending->delete();
-        } elseif ($pending->id !== $tgUser->id) {
-            $pending->update([
-                'link_code' => null,
-                'link_code_expires_at' => null,
-            ]);
         }
 
         $this->reply($tgUser, "✅ Account linked! You are now logged in as {$user->name}.");

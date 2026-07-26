@@ -18,7 +18,9 @@ use App\Models\TaxRule;
 use App\Models\User;
 use App\Services\FolioPostingService;
 use App\Services\TaxCalculator;
+use Database\Seeders\AccountingDemoSeeder;
 use Database\Seeders\BillingDemoSeeder;
+use Database\Seeders\ChartOfAccountsSeeder;
 use Database\Seeders\RolePermissionSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Spatie\Permission\PermissionRegistrar;
@@ -80,6 +82,9 @@ class BillingTest extends TestCase
         $this->hotel->users()->attach($this->user->id);
 
         session(['current_hotel_id' => $this->hotel->id]);
+
+        (new ChartOfAccountsSeeder)->forHotel($this->hotel);
+        (new AccountingDemoSeeder)->run();
     }
 
     public function test_tax_calculator_applies_service_charge_then_ppn(): void

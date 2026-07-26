@@ -2,6 +2,7 @@
 
 namespace App\Actions\Reservations;
 
+use App\Enums\FolioItemType;
 use App\Enums\ReservationRoomStatus;
 use App\Enums\ReservationStatus;
 use App\Enums\RoomStatus;

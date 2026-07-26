@@ -1,0 +1,66 @@
+<?php
+
+namespace Tests\Feature;
+
+use App\Models\Hotel;
+use App\Models\User;
+use Database\Seeders\RolePermissionSeeder;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Spatie\Permission\PermissionRegistrar;
+use Tests\TestCase;
+
+class FbAuthorizationTest extends TestCase
+{
+    use RefreshDatabase;
+
+    private Hotel $hotel;
+
+    private User $admin;
+
+    private User $housekeeper;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        app(PermissionRegistrar::class)->forgetCachedPermissions();
+        $this->seed(RolePermissionSeeder::class);
+
+        $this->hotel = Hotel::query()->create([
+            'name' => 'Test Hotel',
+            'code' => 'TST',
+            'currency' => 'IDR',
+            'timezone' => 'Asia/Makassar',
+            'is_active' => true,
+        ]);
+
+        $this->admin = User::factory()->create(['hotel_id' => null]);
+        $this->admin->assignRole('admin');
+        $this->hotel->users()->attach($this->admin->id);
+
+        $this->housekeeper = User::factory()->create(['hotel_id' => $this->hotel->id]);
+        $this->housekeeper->assignRole('housekeeping');
+        $this->hotel->users()->attach($this->housekeeper->id);
+    }
+
+    public function test_fb_menu_requires_authentication(): void
+    {
+        $this->get('/fb/menu')->assertRedirect('/login');
+    }
+
+    public function test_fb_menu_accessible_by_admin(): void
+    {
+        $this->actingAs($this->admin)
+            ->withSession(['current_hotel_id' => $this->hotel->id])
+            ->get('/fb/menu')
+            ->assertOk();
+    }
+
+    public function test_fb_menu_denied_without_permission(): void
+    {
+        $this->actingAs($this->housekeeper)
+            ->withSession(['current_hotel_id' => $this->hotel->id])
+            ->get('/fb/menu')
+            ->assertForbidden();
+    }
+}

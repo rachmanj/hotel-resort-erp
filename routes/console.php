@@ -10,3 +10,4 @@ Artisan::command('inspire', function () {
 
 Schedule::command('hotel:check-no-shows')->hourly();
 Schedule::command('housekeeping:generate-assignments')->dailyAt('06:00');
+Schedule::command('inventory:check-low-stock')->hourly();

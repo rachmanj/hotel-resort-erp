@@ -6,6 +6,7 @@ use App\Enums\CreatedVia;
 use App\Enums\ReservationSource;
 use App\Enums\ReservationStatus;
 use App\Models\Concerns\BelongsToHotel;
+use App\Models\Concerns\LogsActivity;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -28,7 +29,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 ])]
 class Reservation extends Model
 {
-    use BelongsToHotel;
+    use BelongsToHotel, LogsActivity;
 
     protected function casts(): array
     {

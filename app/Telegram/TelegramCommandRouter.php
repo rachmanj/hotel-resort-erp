@@ -4,21 +4,32 @@ namespace App\Telegram;
 
 use App\Models\TelegramConversationState;
 use App\Models\TelegramUser;
+use App\Telegram\Commands\ApproveRequisitionCommand;
 use App\Telegram\Commands\AvailableCommand;
+use App\Telegram\Commands\BalanceSheetCommand;
 use App\Telegram\Commands\CancelReservationCommand;
 use App\Telegram\Commands\CheckInCommand;
 use App\Telegram\Commands\CheckOutCommand;
 use App\Telegram\Commands\EditReservationCommand;
+use App\Telegram\Commands\GlCommand;
 use App\Telegram\Commands\HelpCommand;
+use App\Telegram\Commands\KdsCommand;
 use App\Telegram\Commands\LinkCommand;
+use App\Telegram\Commands\LowOrdersCommand;
+use App\Telegram\Commands\MaintCommand;
 use App\Telegram\Commands\MyRoomsCommand;
 use App\Telegram\Commands\NewReservationCommand;
+use App\Telegram\Commands\PnlCommand;
+use App\Telegram\Commands\ReportCommand;
 use App\Telegram\Commands\RoomsCommand;
 use App\Telegram\Commands\RoomStatusCommand;
 use App\Telegram\Commands\StartCommand;
+use App\Telegram\Commands\StockCommand;
 use App\Telegram\Commands\SwitchPropertyCommand;
+use App\Telegram\Commands\TrialBalanceCommand;
 use App\Telegram\Commands\UnlinkCommand;
 use App\Telegram\Commands\WhoAmICommand;
+use App\Telegram\Commands\WorkOrdersCommand;
 use App\Telegram\Contracts\TelegramCommand;
 
 class TelegramCommandRouter
@@ -41,6 +52,17 @@ class TelegramCommandRouter
         '/myrooms' => ['class' => MyRoomsCommand::class, 'description' => "Today's rooms"],
         '/checkin' => ['class' => CheckInCommand::class, 'description' => 'Check in a guest'],
         '/checkout' => ['class' => CheckOutCommand::class, 'description' => 'Check out a guest'],
+        '/kds' => ['class' => KdsCommand::class, 'description' => 'Kitchen display summary'],
+        '/maint' => ['class' => MaintCommand::class, 'description' => 'Raise maintenance ticket'],
+        '/workorders' => ['class' => WorkOrdersCommand::class, 'description' => 'List work orders'],
+        '/stock' => ['class' => StockCommand::class, 'description' => 'Check stock level'],
+        '/loworders' => ['class' => LowOrdersCommand::class, 'description' => 'List low stock items'],
+        '/approve' => ['class' => ApproveRequisitionCommand::class, 'description' => 'Approve purchase requisition'],
+        '/gl' => ['class' => GlCommand::class, 'description' => 'GL account transactions'],
+        '/trialbalance' => ['class' => TrialBalanceCommand::class, 'description' => 'Trial balance report'],
+        '/pnl' => ['class' => PnlCommand::class, 'description' => 'Income statement (P&L)'],
+        '/balancesheet' => ['class' => BalanceSheetCommand::class, 'description' => 'Balance sheet report'],
+        '/report' => ['class' => ReportCommand::class, 'description' => 'Operational reports (daily/occupancy/revenue)'],
         '/help' => ['class' => HelpCommand::class, 'description' => 'Show available commands'],
     ];
 

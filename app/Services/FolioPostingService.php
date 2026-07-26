@@ -4,6 +4,8 @@ namespace App\Services;
 
 use App\Enums\FolioItemType;
 use App\Enums\FolioStatus;
+use App\Events\FolioItemPosted;
+use App\Events\PaymentReceived;
 use App\Models\Folio;
 use App\Models\FolioItem;
 use App\Models\Payment;
@@ -44,7 +46,7 @@ class FolioPostingService
             $serviceChargeAmount = $taxes['service_charge'];
         }
 
-        return FolioItem::query()->create([
+        $folioItem = FolioItem::query()->create([
             'folio_id' => $folio->id,
             'item_type' => $itemType,
             'description' => $description,
@@ -58,6 +60,10 @@ class FolioPostingService
             'posted_by' => $postedBy?->id,
             'posted_at' => now(),
         ]);
+
+        FolioItemPosted::dispatch($folioItem);
+
+        return $folioItem;
     }
 
     public function postPayment(
@@ -74,7 +80,7 @@ class FolioPostingService
             throw new InvalidArgumentException('Cannot post payments to a closed or voided folio.');
         }
 
-        return Payment::query()->create([
+        $payment = Payment::query()->create([
             'folio_id' => $folio->id,
             'amount' => round($amount, 2),
             'method' => $method,
@@ -86,6 +92,10 @@ class FolioPostingService
             'paid_at' => now(),
             'is_refund' => false,
         ]);
+
+        PaymentReceived::dispatch($payment);
+
+        return $payment;
     }
 
     public function getBalance(Folio $folio): float

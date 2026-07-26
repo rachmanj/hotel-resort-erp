@@ -30,4 +30,9 @@ class Company extends Model
     {
         return $this->hasMany(Folio::class);
     }
+
+    public function arInvoices(): HasMany
+    {
+        return $this->hasMany(ArInvoice::class);
+    }
 }
