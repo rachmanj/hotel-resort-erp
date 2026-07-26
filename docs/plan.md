@@ -1525,7 +1525,8 @@ app/
 - Enums: PHP backed enums in `App\Enums`, e.g. `App\Enums\ReservationStatus::Confirmed`; DB columns store the enum's string value, **confirmed** `varchar` not native MySQL `ENUM` (Stakeholder Decision Q3, 2026-07-25), for easier future value additions via migration rather than schema alter.
 - Routes: `kebab-case` URIs, dot-notation names matching folder structure (`reservations.calendar`).
 - React components: `PascalCase.tsx`, colocated `components/` folder per page for page-specific pieces; genuinely shared components live in top-level `Components/`.
-- Telegram command classes: `App\Telegram\Commands\{Verb}{Noun}Command`, e.g. `CheckInCommand`, `NewReservationCommand`.
+- Telegram command classes: `App\\Telegram\\Commands\\{Verb}{Noun}Command`, e.g. `CheckInCommand`, `NewReservationCommand`.
+- **UI Theme:** Dark/light mode toggle via Ant Design `ConfigProvider` `theme` prop. **Default is dark mode** (Stakeholder Decision Q16, 2026-07-26). Theme preference is persisted in `localStorage` per user. AntD's `algorithm.darkAlgorithm` / `algorithm.defaultAlgorithm` drive the entire component tree; custom CSS uses CSS variables derived from the active algorithm's token set. All pages and components inherit the theme through `ConfigProvider` — no per-page theme overrides.
 
 ### 10.3 Validation Approach
 
@@ -1611,6 +1612,7 @@ app/
 | 13 | Integration with external accounting software (Accurate, Jurnal.id, SAP) vs. standalone? | **Standalone** — no export/sync layer to external accounting software. | Matches original recommendation; this plan's built-in Chart of Accounts/GL/Financial Statements remains the system of record, per the explicit stakeholder request. | 2026-07-25 |
 | 14 | Payroll module — full payroll or placeholder only? | **Placeholder only** — GL account + `tax_transactions.pph21` type reserved; no full payroll module (gross-to-net, BPJS, PPh 21 brackets, THR) in this plan. | Matches original recommendation; a dedicated Payroll module or external payroll provider is a distinct future initiative, out of this plan's scope. | 2026-07-25 |
 | 15 | Tax e-Filing (e-SPT, e-Faktur) API integration vs. manual export? | **Manual export only** — no e-Faktur/e-SPT API integration. | Matches original recommendation; tax reports export for the finance team to file externally. Consistent with the "manual over live API integration" pattern also chosen for Q8 and the exchange-rate feed in Q12. | 2026-07-25 |
+| 16 | UI theme — dark mode, light mode, or both? | **Dark mode default with light mode toggle** — Ant Design ConfigProvider drives both algorithms; dark is the default on first visit. | Stakeholder preference; hotel front desk and night-shift staff benefit from dark UIs. Toggle persisted in localStorage. See Section 10.2. | 2026-07-26 |
 
 ### 11.2 Trade-offs documented
 

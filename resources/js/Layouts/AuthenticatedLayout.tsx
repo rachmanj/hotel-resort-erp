@@ -1,6 +1,8 @@
 import { Link, router, usePage } from '@inertiajs/react';
 import {
     BankOutlined,
+    BulbOutlined,
+    BulbFilled,
     CalendarOutlined,
     DashboardOutlined,
     DollarOutlined,
@@ -10,11 +12,12 @@ import {
     TagsOutlined,
 } from '@ant-design/icons';
 import { ProLayout } from '@ant-design/pro-layout';
-import { Dropdown, message } from 'antd';
+import { Button, Dropdown, message } from 'antd';
 import { useEffect, type ReactNode } from 'react';
 import PropertySwitcher from '@/Components/PropertySwitcher';
 import NotificationBell from '@/Components/NotificationBell';
 import { useAuth } from '@/hooks/useAuth';
+import { useTheme } from '@/hooks/useTheme';
 import type { PageProps } from '@/types';
 
 interface AuthenticatedLayoutProps {
@@ -25,6 +28,7 @@ interface AuthenticatedLayoutProps {
 export default function AuthenticatedLayout({ children, title }: AuthenticatedLayoutProps) {
     const { auth, currentHotel, availableHotels, flash } = usePage<PageProps>().props;
     const { can } = useAuth();
+    const { isDark, toggleTheme } = useTheme();
 
     useEffect(() => {
         if (flash.success) {
@@ -111,6 +115,13 @@ export default function AuthenticatedLayout({ children, title }: AuthenticatedLa
                     availableHotels={availableHotels}
                 />,
                 <NotificationBell key="notifications" />,
+                <Button
+                    key="theme-toggle"
+                    type="text"
+                    icon={isDark ? <BulbFilled /> : <BulbOutlined />}
+                    onClick={toggleTheme}
+                    title={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+                />,
                 <Dropdown
                     key="user-menu"
                     menu={{
