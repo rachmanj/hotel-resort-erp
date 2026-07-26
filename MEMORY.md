@@ -43,4 +43,12 @@
 
 ---
 
+### [M003] Phase 1 implemented: Inertia/React/AntD + spatie auth + multi-property + rooms foundation (2026-07-26) ✅ COMPLETE
+
+- **Challenge/Decision**: First implementation pass — needed full scaffold with `BelongsToHotel` global scope, `ResolveHotelContext` middleware, spatie permission matrix (8 roles), hotels/currencies/rooms CRUD, and React+AntD ProLayout from day one.
+- **Solution**: Laravel 13 backend with Actions (`SwitchHotelContext`, `CreateHotel`, `StoreExchangeRate`, etc.), thin controllers + FormRequests, `RolePermissionSeeder` + `HotelCurrencySeeder` (GNB hotel, admin@hotel.test). Frontend: `AuthenticatedLayout` (role-aware ProLayout sidebar), `PropertySwitcher`, ProTable pages for rooms/hotels/currencies.
+- **Key Learning**: `session('current_hotel_id')` must be set in `ResolveHotelContext` before any hotel-scoped Eloquent query runs; super-admin (`users.hotel_id = null`) gets all active hotels via `User::accessibleHotels()`. npm install for Ant Design Pro packages needs `--legacy-peer-deps` on this stack.
+
+---
+
 [Add new memory entries below, following the format above]
