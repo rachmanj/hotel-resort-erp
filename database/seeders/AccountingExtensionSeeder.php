@@ -10,6 +10,7 @@ use App\Enums\DepreciationMethod;
 use App\Enums\SupplierInvoiceStatus;
 use App\Enums\TaxTransactionStatus;
 use App\Enums\TaxType;
+use App\Models\ArInvoice;
 use App\Models\Asset;
 use App\Models\BankAccount;
 use App\Models\Budget;
