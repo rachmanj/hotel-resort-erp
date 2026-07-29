@@ -48,16 +48,16 @@ class HotelCurrencySeeder extends Seeder
         );
 
         $hotel = Hotel::query()->updateOrCreate(
-            ['code' => 'GNB'],
+            ['code' => 'PTB'],
             [
-                'name' => 'Grand Hyatt Bali',
+                'name' => 'Pratasaba Resort',
                 'address' => 'Kawasan ITDC Nusa Dua, Bali',
                 'currency' => 'IDR',
                 'timezone' => 'Asia/Makassar',
                 'default_checkin_time' => '14:00:00',
                 'default_checkout_time' => '12:00:00',
                 'phone' => '+62 361 771234',
-                'email' => 'info@grandhyattbali.test',
+                'email' => 'info@pratasaba-resort.test',
                 'is_active' => true,
             ]
         );
