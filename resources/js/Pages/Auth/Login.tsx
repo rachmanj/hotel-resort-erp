@@ -19,7 +19,7 @@ export default function Login() {
             <Head title="Login" />
             <Card>
                 <Typography.Title level={3} style={{ textAlign: 'center', marginBottom: 24 }}>
-                    Hotel ERP
+                    Pratasaba Resort
                 </Typography.Title>
                 <Form layout="vertical" onFinish={submit}>
                     <Form.Item
