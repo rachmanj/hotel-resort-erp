@@ -2,6 +2,7 @@ import '../css/app.css';
 import { createInertiaApp } from '@inertiajs/react';
 import { createRoot } from 'react-dom/client';
 import { ConfigProvider, theme as antTheme } from 'antd';
+import enUS from 'antd/locale/en_US';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { ThemeProvider, useTheme } from './hooks/useTheme';
 
@@ -14,6 +15,7 @@ function AppWrapper({ children }) {
 
     return (
         <ConfigProvider
+            locale={enUS}
             theme={{
                 algorithm: isDark ? antTheme.darkAlgorithm : antTheme.defaultAlgorithm,
                 token: {
