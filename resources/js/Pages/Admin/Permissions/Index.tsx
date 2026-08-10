@@ -17,8 +17,8 @@ interface PermissionsIndexProps {
 
 export default function PermissionsIndex({ permissions, filters }: PermissionsIndexProps) {
     const columns: ProColumns<PermissionRow>[] = [
-        { title: 'Name', dataIndex: 'name' },
-        { title: 'Guard Name', dataIndex: 'guard_name' },
+        { title: 'Name', dataIndex: 'name', fieldProps: { placeholder: 'Permission name' } },
+        { title: 'Guard Name', dataIndex: 'guard_name', fieldProps: { placeholder: 'Guard name' } },
         {
             title: 'Search',
             dataIndex: 'search',
@@ -35,6 +35,8 @@ export default function PermissionsIndex({ permissions, filters }: PermissionsIn
                 columns={columns}
                 dataSource={permissions.data}
                 search={{
+                    searchText: 'Search',
+                    resetText: 'Reset',
                     labelWidth: 'auto',
                     defaultCollapsed: false,
                 }}
@@ -50,6 +52,7 @@ export default function PermissionsIndex({ permissions, filters }: PermissionsIn
                 }
                 options={false}
                 pagination={{
+                    showTotal: (total, range) => `${range[0]}-${range[1]} of ${total}`,
                     current: permissions.current_page,
                     pageSize: permissions.per_page,
                     total: permissions.total,

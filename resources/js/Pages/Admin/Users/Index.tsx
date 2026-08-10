@@ -73,16 +73,18 @@ export default function UsersIndex({ users, hotels, roles, filters }: UsersIndex
     };
 
     const columns: ProColumns<UserRow>[] = [
-        { title: 'Name', dataIndex: 'name' },
-        { title: 'Email', dataIndex: 'email' },
+        { title: 'Name', dataIndex: 'name', fieldProps: { placeholder: 'Name' } },
+        { title: 'Email', dataIndex: 'email', fieldProps: { placeholder: 'Email' } },
         {
             title: 'Hotel',
             dataIndex: ['home_hotel', 'name'],
+            fieldProps: { placeholder: 'Hotel' },
             render: (_, record) => record.home_hotel?.name ?? '—',
         },
         {
             title: 'Roles',
             dataIndex: 'roles',
+            fieldProps: { placeholder: 'Roles' },
             render: (_, record) => (
                 <Space size={[0, 4]} wrap>
                     {record.roles.map((role) => (
@@ -124,6 +126,8 @@ export default function UsersIndex({ users, hotels, roles, filters }: UsersIndex
                 columns={columns}
                 dataSource={users.data}
                 search={{
+                    searchText: 'Search',
+                    resetText: 'Reset',
                     labelWidth: 'auto',
                     defaultCollapsed: false,
                 }}
@@ -143,6 +147,7 @@ export default function UsersIndex({ users, hotels, roles, filters }: UsersIndex
                     </Button>,
                 ]}
                 pagination={{
+                    showTotal: (total, range) => `${range[0]}-${range[1]} of ${total}`,
                     current: users.current_page,
                     pageSize: users.per_page,
                     total: users.total,
