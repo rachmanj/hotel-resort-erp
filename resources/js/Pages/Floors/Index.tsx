@@ -72,6 +72,7 @@ export default function FloorsIndex({ floors, filters }: FloorsIndexProps) {
                 columns={columns}
                 dataSource={floors.data}
                 search={false}
+                options={false}
                 toolBarRender={() => [
                     <Button key="create" type="primary" onClick={openCreate}>
                         New Floor

@@ -106,6 +106,7 @@ export default function RoomTypesIndex({ roomTypes, filters }: RoomTypesIndexPro
                 columns={columns}
                 dataSource={roomTypes.data}
                 search={false}
+                options={false}
                 toolBarRender={() => [
                     <Button key="create" type="primary" onClick={openCreate}>
                         New Room Type

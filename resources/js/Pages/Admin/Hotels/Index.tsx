@@ -56,6 +56,7 @@ export default function HotelsIndex({ hotels, filters }: HotelsIndexProps) {
                 columns={columns}
                 dataSource={hotels.data}
                 search={false}
+                options={false}
                 toolBarRender={() => [
                     <Link key="create" href="/admin/hotels/create">
                         <Button type="primary">New Hotel</Button>

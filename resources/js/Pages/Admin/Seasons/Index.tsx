@@ -81,6 +81,7 @@ export default function SeasonsIndex({ seasons, filters }: SeasonsIndexProps) {
                 columns={columns}
                 dataSource={seasons.data}
                 search={false}
+                options={false}
                 toolBarRender={() => [
                     <Button key="create" type="primary" onClick={openCreate}>
                         New Season

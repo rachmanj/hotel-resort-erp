@@ -88,6 +88,7 @@ export default function CurrenciesIndex({ currencies }: CurrenciesIndexProps) {
                 columns={columns}
                 dataSource={currencies}
                 search={false}
+                options={false}
                 pagination={false}
             />
 
