@@ -1,10 +1,13 @@
 import type { ReactNode } from 'react';
+import { useTheme } from '@/hooks/useTheme';
 
 interface GuestLayoutProps {
     children: ReactNode;
 }
 
 export default function GuestLayout({ children }: GuestLayoutProps) {
+    const { isDark } = useTheme();
+
     return (
         <div
             style={{
@@ -12,7 +15,9 @@ export default function GuestLayout({ children }: GuestLayoutProps) {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                background: 'linear-gradient(135deg, #f0f5ff 0%, #ffffff 100%)',
+                background: isDark
+                    ? 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)'
+                    : 'linear-gradient(135deg, #f0f5ff 0%, #ffffff 100%)',
                 padding: 24,
             }}
         >
