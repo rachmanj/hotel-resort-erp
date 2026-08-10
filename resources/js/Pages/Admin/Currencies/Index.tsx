@@ -67,7 +67,7 @@ export default function CurrenciesIndex({ currencies }: CurrenciesIndexProps) {
         {
             title: 'Effective Date',
             dataIndex: 'effective_date',
-            render: (_, record) => dayjs(record.effective_date).format('DD MMM YYYY'),
+            render: (_, record) => dayjs(record.effective_date).locale('en').format('DD MMM YYYY'),
         },
         {
             title: 'Actions',
@@ -115,7 +115,7 @@ export default function CurrenciesIndex({ currencies }: CurrenciesIndexProps) {
                                 title: 'Effective Date',
                                 dataIndex: 'effective_date',
                                 render: (_, record) =>
-                                    dayjs(record.effective_date).format('DD MMM YYYY'),
+                                    dayjs(record.effective_date).locale('en').format('DD MMM YYYY'),
                             },
                         ]}
                         dataSource={currency.exchange_rates}
