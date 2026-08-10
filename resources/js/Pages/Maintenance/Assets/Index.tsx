@@ -32,7 +32,7 @@ export default function AssetsIndex({ assets }: AssetsIndexProps) {
     return (
         <AuthenticatedLayout title="Assets">
             <Head title="Assets" />
-            <ProTable rowKey="id" search={false} options={false} dataSource={assets.data} columns={columns} />
+            <ProTable rowKey="id" search={false} options={false} pagination={{ showTotal: (total, range) => `${range[0]}-${range[1]} of ${total}` }} dataSource={assets.data} columns={columns} />
         </AuthenticatedLayout>
     );
 }

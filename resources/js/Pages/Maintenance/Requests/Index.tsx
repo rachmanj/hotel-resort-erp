@@ -56,7 +56,7 @@ export default function MaintenanceRequestsIndex({ requests, filters, statusOpti
                 <Select allowClear placeholder="Priority" style={{ width: 140 }} value={filters.priority} options={priorityOptions}
                     onChange={(v) => router.get('/maintenance/requests', { ...filters, priority: v }, { preserveState: true })} />
             </div>
-            <ProTable rowKey="id" search={false} options={false} dataSource={requests.data} columns={columns} />
+            <ProTable rowKey="id" search={false} options={false} pagination={{ showTotal: (total, range) => `${range[0]}-${range[1]} of ${total}` }} dataSource={requests.data} columns={columns} />
         </AuthenticatedLayout>
     );
 }

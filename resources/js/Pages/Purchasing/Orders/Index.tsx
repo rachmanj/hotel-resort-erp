@@ -40,7 +40,7 @@ export default function PurchaseOrdersIndex({ orders, filters, statusOptions }: 
             <Head title="Purchase Orders" />
             <Select allowClear placeholder="Status" style={{ width: 160, marginBottom: 16 }} value={filters.status} options={statusOptions}
                 onChange={(v) => router.get('/purchasing/orders', { status: v }, { preserveState: true })} />
-            <ProTable rowKey="id" search={false} options={false} dataSource={orders.data} columns={columns} />
+            <ProTable rowKey="id" search={false} options={false} pagination={{ showTotal: (total, range) => `${range[0]}-${range[1]} of ${total}` }} dataSource={orders.data} columns={columns} />
         </AuthenticatedLayout>
     );
 }

@@ -34,7 +34,7 @@ export default function SuppliersIndex({ suppliers }: SuppliersIndexProps) {
         <AuthenticatedLayout title="Suppliers">
             <Head title="Suppliers" />
             <div style={{ marginBottom: 16 }}><Button type="primary" onClick={() => setCreating(true)}>Add Supplier</Button></div>
-            <ProTable rowKey="id" search={false} options={false} dataSource={suppliers.data} columns={columns} />
+            <ProTable rowKey="id" search={false} options={false} pagination={{ showTotal: (total, range) => `${range[0]}-${range[1]} of ${total}` }} dataSource={suppliers.data} columns={columns} />
             <Modal title="Add Supplier" open={creating} onCancel={() => setCreating(false)}
                 onOk={() => form.post('/purchasing/suppliers', { onSuccess: () => setCreating(false) })} confirmLoading={form.processing}>
                 <Form layout="vertical">

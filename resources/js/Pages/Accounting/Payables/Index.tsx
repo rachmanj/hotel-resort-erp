@@ -54,7 +54,7 @@ export default function PayablesIndex({ invoices, filters, statusOptions }: Paya
                     <Button type="primary">New Supplier Invoice</Button>
                 </Link>
             </div>
-            <ProTable rowKey="id" search={false} options={false} dataSource={invoices.data} columns={columns} />
+            <ProTable rowKey="id" search={false} options={false} pagination={{ showTotal: (total, range) => `${range[0]}-${range[1]} of ${total}` }} dataSource={invoices.data} columns={columns} />
         </AuthenticatedLayout>
     );
 }

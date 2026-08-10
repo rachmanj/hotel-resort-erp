@@ -67,7 +67,7 @@ export default function ReceivablesIndex({ invoices, filters, statusOptions }: R
                     onChange={(v) => router.get('/accounting/receivables', { status: v }, { preserveState: true })}
                 />
             </div>
-            <ProTable rowKey="id" search={false} options={false} dataSource={invoices.data} columns={columns} />
+            <ProTable rowKey="id" search={false} options={false} pagination={{ showTotal: (total, range) => `${range[0]}-${range[1]} of ${total}` }} dataSource={invoices.data} columns={columns} />
         </AuthenticatedLayout>
     );
 }

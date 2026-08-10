@@ -64,7 +64,7 @@ export default function JournalEntriesIndex({ entries, filters, statusOptions }:
                     <Button type="primary">New Journal Entry</Button>
                 </Link>
             </div>
-            <ProTable rowKey="id" search={false} options={false} dataSource={entries.data} columns={columns} />
+            <ProTable rowKey="id" search={false} options={false} pagination={{ showTotal: (total, range) => `${range[0]}-${range[1]} of ${total}` }} dataSource={entries.data} columns={columns} />
         </AuthenticatedLayout>
     );
 }

@@ -63,7 +63,7 @@ export default function InventoryIndex({ items, filters, categoryOptions, unitOp
                 </div>
                 <Button type="primary" onClick={() => setCreating(true)}>Add Item</Button>
             </div>
-            <ProTable rowKey="id" search={false} options={false} dataSource={items.data} columns={columns} />
+            <ProTable rowKey="id" search={false} options={false} pagination={{ showTotal: (total, range) => `${range[0]}-${range[1]} of ${total}` }} dataSource={items.data} columns={columns} />
 
             <Modal title="Add Inventory Item" open={creating} onCancel={() => setCreating(false)}
                 onOk={() => form.post('/inventory', { onSuccess: () => setCreating(false) })} confirmLoading={form.processing}>

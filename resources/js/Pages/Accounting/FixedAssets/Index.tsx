@@ -96,7 +96,9 @@ export default function FixedAssetsIndex({
                     Run Monthly Depreciation
                 </Button>
             </div>
-            <ProTable rowKey="id" search={false} options={false} dataSource={assets} columns={columns} />
+            <ProTable rowKey="id" search={false} options={false} dataSource={assets} columns={columns} pagination={{
+                showTotal: (total, range) => `${range[0]}-${range[1]} of ${total}`,
+            }} />
             <Modal title="Edit Fixed Asset Accounting" open={editId !== null} onCancel={() => setEditId(null)} onOk={save} confirmLoading={processing}>
                 <Select
                     style={{ width: '100%', marginBottom: 8 }}

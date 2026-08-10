@@ -59,7 +59,7 @@ export default function BankAccounts({ bankAccounts, glAccounts }: BankAccountsP
                     Add Bank Account
                 </Button>
             </div>
-            <ProTable rowKey="id" search={false} options={false} dataSource={bankAccounts} columns={columns} />
+            <ProTable rowKey="id" search={false} options={false} pagination={{ showTotal: (total, range) => `${range[0]}-${range[1]} of ${total}` }} dataSource={bankAccounts} columns={columns} />
             <Modal title="New Bank Account" open={open} onCancel={() => setOpen(false)} onOk={submit} confirmLoading={processing}>
                 <Form layout="vertical">
                     <Form.Item label="Bank Name" required>

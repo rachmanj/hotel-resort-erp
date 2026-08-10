@@ -69,7 +69,7 @@ export default function BankReconciliationIndex({ reconciliations, bankAccounts 
                     New Reconciliation
                 </Button>
             </div>
-            <ProTable rowKey="id" search={false} options={false} dataSource={reconciliations.data} columns={columns} />
+            <ProTable rowKey="id" search={false} options={false} pagination={{ showTotal: (total, range) => `${range[0]}-${range[1]} of ${total}` }} dataSource={reconciliations.data} columns={columns} />
             <Modal
                 title="Start Reconciliation"
                 open={open}
