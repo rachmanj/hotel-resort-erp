@@ -113,6 +113,7 @@ export default function RoomTypesIndex({ roomTypes, filters }: RoomTypesIndexPro
                     </Button>,
                 ]}
                 pagination={{
+                    showTotal: (total, range) => `${range[0]}-${range[1]} of ${total}`,
                     current: roomTypes.current_page,
                     pageSize: roomTypes.per_page,
                     total: roomTypes.total,

@@ -66,6 +66,7 @@ export default function CompaniesIndex({ companies, filters }: CompaniesIndexPro
                 search={false}
                 options={false}
                 pagination={{
+                    showTotal: (total, range) => `${range[0]}-${range[1]} of ${total}`,
                     current: companies.current_page,
                     pageSize: companies.per_page,
                     total: companies.total,

@@ -79,6 +79,7 @@ export default function FloorsIndex({ floors, filters }: FloorsIndexProps) {
                     </Button>,
                 ]}
                 pagination={{
+                    showTotal: (total, range) => `${range[0]}-${range[1]} of ${total}`,
                     current: floors.current_page,
                     pageSize: floors.per_page,
                     total: floors.total,

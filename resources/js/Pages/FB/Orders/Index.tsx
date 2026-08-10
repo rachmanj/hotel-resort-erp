@@ -112,6 +112,7 @@ export default function OrdersIndex({ orders, filters, statusOptions, typeOption
                 dataSource={orders.data}
                 columns={columns}
                 pagination={{
+                    showTotal: (total, range) => `${range[0]}-${range[1]} of ${total}`,
                     total: (orders as { total?: number }).total,
                     current: (orders as { current_page?: number }).current_page,
                     pageSize: (orders as { per_page?: number }).per_page ?? 20,

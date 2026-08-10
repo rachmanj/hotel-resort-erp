@@ -161,6 +161,7 @@ export default function AppointmentsIndex({
                 dataSource={appointments.data}
                 columns={columns}
                 pagination={{
+                    showTotal: (total, range) => `${range[0]}-${range[1]} of ${total}`,
                     total: appointments.total,
                     current: appointments.current_page,
                     pageSize: appointments.per_page ?? 20,

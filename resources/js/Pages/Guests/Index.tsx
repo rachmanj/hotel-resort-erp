@@ -72,6 +72,7 @@ export default function GuestsIndex({ guests, filters }: GuestsIndexProps) {
                 search={false}
                 options={false}
                 pagination={{
+                    showTotal: (total, range) => `${range[0]}-${range[1]} of ${total}`,
                     current: guests.current_page,
                     pageSize: guests.per_page,
                     total: guests.total,

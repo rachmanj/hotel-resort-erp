@@ -122,6 +122,7 @@ export default function HousekeepingAssignments({
                 search={false}
                 options={false}
                 pagination={{
+                    showTotal: (total, range) => `${range[0]}-${range[1]} of ${total}`,
                     current: assignments.current_page,
                     pageSize: assignments.per_page,
                     total: assignments.total,
