@@ -73,7 +73,12 @@ Route::middleware(['auth', 'hotel.context'])->group(function (): void {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::get('/rooms', [RoomController::class, 'index'])->name('rooms.index')->middleware('can:rooms.view');
+    Route::get('/rooms/create', [RoomController::class, 'create'])->name('rooms.create')->middleware('can:rooms.manage');
+    Route::post('/rooms', [RoomController::class, 'store'])->name('rooms.store')->middleware('can:rooms.manage');
     Route::get('/rooms/{room}', [RoomController::class, 'show'])->name('rooms.show')->middleware('can:rooms.view');
+    Route::get('/rooms/{room}/edit', [RoomController::class, 'edit'])->name('rooms.edit')->middleware('can:rooms.manage');
+    Route::put('/rooms/{room}', [RoomController::class, 'update'])->name('rooms.update')->middleware('can:rooms.manage');
+    Route::delete('/rooms/{room}', [RoomController::class, 'destroy'])->name('rooms.destroy')->middleware('can:rooms.manage');
 
     Route::get('/room-types', [RoomTypeController::class, 'index'])->name('room-types.index')->middleware('can:rooms.manage');
     Route::post('/room-types', [RoomTypeController::class, 'store'])->name('room-types.store')->middleware('can:rooms.manage');
@@ -85,6 +90,8 @@ Route::middleware(['auth', 'hotel.context'])->group(function (): void {
     Route::get('/reservations/create', [ReservationController::class, 'create'])->name('reservations.create')->middleware('can:reservations.create');
     Route::post('/reservations', [ReservationController::class, 'store'])->name('reservations.store')->middleware('can:reservations.create');
     Route::get('/reservations/{reservation}', [ReservationController::class, 'show'])->name('reservations.show')->middleware('can:reservations.view');
+    Route::get('/reservations/{reservation}/edit', [ReservationController::class, 'edit'])->name('reservations.edit')->middleware('can:reservations.edit');
+    Route::put('/reservations/{reservation}', [ReservationController::class, 'update'])->name('reservations.update')->middleware('can:reservations.edit');
     Route::post('/reservations/{reservation}/cancel', [ReservationController::class, 'cancel'])->name('reservations.cancel')->middleware('can:reservations.cancel');
     Route::post('/reservations/{reservation}/checkin', [CheckInController::class, 'store'])->name('reservations.checkin')->middleware('can:reservations.checkin');
     Route::post('/reservation-rooms/{reservationRoom}/checkout', [CheckOutController::class, 'store'])->name('reservations.checkout')->middleware('can:reservations.checkout');

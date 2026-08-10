@@ -21,14 +21,14 @@ class AvailabilityService
         ReservationRoomStatus::CheckedIn->value,
     ];
 
-    public function isAvailable(Room $room, Carbon $checkin, Carbon $checkout): bool
+    public function isAvailable(Room $room, Carbon $checkin, Carbon $checkout, ?int $excludeReservationId = null): bool
     {
-        return ! $this->queryOverlappingReservationRooms($checkin, $checkout, $room->id)->exists();
+        return ! $this->queryOverlappingReservationRooms($checkin, $checkout, $room->id, $excludeReservationId)->exists();
     }
 
-    public function assertRoomAvailable(Room $room, Carbon $checkin, Carbon $checkout): void
+    public function assertRoomAvailable(Room $room, Carbon $checkin, Carbon $checkout, ?int $excludeReservationId = null): void
     {
-        if (! $this->isAvailable($room, $checkin, $checkout)) {
+        if (! $this->isAvailable($room, $checkin, $checkout, $excludeReservationId)) {
             throw new RoomNotAvailableException;
         }
     }
@@ -44,11 +44,11 @@ class AvailabilityService
     /**
      * @return Collection<int, Room>
      */
-    public function getAvailableRooms(int $roomTypeId, Carbon $checkin, Carbon $checkout, ?int $hotelId = null): Collection
+    public function getAvailableRooms(int $roomTypeId, Carbon $checkin, Carbon $checkout, ?int $hotelId = null, ?int $excludeReservationId = null): Collection
     {
         $hotelId ??= session('current_hotel_id');
 
-        $occupiedRoomIds = $this->queryOverlappingReservationRooms($checkin, $checkout)
+        $occupiedRoomIds = $this->queryOverlappingReservationRooms($checkin, $checkout, null, $excludeReservationId)
             ->when($hotelId !== null, function ($query) use ($hotelId): void {
                 $query->whereHas('reservation', fn ($q) => $q->where('hotel_id', $hotelId));
             })
@@ -68,7 +68,7 @@ class AvailabilityService
     /**
      * @return array<int, array{room_type_id: int, name: string, code: string, available_count: int, total_count: int}>
      */
-    public function getAvailability(Carbon $checkin, Carbon $checkout, ?int $hotelId = null): array
+    public function getAvailability(Carbon $checkin, Carbon $checkout, ?int $hotelId = null, ?int $excludeReservationId = null): array
     {
         $hotelId ??= session('current_hotel_id');
 
@@ -85,7 +85,7 @@ class AvailabilityService
                 ->when($hotelId !== null, fn ($q) => $q->where('hotel_id', $hotelId))
                 ->count();
 
-            $availableRooms = $this->getAvailableRooms($roomType->id, $checkin, $checkout, $hotelId);
+            $availableRooms = $this->getAvailableRooms($roomType->id, $checkin, $checkout, $hotelId, $excludeReservationId);
 
             $result[] = [
                 'room_type_id' => $roomType->id,
@@ -102,7 +102,7 @@ class AvailabilityService
     /**
      * @return Builder<ReservationRoom>
      */
-    private function queryOverlappingReservationRooms(Carbon $checkin, Carbon $checkout, ?int $roomId = null)
+    private function queryOverlappingReservationRooms(Carbon $checkin, Carbon $checkout, ?int $roomId = null, ?int $excludeReservationId = null)
     {
         $checkinDate = $checkin->toDateString();
         $checkoutDate = $checkout->toDateString();
@@ -110,6 +110,7 @@ class AvailabilityService
         return ReservationRoom::query()
             ->whereIn('status', self::BLOCKING_STATUSES)
             ->when($roomId !== null, fn ($q) => $q->where('room_id', $roomId))
+            ->when($excludeReservationId !== null, fn ($q) => $q->where('reservation_id', '!=', $excludeReservationId))
             ->whereNotNull('room_id')
             ->whereHas('reservation', function ($query) use ($checkinDate, $checkoutDate): void {
                 $query->where('arrival_date', '<', $checkoutDate)

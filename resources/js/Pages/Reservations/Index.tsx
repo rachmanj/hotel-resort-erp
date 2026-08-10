@@ -5,6 +5,7 @@ import { Button, DatePicker, Input, Select, Space, Tag } from 'antd';
 import dayjs from 'dayjs';
 import { useState } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import { useAuth } from '@/hooks/useAuth';
 import type { Paginated } from '@/types';
 
 interface ReservationRow {
@@ -42,6 +43,7 @@ export default function ReservationsIndex({
     sources,
     filters,
 }: ReservationsIndexProps) {
+    const { can } = useAuth();
     const [localFilters, setLocalFilters] = useState(filters);
 
     const applyFilters = () => {
@@ -88,6 +90,19 @@ export default function ReservationsIndex({
                 <Tag color={record.status_color}>{record.status_label}</Tag>
             ),
         },
+        ...(can('reservations.edit')
+            ? [
+                  {
+                      title: 'Actions',
+                      valueType: 'option' as const,
+                      render: (_: unknown, record: ReservationRow) => [
+                          <Link key="edit" href={`/reservations/${record.id}/edit`}>
+                              <Button type="link">Edit</Button>
+                          </Link>,
+                      ],
+                  },
+              ]
+            : []),
     ];
 
     return (
@@ -153,6 +168,7 @@ export default function ReservationsIndex({
                 search={false}
                 options={{ reload: false }}
                 pagination={{
+                    showTotal: (total, range) => `${range[0]}-${range[1]} of ${total}`,
                     current: reservations.current_page,
                     pageSize: reservations.per_page,
                     total: reservations.total,

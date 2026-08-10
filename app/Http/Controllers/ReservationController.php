@@ -10,13 +10,16 @@ use App\Enums\ReservationStatus;
 use App\Exceptions\RoomNotAvailableException;
 use App\Http\Requests\CancelReservationRequest;
 use App\Http\Requests\StoreReservationRequest;
+use App\Http\Requests\UpdateReservationRequest;
 use App\Models\RatePlan;
 use App\Models\Reservation;
+use App\Models\Room;
 use App\Models\RoomType;
 use App\Services\AvailabilityService;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -142,6 +145,142 @@ class ReservationController extends Controller
         return redirect()
             ->route('reservations.show', $reservation)
             ->with('success', 'Reservation created successfully.');
+    }
+
+    public function edit(AvailabilityService $availabilityService, Request $request, Reservation $reservation): Response
+    {
+        $reservation->load(['guest', 'reservationRooms.room', 'reservationRooms.roomType', 'reservationRooms.ratePlan']);
+
+        $arrival = $request->string('arrival_date')->toString() ?: $reservation->arrival_date->toDateString();
+        $departure = $request->string('departure_date')->toString() ?: $reservation->departure_date->toDateString();
+
+        $checkin = Carbon::parse($arrival)->startOfDay();
+        $checkout = Carbon::parse($departure)->startOfDay();
+
+        $reservationRoom = $reservation->reservationRooms->first();
+
+        return Inertia::render('Reservations/Edit', [
+            'reservation' => [
+                'id' => $reservation->id,
+                'reservation_code' => $reservation->reservation_code,
+                'arrival_date' => $reservation->arrival_date->toDateString(),
+                'departure_date' => $reservation->departure_date->toDateString(),
+                'adults' => $reservation->adults,
+                'children' => $reservation->children,
+                'special_requests' => $reservation->special_requests,
+                'source' => $reservation->source->value,
+                'guest_id' => $reservation->guest_id,
+                'guest' => $reservation->guest ? [
+                    'full_name' => $reservation->guest->full_name,
+                    'phone' => $reservation->guest->phone ?? '',
+                    'email' => $reservation->guest->email ?? '',
+                    'id_number' => $reservation->guest->id_number ?? '',
+                    'nationality' => $reservation->guest->nationality ?? '',
+                ] : null,
+                'room_type_id' => $reservationRoom?->room_type_id,
+                'room_id' => $reservationRoom?->room_id,
+                'rate_plan_id' => $reservationRoom?->rate_plan_id,
+            ],
+            'roomTypes' => RoomType::query()
+                ->where('is_active', true)
+                ->orderBy('name')
+                ->get(['id', 'name', 'code', 'base_rate', 'max_occupancy']),
+            'ratePlans' => RatePlan::query()
+                ->where('is_active', true)
+                ->with(['roomType:id,name', 'season:id,name'])
+                ->orderBy('name')
+                ->get()
+                ->map(fn (RatePlan $plan) => [
+                    'id' => $plan->id,
+                    'name' => $plan->name,
+                    'room_type_id' => $plan->room_type_id,
+                    'nightly_rate' => $plan->nightly_rate,
+                    'rate_type' => $plan->rate_type->value,
+                    'season' => $plan->season?->only(['id', 'name']),
+                ]),
+            'availability' => $availabilityService->getAvailability($checkin, $checkout, $reservation->hotel_id, $reservation->id),
+            'sources' => collect(ReservationSource::cases())->map(fn (ReservationSource $s) => [
+                'value' => $s->value,
+                'label' => $s->label(),
+            ]),
+        ]);
+    }
+
+    public function update(
+        UpdateReservationRequest $request,
+        Reservation $reservation,
+        AvailabilityService $availabilityService,
+    ): RedirectResponse {
+        $validated = $request->validated();
+
+        try {
+            DB::transaction(function () use ($validated, $reservation, $availabilityService): void {
+                $checkin = Carbon::parse($validated['arrival_date'])->startOfDay();
+                $checkout = Carbon::parse($validated['departure_date'])->startOfDay();
+
+                $availabilityService->lockOverlappingForHotel($reservation->hotel_id, $checkin, $checkout);
+
+                $roomId = $validated['room_id'] ?? null;
+
+                if ($roomId !== null) {
+                    $room = Room::query()->findOrFail($roomId);
+                    $availabilityService->assertRoomAvailable($room, $checkin, $checkout, $reservation->id);
+                }
+
+                if (isset($validated['guest_id'])) {
+                    $reservation->update(['guest_id' => $validated['guest_id']]);
+                } elseif (isset($validated['guest']) && $reservation->guest !== null) {
+                    $reservation->guest->update(array_filter(
+                        $validated['guest'],
+                        fn ($value) => $value !== null && $value !== '',
+                    ));
+                }
+
+                $reservation->update([
+                    'arrival_date' => $validated['arrival_date'],
+                    'departure_date' => $validated['departure_date'],
+                    'adults' => $validated['adults'] ?? $reservation->adults,
+                    'children' => $validated['children'] ?? $reservation->children,
+                    'special_requests' => $validated['special_requests'] ?? null,
+                    'source' => $validated['source'] ?? $reservation->source->value,
+                ]);
+
+                $reservationRoom = $reservation->reservationRooms()->first();
+
+                if ($reservationRoom !== null) {
+                    $nightlyRate = $this->resolveNightlyRate(
+                        $validated['rate_plan_id'] ?? null,
+                        $validated['room_type_id'],
+                    );
+
+                    $reservationRoom->update([
+                        'room_type_id' => $validated['room_type_id'],
+                        'room_id' => $roomId,
+                        'rate_plan_id' => $validated['rate_plan_id'] ?? null,
+                        'nightly_rate' => $nightlyRate,
+                    ]);
+                }
+            });
+        } catch (RoomNotAvailableException $e) {
+            return back()->withInput()->with('error', $e->getMessage());
+        }
+
+        return redirect()
+            ->route('reservations.show', $reservation)
+            ->with('success', 'Reservation updated successfully.');
+    }
+
+    private function resolveNightlyRate(?int $ratePlanId, int $roomTypeId): string
+    {
+        if ($ratePlanId !== null) {
+            $ratePlan = RatePlan::query()->findOrFail($ratePlanId);
+
+            return (string) $ratePlan->nightly_rate;
+        }
+
+        $roomType = RoomType::query()->findOrFail($roomTypeId);
+
+        return (string) $roomType->base_rate;
     }
 
     public function show(Reservation $reservation): Response
