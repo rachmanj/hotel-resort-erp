@@ -14,6 +14,7 @@ import {
     HomeOutlined,
     InboxOutlined,
     LogoutOutlined,
+    SafetyCertificateOutlined,
     SendOutlined,
     SettingOutlined,
     TagsOutlined,
@@ -271,6 +272,21 @@ export default function AuthenticatedLayout({ children, title }: AuthenticatedLa
                 path: '/floors',
                 name: 'Floors',
                 icon: <SettingOutlined />,
+            },
+            can('admin.manage') && {
+                path: '/admin/users',
+                name: 'Users',
+                icon: <TeamOutlined />,
+            },
+            can('admin.manage') && {
+                path: '/admin/roles',
+                name: 'Roles',
+                icon: <SafetyCertificateOutlined />,
+            },
+            can('admin.manage') && {
+                path: '/admin/permissions',
+                name: 'Permissions',
+                icon: <SafetyCertificateOutlined />,
             },
             can('hotels.manage') && {
                 path: '/admin/hotels',

@@ -17,9 +17,12 @@ use App\Http\Controllers\Accounting\TaxReportController;
 use App\Http\Controllers\Admin\CurrencyController;
 use App\Http\Controllers\Admin\HotelController;
 use App\Http\Controllers\Admin\HotelSettingController;
+use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\RatePlanController;
+use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\SeasonController;
 use App\Http\Controllers\Admin\TaxRuleController;
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\AssetController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\CheckInController;
@@ -249,6 +252,10 @@ Route::middleware(['auth', 'hotel.context'])->group(function (): void {
     Route::delete('/floors/{floor}', [FloorController::class, 'destroy'])->name('floors.destroy')->middleware('can:floors.manage');
 
     Route::prefix('admin')->name('admin.')->group(function (): void {
+        Route::resource('users', UserController::class)->except(['show'])->middleware('can:admin.manage');
+        Route::resource('roles', RoleController::class)->except(['create', 'show', 'edit'])->middleware('can:admin.manage');
+        Route::get('permissions', [PermissionController::class, 'index'])->name('permissions.index')->middleware('can:admin.manage');
+
         Route::get('/hotels', [HotelController::class, 'index'])->name('hotels.index')->middleware('can:hotels.manage');
         Route::get('/hotels/create', [HotelController::class, 'create'])->name('hotels.create')->middleware('can:hotels.manage');
         Route::post('/hotels', [HotelController::class, 'store'])->name('hotels.store')->middleware('can:hotels.manage');

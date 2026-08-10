@@ -23,8 +23,8 @@ class StartCommand extends BaseCommand
 
         $this->reply(
             $tgUser,
-            "Welcome to Hotel ERP Bot! 🏨\n\n".
-            "To get started, link your account with /link <code>.\n".
+            "Welcome to Pratasaba ERP System! 🏨\n\n".
+            "To get started, link your account with /link &lt;code&gt;CODE&lt;/code&gt;.\n".
             'Get your linking code from your profile page on the web app.',
         );
     }
