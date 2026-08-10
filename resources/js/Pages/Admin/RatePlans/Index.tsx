@@ -125,6 +125,7 @@ export default function RatePlansIndex({
                     </Button>,
                 ]}
                 pagination={{
+                    showTotal: (total, range) => `${range[0]}-${range[1]} of ${total}`,
                     current: ratePlans.current_page,
                     pageSize: ratePlans.per_page,
                     total: ratePlans.total,

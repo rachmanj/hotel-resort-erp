@@ -62,6 +62,7 @@ export default function HotelsIndex({ hotels, filters }: HotelsIndexProps) {
                     </Link>,
                 ]}
                 pagination={{
+                    showTotal: (total, range) => `${range[0]}-${range[1]} of ${total}`,
                     current: hotels.current_page,
                     pageSize: hotels.per_page,
                     total: hotels.total,

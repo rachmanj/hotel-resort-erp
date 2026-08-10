@@ -87,6 +87,7 @@ export default function SeasonsIndex({ seasons, filters }: SeasonsIndexProps) {
                     </Button>,
                 ]}
                 pagination={{
+                    showTotal: (total, range) => `${range[0]}-${range[1]} of ${total}`,
                     current: seasons.current_page,
                     pageSize: seasons.per_page,
                     total: seasons.total,
