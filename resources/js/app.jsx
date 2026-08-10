@@ -5,6 +5,10 @@ import { ConfigProvider, theme as antTheme } from 'antd';
 import enUS from 'antd/locale/en_US';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { ThemeProvider, useTheme } from './hooks/useTheme';
+import dayjs from 'dayjs';
+import 'dayjs/locale/en';
+
+dayjs.locale('en');
 
 const appName = import.meta.env.VITE_APP_NAME || 'Hotel ERP';
 
