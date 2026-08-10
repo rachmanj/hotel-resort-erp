@@ -1,8 +1,9 @@
 import { Head, Link } from '@inertiajs/react';
-import { Button, Space } from 'antd';
+import { Button, Space, theme } from 'antd';
 import dayjs from 'dayjs';
 import { useMemo } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import { useTheme } from '@/hooks/useTheme';
 
 interface RoomRow {
     id: number;
@@ -46,6 +47,16 @@ export default function ReservationCalendar({
     startDate,
     days,
 }: CalendarProps) {
+    const { isDark } = useTheme();
+    const { token } = theme.useToken();
+
+    const bg = isDark ? token.colorBgContainer : '#fff';
+    const headerBg = isDark ? token.colorBgElevated : '#fafafa';
+    const borderColor = isDark ? token.colorBorderSecondary : '#f0f0f0';
+    const textSecondary = isDark ? token.colorTextSecondary : '#888';
+    const weekendBg = isDark ? `${token.colorBgContainer}99` : '#f9f9f9';
+    const textColor = isDark ? token.colorText : 'inherit';
+
     const start = dayjs(startDate);
     const gridWidth = days * CELL_WIDTH;
 
@@ -103,12 +114,13 @@ export default function ReservationCalendar({
             <div
                 style={{
                     overflow: 'auto',
-                    border: '1px solid #f0f0f0',
+                    border: `1px solid ${borderColor}`,
                     borderRadius: 8,
-                    background: '#fff',
+                    background: bg,
+                    color: textColor,
                 }}
             >
-                <div style={{ display: 'flex', background: '#fafafa', borderBottom: '1px solid #f0f0f0' }}>
+                <div style={{ display: 'flex', background: headerBg, borderBottom: `1px solid ${borderColor}` }}>
                     <div
                         style={{
                             width: LABEL_WIDTH,
@@ -128,7 +140,7 @@ export default function ReservationCalendar({
                                     padding: 8,
                                     textAlign: 'center',
                                     fontSize: 11,
-                                    borderLeft: '1px solid #f0f0f0',
+                                    borderLeft: `1px solid ${borderColor}`,
                                     flexShrink: 0,
                                 }}
                             >
@@ -146,7 +158,7 @@ export default function ReservationCalendar({
                             key={room.id}
                             style={{
                                 display: 'flex',
-                                borderBottom: '1px solid #f0f0f0',
+                                borderBottom: `1px solid ${borderColor}`,
                             }}
                         >
                             <div
@@ -154,12 +166,12 @@ export default function ReservationCalendar({
                                     width: LABEL_WIDTH,
                                     padding: 8,
                                     flexShrink: 0,
-                                    background: '#fafafa',
-                                    borderRight: '1px solid #f0f0f0',
+                                    background: headerBg,
+                                    borderRight: `1px solid ${borderColor}`,
                                 }}
                             >
                                 <div style={{ fontWeight: 500 }}>{room.number}</div>
-                                <div style={{ fontSize: 11, color: '#888' }}>
+                                <div style={{ fontSize: 11, color: textSecondary }}>
                                     {room.room_type?.name}
                                 </div>
                             </div>
@@ -178,12 +190,12 @@ export default function ReservationCalendar({
                                             style={{
                                                 width: CELL_WIDTH,
                                                 height: '100%',
-                                                borderLeft: '1px solid #f0f0f0',
+                                                borderLeft: `1px solid ${borderColor}`,
                                                 background:
                                                     dayjs(col.date).day() === 0 ||
                                                     dayjs(col.date).day() === 6
-                                                        ? '#f9f9f9'
-                                                        : '#fff',
+                                                        ? weekendBg
+                                                        : bg,
                                                 flexShrink: 0,
                                             }}
                                         />
