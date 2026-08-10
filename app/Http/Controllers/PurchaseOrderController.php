@@ -58,6 +58,19 @@ class PurchaseOrderController extends Controller
         ]);
     }
 
+    public function create(): Response
+    {
+        return Inertia::render('Purchasing/Orders/Create', [
+            'suppliers' => Supplier::query()->where('is_active', true)->orderBy('name')->get(['id', 'name']),
+            'approvedRequisitions' => PurchaseRequisition::query()
+                ->where('status', 'approved')
+                ->whereDoesntHave('purchaseOrder')
+                ->with('items.inventoryItem:id,name')
+                ->orderByDesc('created_at')
+                ->get(['id', 'requisition_no', 'department']),
+        ]);
+    }
+
     public function show(PurchaseOrder $purchaseOrder): Response
     {
         $purchaseOrder->load(['items.inventoryItem', 'supplier', 'purchaseRequisition']);

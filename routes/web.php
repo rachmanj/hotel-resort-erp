@@ -150,12 +150,14 @@ Route::middleware(['auth', 'hotel.context'])->group(function (): void {
     Route::put('/purchasing/suppliers/{supplier}', [SupplierController::class, 'update'])->name('suppliers.update')->middleware('can:purchasing.view');
 
     Route::get('/purchasing/requisitions', [PurchaseRequisitionController::class, 'index'])->name('requisitions.index')->middleware('can:purchasing.view');
+    Route::get('/purchasing/requisitions/create', [PurchaseRequisitionController::class, 'create'])->name('requisitions.create')->middleware('can:purchasing.view');
     Route::get('/purchasing/requisitions/{purchaseRequisition}', [PurchaseRequisitionController::class, 'show'])->name('requisitions.show')->middleware('can:purchasing.view');
     Route::post('/purchasing/requisitions', [PurchaseRequisitionController::class, 'store'])->name('requisitions.store')->middleware('can:purchasing.view');
     Route::post('/purchasing/requisitions/{purchaseRequisition}/submit', [PurchaseRequisitionController::class, 'submit'])->name('requisitions.submit')->middleware('can:purchasing.view');
     Route::post('/purchasing/requisitions/{purchaseRequisition}/approve', [PurchaseRequisitionController::class, 'approve'])->name('requisitions.approve')->middleware('can:purchasing.approve');
 
     Route::get('/purchasing/orders', [PurchaseOrderController::class, 'index'])->name('purchase-orders.index')->middleware('can:purchasing.view');
+    Route::get('/purchasing/orders/create', [PurchaseOrderController::class, 'create'])->name('purchase-orders.create')->middleware('can:purchasing.view');
     Route::get('/purchasing/orders/{purchaseOrder}', [PurchaseOrderController::class, 'show'])->name('purchase-orders.show')->middleware('can:purchasing.view');
     Route::post('/purchasing/orders', [PurchaseOrderController::class, 'store'])->name('purchase-orders.store')->middleware('can:purchasing.view');
     Route::post('/purchasing/orders/{purchaseOrder}/receive', [PurchaseOrderController::class, 'receive'])->name('purchase-orders.receive')->middleware('can:purchasing.view');

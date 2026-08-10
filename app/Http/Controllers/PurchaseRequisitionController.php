@@ -51,6 +51,14 @@ class PurchaseRequisitionController extends Controller
         ]);
     }
 
+    public function create(Request $request): Response
+    {
+        return Inertia::render('Purchasing/Requisitions/Create', [
+            'inventoryItems' => InventoryItem::query()->orderBy('name')->get(['id', 'name', 'unit', 'current_stock']),
+            'canApprove' => $request->user()?->can('purchasing.approve') ?? false,
+        ]);
+    }
+
     public function show(PurchaseRequisition $purchaseRequisition): Response
     {
         $purchaseRequisition->load(['items.inventoryItem', 'requester:id,name', 'approver:id,name']);
