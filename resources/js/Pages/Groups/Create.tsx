@@ -1,5 +1,5 @@
 import { Head, router, useForm } from '@inertiajs/react';
-import { Button, DatePicker, Form, Input, InputNumber, Select, Steps } from 'antd';
+import { Button, DatePicker, Form, Input, InputNumber, Select, Space, Steps } from 'antd';
 import dayjs from 'dayjs';
 import { useMemo, useState } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
