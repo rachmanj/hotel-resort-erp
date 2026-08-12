@@ -160,7 +160,7 @@ export default function ReservationsIndex({
                 columns={columns}
                 dataSource={reservations.data}
                 search={false}
-                options={{ reload: false }}
+                options={false}
                 expandable={{ childrenColumnName: 'rowChildren' }}
                 pagination={{
                     showTotal: (total, range) => `${range[0]}-${range[1]} of ${total}`,
