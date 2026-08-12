@@ -57,6 +57,7 @@ Include relevant context in brackets to help with future AI-assisted coding:
 ## Up Next (This Week)
 
 - `[ ] P0: Begin Phase 1 scaffolding per docs/plan.md Section 9 - multi-property foundation + spatie auth + basic room setup [Laravel 13 scaffold, spatie/laravel-permission, hotels/hotel_user/currencies/exchange_rates tables, BelongsToHotel scope, ResolveHotelContext middleware]`
+- `[ ] P1: Review and prioritize docs/group-promo-agent-plan.md (Group Booking Types A/B/C, Promotional Rates CRUD + auto-apply engine, Agent Booking + portal + commissions) [new tables: reservation_groups, promotions/promotion_*, agents/agent_rates/agent_commissions; est. ~65 ideal-dev-days]`
 
 ## Recently Completed
 
