@@ -13,6 +13,7 @@ use App\Models\RestaurantTable;
 use App\Services\OrderService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -107,7 +108,35 @@ class OrderController extends Controller
             'statusOptions' => collect(OrderStatus::cases())
                 ->reject(fn (OrderStatus $s) => in_array($s, [OrderStatus::Cancelled, OrderStatus::Served], true))
                 ->map(fn (OrderStatus $s) => ['value' => $s->value, 'label' => $s->label()]),
+            'checkedInReservations' => Reservation::query()
+                ->with('guest:id,full_name')
+                ->where('status', ReservationStatus::CheckedIn->value)
+                ->orderByDesc('arrival_date')
+                ->get()
+                ->map(fn (Reservation $r) => [
+                    'id' => $r->id,
+                    'reservation_code' => $r->reservation_code,
+                    'guest_name' => $r->guest?->full_name,
+                ]),
         ]);
+    }
+
+    public function chargeToRoom(Request $request, Order $order): RedirectResponse
+    {
+        $request->validate([
+            'reservation_id' => [
+                'required',
+                Rule::exists('reservations', 'id')->where('status', ReservationStatus::CheckedIn->value),
+            ],
+        ]);
+
+        try {
+            $this->orderService->chargeToRoom($order, $request->integer('reservation_id'), $request->user());
+        } catch (\InvalidArgumentException $e) {
+            return back()->with('error', $e->getMessage());
+        }
+
+        return back()->with('success', 'Order charged to room folio.');
     }
 
     public function cancel(Order $order): RedirectResponse

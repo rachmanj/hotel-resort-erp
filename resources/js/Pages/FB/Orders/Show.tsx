@@ -1,5 +1,6 @@
-import { Head, router } from '@inertiajs/react';
-import { Button, Card, Col, Descriptions, Row, Select, Table, Tag } from 'antd';
+import { Head, router, useForm } from '@inertiajs/react';
+import { Button, Card, Col, Descriptions, Form, Modal, Row, Select, Table, Tag } from 'antd';
+import { useState } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -31,9 +32,16 @@ interface OrderDetail {
     folio_item_id: number | null;
 }
 
+interface CheckedInReservation {
+    id: number;
+    reservation_code: string;
+    guest_name: string;
+}
+
 interface OrdersShowProps {
     order: OrderDetail;
     statusOptions: Array<{ value: string; label: string }>;
+    checkedInReservations: CheckedInReservation[];
 }
 
 const statusColors: Record<string, string> = {
@@ -44,10 +52,16 @@ const statusColors: Record<string, string> = {
     cancelled: 'red',
 };
 
-export default function OrdersShow({ order, statusOptions }: OrdersShowProps) {
+export default function OrdersShow({ order, statusOptions, checkedInReservations }: OrdersShowProps) {
     const { can } = useAuth();
     const canManage = can('fb.manage');
     const isActive = !['served', 'cancelled'].includes(order.status);
+    const canChargeToRoom = canManage && !order.charged_to_room && order.folio_item_id === null;
+    const [chargeModalOpen, setChargeModalOpen] = useState(false);
+
+    const chargeForm = useForm({
+        reservation_id: null as number | null,
+    });
 
     return (
         <AuthenticatedLayout title={`Order ${order.order_no}`}>
@@ -73,21 +87,35 @@ export default function OrdersShow({ order, statusOptions }: OrdersShowProps) {
                             </Descriptions.Item>
                         </Descriptions>
 
-                        {canManage && isActive && (
+                        {(canManage && isActive) || canChargeToRoom ? (
                             <div style={{ marginTop: 16, display: 'flex', gap: 8 }}>
-                                <Select
-                                    style={{ width: 160 }}
-                                    placeholder="Update status"
-                                    options={statusOptions}
-                                    onChange={(status) =>
-                                        router.put(`/fb/orders/${order.id}/status`, { status })
-                                    }
-                                />
-                                <Button danger onClick={() => router.post(`/fb/orders/${order.id}/cancel`)}>
-                                    Cancel Order
-                                </Button>
+                                {canManage && isActive && (
+                                    <>
+                                        <Select
+                                            style={{ width: 160 }}
+                                            placeholder="Update status"
+                                            options={statusOptions}
+                                            onChange={(status) =>
+                                                router.put(`/fb/orders/${order.id}/status`, { status })
+                                            }
+                                        />
+                                        <Button danger onClick={() => router.post(`/fb/orders/${order.id}/cancel`)}>
+                                            Cancel Order
+                                        </Button>
+                                    </>
+                                )}
+                                {canChargeToRoom && (
+                                    <Button
+                                        onClick={() => {
+                                            chargeForm.setData('reservation_id', null);
+                                            setChargeModalOpen(true);
+                                        }}
+                                    >
+                                        Charge to Room
+                                    </Button>
+                                )}
                             </div>
-                        )}
+                        ) : null}
                     </Card>
                 </Col>
                 <Col span={24} style={{ marginTop: 16 }}>
@@ -117,6 +145,32 @@ export default function OrdersShow({ order, statusOptions }: OrdersShowProps) {
                     </Card>
                 </Col>
             </Row>
+
+            <Modal
+                title="Charge to Room"
+                open={chargeModalOpen}
+                onCancel={() => setChargeModalOpen(false)}
+                onOk={() =>
+                    chargeForm.post(`/fb/orders/${order.id}/charge-to-room`, {
+                        onSuccess: () => setChargeModalOpen(false),
+                    })
+                }
+                confirmLoading={chargeForm.processing}
+            >
+                <Form layout="vertical">
+                    <Form.Item label="Reservation" required>
+                        <Select
+                            placeholder="Select checked-in guest"
+                            value={chargeForm.data.reservation_id}
+                            options={checkedInReservations.map((r) => ({
+                                value: r.id,
+                                label: `${r.reservation_code} — ${r.guest_name}`,
+                            }))}
+                            onChange={(v) => chargeForm.setData('reservation_id', v)}
+                        />
+                    </Form.Item>
+                </Form>
+            </Modal>
         </AuthenticatedLayout>
     );
 }

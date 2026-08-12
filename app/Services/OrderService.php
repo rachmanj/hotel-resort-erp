@@ -167,8 +167,12 @@ class OrderService
             ->get();
     }
 
-    private function chargeToRoom(Order $order, int $reservationId, User $postedBy): void
+    public function chargeToRoom(Order $order, int $reservationId, User $postedBy): void
     {
+        if ($order->charged_to_room || $order->folio_item_id !== null) {
+            throw new InvalidArgumentException('Order is already charged to room.');
+        }
+
         $reservation = Reservation::query()->with('guest')->findOrFail($reservationId);
 
         $folio = $this->folioPostingService->findOrCreateMasterFolio(
@@ -192,7 +196,11 @@ class OrderService
             postedBy: $postedBy,
         );
 
-        $order->update(['folio_item_id' => $folioItem->id]);
+        $order->update([
+            'charged_to_room' => true,
+            'reservation_id' => $reservationId,
+            'folio_item_id' => $folioItem->id,
+        ]);
     }
 
     private function syncOrderStatusFromItems(Order $order): void
