@@ -13,7 +13,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
 
-#[Fillable(['name', 'email', 'password', 'hotel_id'])]
+#[Fillable(['name', 'email', 'password', 'hotel_id', 'agent_id'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -41,6 +41,11 @@ class User extends Authenticatable
     public function telegramUser(): HasOne
     {
         return $this->hasOne(TelegramUser::class);
+    }
+
+    public function agent(): BelongsTo
+    {
+        return $this->belongsTo(Agent::class);
     }
 
     public function isSuperAdmin(): bool

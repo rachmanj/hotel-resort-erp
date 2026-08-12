@@ -92,6 +92,7 @@ class ChartOfAccountsSeeder extends Seeder
 
             $this->header('2-0000', 'KEWAJIBAN', AccountType::Liability, NormalBalance::Credit),
             $this->postable('2-1100', 'Hutang Usaha', AccountType::Liability, NormalBalance::Credit, '2-0000'),
+            $this->postable('2-1400', 'Utang Komisi Agen', AccountType::Liability, NormalBalance::Credit, '2-0000'),
             $this->postable('2-1500', 'Hutang Pajak Lainnya', AccountType::Liability, NormalBalance::Credit, '2-0000'),
             $this->postable('2-1600', 'Beban Terutang', AccountType::Liability, NormalBalance::Credit, '2-0000'),
             $this->postable('2-2100', 'PPN Keluaran', AccountType::Liability, NormalBalance::Credit, '2-0000'),

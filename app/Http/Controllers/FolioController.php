@@ -17,7 +17,8 @@ class FolioController extends Controller
     {
         $folio->load([
             'guest',
-            'reservation',
+            'reservation.promotion',
+            'reservation.promotionRedemptions.promotionCode',
             'company',
             'items.postedBy:id,name',
             'payments.receivedBy:id,name',
@@ -37,7 +38,19 @@ class FolioController extends Controller
                 'opened_at' => $folio->opened_at?->toDateTimeString(),
                 'closed_at' => $folio->closed_at?->toDateTimeString(),
                 'guest' => $folio->guest?->only(['id', 'full_name', 'phone', 'email']),
-                'reservation' => $folio->reservation?->only(['id', 'reservation_code']),
+                'reservation' => $folio->reservation ? [
+                    'id' => $folio->reservation->id,
+                    'reservation_code' => $folio->reservation->reservation_code,
+                    'promotion' => $folio->reservation->promotion ? [
+                        'name' => $folio->reservation->promotion->name,
+                        'discount_summary' => $folio->reservation->promotion->discountSummary(),
+                    ] : null,
+                    'promotion_redemptions' => $folio->reservation->promotionRedemptions->map(fn ($r) => [
+                        'promotion_name' => $r->promotion?->name,
+                        'code' => $r->promotionCode?->code,
+                        'discount_amount' => $r->discount_amount,
+                    ]),
+                ] : null,
                 'company' => $folio->company?->only(['id', 'name']),
                 'items' => $folio->items->map(fn ($item) => [
                     'id' => $item->id,

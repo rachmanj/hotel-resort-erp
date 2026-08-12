@@ -288,9 +288,13 @@ class ReservationController extends Controller
         $reservation->load([
             'guest',
             'createdBy:id,name',
+            'promotion',
+            'promotionRedemptions.promotion',
+            'promotionRedemptions.promotionCode',
             'reservationRooms.room',
             'reservationRooms.roomType',
             'reservationRooms.ratePlan',
+            'reservationRooms.promotion',
             'folios',
         ]);
 
@@ -312,6 +316,16 @@ class ReservationController extends Controller
                 'special_requests' => $reservation->special_requests,
                 'cancelled_reason' => $reservation->cancelled_reason,
                 'created_by' => $reservation->createdBy?->only(['id', 'name']),
+                'promotion' => $reservation->promotion ? [
+                    'id' => $reservation->promotion->id,
+                    'name' => $reservation->promotion->name,
+                    'discount_summary' => $reservation->promotion->discountSummary(),
+                ] : null,
+                'promotion_redemptions' => $reservation->promotionRedemptions->map(fn ($r) => [
+                    'promotion_name' => $r->promotion?->name,
+                    'code' => $r->promotionCode?->code,
+                    'discount_amount' => $r->discount_amount,
+                ]),
                 'guest' => $reservation->guest ? [
                     'id' => $reservation->guest->id,
                     'full_name' => $reservation->guest->full_name,
@@ -329,9 +343,15 @@ class ReservationController extends Controller
                     'status' => $rr->status->value,
                     'status_label' => $rr->status->label(),
                     'nightly_rate' => $rr->nightly_rate,
+                    'gross_nightly_rate' => $rr->gross_nightly_rate,
                     'room' => $rr->room?->only(['id', 'number']),
                     'room_type' => $rr->roomType?->only(['id', 'name', 'code']),
                     'rate_plan' => $rr->ratePlan?->only(['id', 'name']),
+                    'promotion' => $rr->promotion ? [
+                        'id' => $rr->promotion->id,
+                        'name' => $rr->promotion->name,
+                        'discount_summary' => $rr->promotion->discountSummary(),
+                    ] : null,
                 ]),
             ],
             'folio' => $masterFolio ? [

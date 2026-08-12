@@ -10,7 +10,9 @@ use App\Models\GuestStay;
 use App\Models\ReservationRoom;
 use App\Models\User;
 use App\Observers\ActivityLogObserver;
+use App\Services\AgentCommissionService;
 use App\Services\FolioPostingService;
+use App\Services\GroupBookingService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
@@ -19,13 +21,14 @@ class CheckOutGuestAction
 {
     public function __construct(
         private FolioPostingService $folioPostingService,
+        private AgentCommissionService $agentCommissionService,
     ) {}
 
     public function __invoke(ReservationRoom $reservationRoom, ?User $performedBy = null): array
     {
         return DB::transaction(function () use ($reservationRoom, $performedBy): array {
             $reservationRoom = ReservationRoom::query()->lockForUpdate()->findOrFail($reservationRoom->id);
-            $reservationRoom->load(['reservation.guest', 'room']);
+            $reservationRoom->load(['reservation.guest', 'reservation.reservationGroup', 'room']);
 
             $reservation = $reservationRoom->reservation;
 
@@ -45,6 +48,12 @@ class CheckOutGuestAction
                 ->where('reservation_id', $reservation->id)
                 ->where('type', 'master')
                 ->first();
+
+            $companyId = $reservation->reservationGroup?->company_id;
+
+            if ($folio !== null && $companyId !== null && $folio->company_id === null) {
+                $folio->update(['company_id' => $companyId]);
+            }
 
             $balance = $folio !== null ? $this->folioPostingService->getBalance($folio) : 0.0;
             $totalSpend = $folio !== null ? $this->folioPostingService->getChargesTotal($folio) : 0.0;
@@ -86,6 +95,23 @@ class CheckOutGuestAction
 
             if ($folio !== null && $folio->company_id === null) {
                 $this->folioPostingService->closeFolio($folio);
+            }
+
+            if ($reservation->reservationGroup !== null) {
+                app(GroupBookingService::class)
+                    ->refreshGroupStatus($reservation->reservationGroup->fresh());
+            }
+
+            if ($allCheckedOut && $reservation->agent_id !== null) {
+                $agent = $reservation->agent ?? $reservation->load('agent')->agent;
+
+                if ($agent !== null) {
+                    try {
+                        $this->agentCommissionService->accrue($reservation, $agent, $performedBy);
+                    } catch (InvalidArgumentException) {
+                        // Zero commission — skip accrual
+                    }
+                }
             }
 
             $reservation = $reservation->fresh(['guest', 'reservationRooms.room']);

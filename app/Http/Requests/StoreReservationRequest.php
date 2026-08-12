@@ -34,6 +34,8 @@ class StoreReservationRequest extends FormRequest
             'room_type_id' => ['required', 'integer', 'exists:room_types,id'],
             'room_id' => ['nullable', 'integer', 'exists:rooms,id'],
             'rate_plan_id' => ['nullable', 'integer', 'exists:rate_plans,id'],
+            'promotion_code' => ['nullable', 'string', 'max:30'],
+            'company_id' => ['nullable', 'integer', 'exists:companies,id'],
             'adults' => ['sometimes', 'integer', 'min:1', 'max:20'],
             'children' => ['sometimes', 'integer', 'min:0', 'max:20'],
             'special_requests' => ['nullable', 'string'],

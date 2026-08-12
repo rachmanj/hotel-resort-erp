@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
     'hotel_id',
     'folio_no',
     'reservation_id',
+    'reservation_group_id',
     'guest_id',
     'company_id',
     'type',
@@ -40,6 +41,11 @@ class Folio extends Model
     public function reservation(): BelongsTo
     {
         return $this->belongsTo(Reservation::class);
+    }
+
+    public function reservationGroup(): BelongsTo
+    {
+        return $this->belongsTo(ReservationGroup::class);
     }
 
     public function guest(): BelongsTo

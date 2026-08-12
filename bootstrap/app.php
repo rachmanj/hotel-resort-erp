@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\EnsureUserIsAgent;
 use App\Http\Middleware\HandleInertiaRequests;
 use App\Http\Middleware\ResolveHotelContext;
 use Illuminate\Cache\RateLimiting\Limit;
@@ -33,6 +34,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->alias([
             'hotel.context' => ResolveHotelContext::class,
+            'agent.portal' => EnsureUserIsAgent::class,
         ]);
 
         $middleware->redirectGuestsTo(fn () => route('login'));

@@ -6,13 +6,16 @@ use App\Enums\ReservationRoomStatus;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 #[Fillable([
     'reservation_id',
     'room_id',
     'room_type_id',
     'rate_plan_id',
+    'promotion_id',
     'nightly_rate',
+    'gross_nightly_rate',
     'check_in_at',
     'check_out_at',
     'status',
@@ -23,6 +26,7 @@ class ReservationRoom extends Model
     {
         return [
             'nightly_rate' => 'decimal:2',
+            'gross_nightly_rate' => 'decimal:2',
             'check_in_at' => 'datetime',
             'check_out_at' => 'datetime',
             'status' => ReservationRoomStatus::class,
@@ -47,5 +51,15 @@ class ReservationRoom extends Model
     public function ratePlan(): BelongsTo
     {
         return $this->belongsTo(RatePlan::class);
+    }
+
+    public function promotion(): BelongsTo
+    {
+        return $this->belongsTo(Promotion::class);
+    }
+
+    public function promotionRedemptions(): HasMany
+    {
+        return $this->hasMany(PromotionRedemption::class);
     }
 }

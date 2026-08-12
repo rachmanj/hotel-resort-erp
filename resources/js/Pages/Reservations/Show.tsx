@@ -21,6 +21,12 @@ interface ReservationShowProps {
         special_requests?: string | null;
         cancelled_reason?: string | null;
         created_by?: { id: number; name: string } | null;
+        promotion?: { id: number; name: string; discount_summary: string } | null;
+        promotion_redemptions?: Array<{
+            promotion_name?: string;
+            code?: string;
+            discount_amount: string;
+        }>;
         guest?: {
             id: number;
             full_name: string;
@@ -38,6 +44,8 @@ interface ReservationShowProps {
             status: string;
             status_label: string;
             nightly_rate: string;
+            gross_nightly_rate?: string | null;
+            promotion?: { id: number; name: string; discount_summary: string } | null;
             room?: { id: number; number: string } | null;
             room_type?: { id: number; name: string; code: string } | null;
             rate_plan?: { id: number; name: string } | null;
@@ -112,6 +120,13 @@ export default function ReservationShow({
                         {reservation.cancelled_reason}
                     </Descriptions.Item>
                 )}
+                {reservation.promotion && (
+                    <Descriptions.Item label="Promotion" span={2}>
+                        <Tag color="green">
+                            {reservation.promotion.name} — {reservation.promotion.discount_summary}
+                        </Tag>
+                    </Descriptions.Item>
+                )}
             </Descriptions>
 
             <h3>Guest</h3>
@@ -144,9 +159,35 @@ export default function ReservationShow({
                     { title: 'Type', dataIndex: ['room_type', 'name'] },
                     { title: 'Rate plan', dataIndex: ['rate_plan', 'name'], render: (v) => v ?? 'Base' },
                     {
+                        title: 'Promotion',
+                        dataIndex: ['promotion', 'name'],
+                        render: (v, record) =>
+                            record.promotion ? (
+                                <Tag color="green">{record.promotion.name}</Tag>
+                            ) : (
+                                '—'
+                            ),
+                    },
+                    {
                         title: 'Nightly rate',
                         dataIndex: 'nightly_rate',
-                        render: (v) => `Rp ${Number(v).toLocaleString('id-ID')}`,
+                        render: (v, record) => {
+                            const net = `Rp ${Number(v).toLocaleString('id-ID')}`;
+                            if (
+                                record.gross_nightly_rate &&
+                                Number(record.gross_nightly_rate) > Number(v)
+                            ) {
+                                return (
+                                    <>
+                                        <s style={{ marginRight: 8 }}>
+                                            Rp {Number(record.gross_nightly_rate).toLocaleString('id-ID')}
+                                        </s>
+                                        {net}
+                                    </>
+                                );
+                            }
+                            return net;
+                        },
                     },
                     { title: 'Status', dataIndex: 'status_label' },
                     {

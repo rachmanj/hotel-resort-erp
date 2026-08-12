@@ -15,7 +15,11 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 #[Fillable([
     'hotel_id',
     'reservation_code',
+    'external_booking_id',
     'guest_id',
+    'agent_id',
+    'reservation_group_id',
+    'promotion_id',
     'source',
     'status',
     'arrival_date',
@@ -47,9 +51,29 @@ class Reservation extends Model
         return $this->belongsTo(Guest::class);
     }
 
+    public function reservationGroup(): BelongsTo
+    {
+        return $this->belongsTo(ReservationGroup::class);
+    }
+
+    public function promotion(): BelongsTo
+    {
+        return $this->belongsTo(Promotion::class);
+    }
+
+    public function promotionRedemptions(): HasMany
+    {
+        return $this->hasMany(PromotionRedemption::class);
+    }
+
     public function createdBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function agent(): BelongsTo
+    {
+        return $this->belongsTo(Agent::class);
     }
 
     public function reservationRooms(): HasMany

@@ -15,15 +15,19 @@ use App\Http\Controllers\Accounting\Reports\TrialBalanceController;
 use App\Http\Controllers\Accounting\SupplierInvoiceController;
 use App\Http\Controllers\Accounting\TaxReportController;
 use App\Http\Controllers\Admin\ActivityLogController;
+use App\Http\Controllers\Admin\AgentController;
+use App\Http\Controllers\Admin\AgentRateController;
 use App\Http\Controllers\Admin\CurrencyController;
 use App\Http\Controllers\Admin\HotelController;
 use App\Http\Controllers\Admin\HotelSettingController;
-use App\Http\Controllers\Admin\PermissionController;
+use App\Http\Controllers\Admin\PromotionCodeController;
+use App\Http\Controllers\Admin\PromotionController;
 use App\Http\Controllers\Admin\RatePlanController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\SeasonController;
 use App\Http\Controllers\Admin\TaxRuleController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\AgentPortal\BookingController as AgentPortalBookingController;
 use App\Http\Controllers\AssetController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\CheckInController;
@@ -32,6 +36,7 @@ use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FloorController;
 use App\Http\Controllers\FolioController;
+use App\Http\Controllers\GroupController;
 use App\Http\Controllers\GuestController;
 use App\Http\Controllers\HotelContextController;
 use App\Http\Controllers\HousekeepingAssignmentController;
@@ -43,6 +48,7 @@ use App\Http\Controllers\MaintenanceRequestController;
 use App\Http\Controllers\MenuController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\Profile\TelegramLinkController;
+use App\Http\Controllers\PromotionQuoteController;
 use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\PurchaseRequisitionController;
 use App\Http\Controllers\Reports\AdrRevParController;
@@ -90,12 +96,24 @@ Route::middleware(['auth', 'hotel.context'])->group(function (): void {
     Route::get('/reservations/calendar', [ReservationCalendarController::class, 'index'])->name('reservations.calendar')->middleware('can:reservations.view');
     Route::get('/reservations/create', [ReservationController::class, 'create'])->name('reservations.create')->middleware('can:reservations.create');
     Route::post('/reservations', [ReservationController::class, 'store'])->name('reservations.store')->middleware('can:reservations.create');
+    Route::post('/reservations/quote', [PromotionQuoteController::class, 'store'])->name('reservations.quote')->middleware('can:reservations.create');
     Route::get('/reservations/{reservation}', [ReservationController::class, 'show'])->name('reservations.show')->middleware('can:reservations.view');
     Route::get('/reservations/{reservation}/edit', [ReservationController::class, 'edit'])->name('reservations.edit')->middleware('can:reservations.edit');
     Route::put('/reservations/{reservation}', [ReservationController::class, 'update'])->name('reservations.update')->middleware('can:reservations.edit');
     Route::post('/reservations/{reservation}/cancel', [ReservationController::class, 'cancel'])->name('reservations.cancel')->middleware('can:reservations.cancel');
     Route::post('/reservations/{reservation}/checkin', [CheckInController::class, 'store'])->name('reservations.checkin')->middleware('can:reservations.checkin');
     Route::post('/reservation-rooms/{reservationRoom}/checkout', [CheckOutController::class, 'store'])->name('reservations.checkout')->middleware('can:reservations.checkout');
+
+    Route::get('/groups', [GroupController::class, 'index'])->name('groups.index')->middleware('can:groups.view');
+    Route::get('/groups/create', [GroupController::class, 'create'])->name('groups.create')->middleware('can:groups.manage');
+    Route::post('/groups', [GroupController::class, 'store'])->name('groups.store')->middleware('can:groups.manage');
+    Route::get('/groups/{group}', [GroupController::class, 'show'])->name('groups.show')->middleware('can:groups.view');
+    Route::post('/groups/{group}/reservations', [GroupController::class, 'addReservation'])->name('groups.reservations.add')->middleware('can:groups.manage');
+    Route::delete('/groups/{group}/reservations/{reservation}', [GroupController::class, 'removeReservation'])->name('groups.reservations.remove')->middleware('can:groups.manage');
+    Route::post('/groups/{group}/checkin', [GroupController::class, 'checkIn'])->name('groups.checkin')->middleware('can:groups.checkin');
+    Route::post('/groups/{group}/checkout', [GroupController::class, 'checkOut'])->name('groups.checkout')->middleware('can:groups.checkout');
+    Route::post('/groups/{group}/deposit', [GroupController::class, 'storeDeposit'])->name('groups.deposit.store')->middleware('can:groups.manage');
+    Route::post('/groups/{group}/invoice/generate', [GroupController::class, 'generateInvoice'])->name('groups.invoice.generate')->middleware('can:billing.invoice');
 
     Route::get('/folios/{folio}', [FolioController::class, 'show'])->name('folios.show')->middleware('can:folios.view');
     Route::post('/folios/{folio}/payments', [FolioController::class, 'postPayment'])->name('folios.payments.store')->middleware('can:billing.payment');
@@ -285,6 +303,15 @@ Route::middleware(['auth', 'hotel.context'])->group(function (): void {
         Route::put('/rate-plans/{ratePlan}', [RatePlanController::class, 'update'])->name('rate-plans.update')->middleware('can:rates.manage');
         Route::delete('/rate-plans/{ratePlan}', [RatePlanController::class, 'destroy'])->name('rate-plans.destroy')->middleware('can:rates.manage');
 
+        Route::get('/promotions', [PromotionController::class, 'index'])->name('promotions.index')->middleware('can:promotions.view');
+        Route::get('/promotions/{promotion}', [PromotionController::class, 'show'])->name('promotions.show')->middleware('can:promotions.view');
+        Route::post('/promotions', [PromotionController::class, 'store'])->name('promotions.store')->middleware('can:promotions.manage');
+        Route::put('/promotions/{promotion}', [PromotionController::class, 'update'])->name('promotions.update')->middleware('can:promotions.manage');
+        Route::delete('/promotions/{promotion}', [PromotionController::class, 'destroy'])->name('promotions.destroy')->middleware('can:promotions.manage');
+        Route::get('/promotions/{promotion}/codes', [PromotionCodeController::class, 'index'])->name('promotions.codes.index')->middleware('can:promotions.view');
+        Route::post('/promotions/{promotion}/codes', [PromotionCodeController::class, 'store'])->name('promotions.codes.store')->middleware('can:promotions.manage');
+        Route::delete('/promotions/codes/{code}', [PromotionCodeController::class, 'destroy'])->name('promotions.codes.destroy')->middleware('can:promotions.manage');
+
         Route::get('/seasons', [SeasonController::class, 'index'])->name('seasons.index')->middleware('can:seasons.manage');
         Route::post('/seasons', [SeasonController::class, 'store'])->name('seasons.store')->middleware('can:seasons.manage');
         Route::put('/seasons/{season}', [SeasonController::class, 'update'])->name('seasons.update')->middleware('can:seasons.manage');
@@ -295,6 +322,19 @@ Route::middleware(['auth', 'hotel.context'])->group(function (): void {
 
         Route::get('/hotel-settings', [HotelSettingController::class, 'edit'])->name('hotel-settings.edit')->middleware('can:admin.manage');
         Route::put('/hotel-settings', [HotelSettingController::class, 'update'])->name('hotel-settings.update')->middleware('can:admin.manage');
+
+        Route::get('/agents', [AgentController::class, 'index'])->name('agents.index')->middleware('can:agents.view');
+        Route::post('/agents', [AgentController::class, 'store'])->name('agents.store')->middleware('can:agents.manage');
+        Route::put('/agents/{agent}', [AgentController::class, 'update'])->name('agents.update')->middleware('can:agents.manage');
+        Route::delete('/agents/{agent}', [AgentController::class, 'destroy'])->name('agents.destroy')->middleware('can:agents.manage');
+        Route::get('/agents/{agent}/rates', [AgentRateController::class, 'index'])->name('agents.rates.index')->middleware('can:agents.manage');
+        Route::post('/agents/{agent}/rates', [AgentRateController::class, 'store'])->name('agents.rates.store')->middleware('can:agents.manage');
+        Route::put('/agents/rates/{rate}', [AgentRateController::class, 'update'])->name('agents.rates.update')->middleware('can:agents.manage');
+        Route::delete('/agents/rates/{rate}', [AgentRateController::class, 'destroy'])->name('agents.rates.destroy')->middleware('can:agents.manage');
+    });
+
+    Route::prefix('agent-portal')->name('agent.')->middleware('agent.portal')->group(function (): void {
+        Route::get('/bookings', [AgentPortalBookingController::class, 'index'])->name('bookings.index');
     });
 
     Route::post('/hotel-context/switch', [HotelContextController::class, 'switch'])->name('hotel-context.switch');

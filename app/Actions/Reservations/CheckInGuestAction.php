@@ -25,29 +25,43 @@ class CheckInGuestAction
         private FolioPostingService $folioPostingService,
     ) {}
 
-    public function __invoke(Reservation $reservation, ?User $performedBy = null): Reservation
+    /**
+     * @param  list<int>|null  $reservationRoomIds  Check in specific rooms only (multi-room partial check-in)
+     */
+    public function __invoke(Reservation $reservation, ?User $performedBy = null, ?array $reservationRoomIds = null): Reservation
     {
-        return DB::transaction(function () use ($reservation, $performedBy): Reservation {
+        return DB::transaction(function () use ($reservation, $performedBy, $reservationRoomIds): Reservation {
             $reservation = Reservation::query()->lockForUpdate()->findOrFail($reservation->id);
-            $reservation->load(['guest', 'reservationRooms.room']);
+            $reservation->load(['guest', 'reservationRooms.room', 'reservationGroup']);
 
-            if ($reservation->status !== ReservationStatus::Confirmed) {
-                throw new InvalidArgumentException('Reservation must be in confirmed status to check in.');
+            if (! in_array($reservation->status, [ReservationStatus::Confirmed, ReservationStatus::CheckedIn], true)) {
+                throw new InvalidArgumentException('Reservation must be in confirmed or partially checked-in status to check in.');
             }
 
             if ($reservation->guest?->is_blacklisted) {
                 throw new InvalidArgumentException('Guest is blacklisted and cannot check in.');
             }
 
+            $roomsToCheckIn = $reservation->reservationRooms
+                ->filter(fn (ReservationRoom $rr) => $rr->status === ReservationRoomStatus::Booked)
+                ->when($reservationRoomIds !== null, fn ($c) => $c->whereIn('id', $reservationRoomIds));
+
+            if ($roomsToCheckIn->isEmpty()) {
+                throw new InvalidArgumentException('No booked rooms available for check-in.');
+            }
+
             $nights = max(1, Carbon::parse($reservation->arrival_date)->diffInDays($reservation->departure_date));
+
+            $companyId = $reservation->reservationGroup?->company_id;
 
             $folio = $this->folioPostingService->findOrCreateMasterFolio(
                 $reservation->hotel_id,
                 $reservation->id,
                 $reservation->guest_id,
+                $companyId,
             );
 
-            foreach ($reservation->reservationRooms as $reservationRoom) {
+            foreach ($roomsToCheckIn as $reservationRoom) {
                 $reservationRoom->update([
                     'status' => ReservationRoomStatus::CheckedIn->value,
                     'check_in_at' => now(),
@@ -71,17 +85,25 @@ class CheckInGuestAction
                 );
             }
 
+            $allCheckedIn = $reservation->reservationRooms()
+                ->where('status', '!=', ReservationRoomStatus::CheckedIn->value)
+                ->where('status', '!=', ReservationRoomStatus::CheckedOut->value)
+                ->doesntExist();
+
             $reservation->update([
-                'status' => ReservationStatus::CheckedIn->value,
+                'status' => $allCheckedIn || $reservation->status === ReservationStatus::CheckedIn
+                    ? ReservationStatus::CheckedIn->value
+                    : ReservationStatus::CheckedIn->value,
             ]);
 
-            $reservation = $reservation->fresh(['guest', 'reservationRooms.room']);
+            $reservation = $reservation->fresh(['guest', 'reservationRooms.room', 'reservationGroup']);
 
             if ($performedBy !== null) {
+                $roomCount = $roomsToCheckIn->count();
                 ActivityLogObserver::logCustom(
                     $reservation,
                     'checked_in',
-                    "Reservation {$reservation->reservation_code} checked in by {$performedBy->name}",
+                    "Reservation {$reservation->reservation_code} — {$roomCount} room(s) checked in by {$performedBy->name}",
                     $performedBy->id,
                 );
             }

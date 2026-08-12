@@ -4,11 +4,13 @@ namespace App\Services;
 
 use App\Enums\FolioItemType;
 use App\Enums\FolioStatus;
+use App\Enums\FolioType;
 use App\Events\FolioItemPosted;
 use App\Events\PaymentReceived;
 use App\Models\Folio;
 use App\Models\FolioItem;
 use App\Models\Payment;
+use App\Models\ReservationGroup;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
@@ -141,7 +143,7 @@ class FolioPostingService
     ): Folio {
         $existing = Folio::query()
             ->where('reservation_id', $reservationId)
-            ->where('type', 'master')
+            ->where('type', FolioType::Master->value)
             ->first();
 
         if ($existing !== null) {
@@ -154,7 +156,30 @@ class FolioPostingService
             'reservation_id' => $reservationId,
             'guest_id' => $guestId,
             'company_id' => $companyId,
-            'type' => 'master',
+            'type' => FolioType::Master->value,
+            'status' => FolioStatus::Open->value,
+            'opened_at' => now(),
+        ]);
+    }
+
+    public function findOrCreateGroupDepositFolio(ReservationGroup $group, int $guestId): Folio
+    {
+        $existing = Folio::query()
+            ->where('reservation_group_id', $group->id)
+            ->where('type', FolioType::GroupDeposit->value)
+            ->first();
+
+        if ($existing !== null) {
+            return $existing;
+        }
+
+        return Folio::query()->create([
+            'hotel_id' => $group->hotel_id,
+            'folio_no' => $this->generateFolioNumber(),
+            'reservation_group_id' => $group->id,
+            'guest_id' => $guestId,
+            'company_id' => $group->company_id,
+            'type' => FolioType::GroupDeposit->value,
             'status' => FolioStatus::Open->value,
             'opened_at' => now(),
         ]);

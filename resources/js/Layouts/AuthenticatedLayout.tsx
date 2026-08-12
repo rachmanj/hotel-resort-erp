@@ -81,6 +81,11 @@ export default function AuthenticatedLayout({ children, title }: AuthenticatedLa
                 name: 'Calendar',
                 icon: <CalendarOutlined />,
             },
+            can('groups.view') && {
+                path: '/groups',
+                name: 'Group Bookings',
+                icon: <TeamOutlined />,
+            },
             can('rooms.view') && {
                 path: '/rooms',
                 name: 'Rooms',
@@ -262,7 +267,17 @@ export default function AuthenticatedLayout({ children, title }: AuthenticatedLa
                 name: 'Companies',
                 icon: <TeamOutlined />,
             },
+            can('agents.view') && {
+                path: '/admin/agents',
+                name: 'Agents',
+                icon: <TeamOutlined />,
+            },
         ]),
+        can('agents.portal') && {
+            path: '/agent-portal/bookings',
+            name: 'Agent Portal',
+            icon: <TeamOutlined />,
+        },
         menuGroup('/administration', 'Administration', <SettingOutlined />, [
             can('rooms.manage') && {
                 path: '/room-types',
@@ -307,6 +322,11 @@ export default function AuthenticatedLayout({ children, title }: AuthenticatedLa
             can('rates.manage') && {
                 path: '/admin/rate-plans',
                 name: 'Rate Plans',
+                icon: <TagsOutlined />,
+            },
+            can('promotions.view') && {
+                path: '/admin/promotions',
+                name: 'Promotions',
                 icon: <TagsOutlined />,
             },
             can('seasons.manage') && {

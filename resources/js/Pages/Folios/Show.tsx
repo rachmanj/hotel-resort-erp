@@ -12,7 +12,16 @@ interface FolioShowProps {
         opened_at?: string;
         closed_at?: string | null;
         guest?: { id: number; full_name: string; phone?: string; email?: string };
-        reservation?: { id: number; reservation_code: string };
+        reservation?: {
+            id: number;
+            reservation_code: string;
+            promotion?: { name: string; discount_summary: string } | null;
+            promotion_redemptions?: Array<{
+                promotion_name?: string;
+                code?: string;
+                discount_amount: string;
+            }>;
+        };
         company?: { id: number; name: string } | null;
         items: Array<{
             id: number;
@@ -97,6 +106,14 @@ export default function FolioShow({
                 </Descriptions.Item>
                 <Descriptions.Item label="Guest">{folio.guest?.full_name}</Descriptions.Item>
                 <Descriptions.Item label="Reservation">{folio.reservation?.reservation_code}</Descriptions.Item>
+                {folio.reservation?.promotion && (
+                    <Descriptions.Item label="Promotion" span={2}>
+                        <Tag color="green">
+                            {folio.reservation.promotion.name} —{' '}
+                            {folio.reservation.promotion.discount_summary}
+                        </Tag>
+                    </Descriptions.Item>
+                )}
                 {folio.company && (
                     <Descriptions.Item label="Company" span={2}>{folio.company.name}</Descriptions.Item>
                 )}

@@ -4,6 +4,7 @@ namespace App\Telegram;
 
 use App\Models\TelegramConversationState;
 use App\Models\TelegramUser;
+use App\Telegram\Commands\AgentBookingsCommand;
 use App\Telegram\Commands\ApproveRequisitionCommand;
 use App\Telegram\Commands\AvailableCommand;
 use App\Telegram\Commands\BalanceSheetCommand;
@@ -12,6 +13,9 @@ use App\Telegram\Commands\CheckInCommand;
 use App\Telegram\Commands\CheckOutCommand;
 use App\Telegram\Commands\EditReservationCommand;
 use App\Telegram\Commands\GlCommand;
+use App\Telegram\Commands\GroupCheckInCommand;
+use App\Telegram\Commands\GroupCheckOutCommand;
+use App\Telegram\Commands\GroupsCommand;
 use App\Telegram\Commands\HelpCommand;
 use App\Telegram\Commands\KdsCommand;
 use App\Telegram\Commands\LinkCommand;
@@ -20,6 +24,7 @@ use App\Telegram\Commands\MaintCommand;
 use App\Telegram\Commands\MyRoomsCommand;
 use App\Telegram\Commands\NewReservationCommand;
 use App\Telegram\Commands\PnlCommand;
+use App\Telegram\Commands\PromoCommand;
 use App\Telegram\Commands\ReportCommand;
 use App\Telegram\Commands\RoomsCommand;
 use App\Telegram\Commands\RoomStatusCommand;
@@ -45,6 +50,7 @@ class TelegramCommandRouter
         '/switchproperty' => ['class' => SwitchPropertyCommand::class, 'description' => 'Switch active property'],
         '/rooms' => ['class' => RoomsCommand::class, 'description' => 'List rooms'],
         '/available' => ['class' => AvailableCommand::class, 'description' => 'Check availability'],
+        '/promo' => ['class' => PromoCommand::class, 'description' => 'Check promo code'],
         '/newres' => ['class' => NewReservationCommand::class, 'description' => 'Create reservation'],
         '/editres' => ['class' => EditReservationCommand::class, 'description' => 'Edit reservation'],
         '/cancelres' => ['class' => CancelReservationCommand::class, 'description' => 'Cancel reservation'],
@@ -52,6 +58,9 @@ class TelegramCommandRouter
         '/myrooms' => ['class' => MyRoomsCommand::class, 'description' => "Today's rooms"],
         '/checkin' => ['class' => CheckInCommand::class, 'description' => 'Check in a guest'],
         '/checkout' => ['class' => CheckOutCommand::class, 'description' => 'Check out a guest'],
+        '/groups' => ['class' => GroupsCommand::class, 'description' => 'List active group bookings'],
+        '/groupcheckin' => ['class' => GroupCheckInCommand::class, 'description' => 'Check in a group'],
+        '/groupcheckout' => ['class' => GroupCheckOutCommand::class, 'description' => 'Check out a group'],
         '/kds' => ['class' => KdsCommand::class, 'description' => 'Kitchen display summary'],
         '/maint' => ['class' => MaintCommand::class, 'description' => 'Raise maintenance ticket'],
         '/workorders' => ['class' => WorkOrdersCommand::class, 'description' => 'List work orders'],
@@ -63,6 +72,7 @@ class TelegramCommandRouter
         '/pnl' => ['class' => PnlCommand::class, 'description' => 'Income statement (P&L)'],
         '/balancesheet' => ['class' => BalanceSheetCommand::class, 'description' => 'Balance sheet report'],
         '/report' => ['class' => ReportCommand::class, 'description' => 'Operational reports (daily/occupancy/revenue)'],
+        '/agentbookings' => ['class' => AgentBookingsCommand::class, 'description' => 'List agent bookings'],
         '/help' => ['class' => HelpCommand::class, 'description' => 'Show available commands'],
     ];
 
