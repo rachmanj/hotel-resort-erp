@@ -87,14 +87,6 @@ export default function ActivityLogsIndex({
             dataIndex: 'description',
             ellipsis: true,
         },
-        {
-            title: 'Properties',
-            dataIndex: 'properties',
-            width: 200,
-            ellipsis: true,
-            render: (_, row) =>
-                row.properties ? JSON.stringify(row.properties) : '—',
-        },
     ];
 
     const userOptions = users.map((u) => ({ value: u.id, label: u.name }));
