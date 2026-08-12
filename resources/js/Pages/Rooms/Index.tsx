@@ -162,7 +162,7 @@ export default function RoomsIndex({
                 columns={columns}
                 dataSource={rooms.data}
                 search={false}
-                options={{ reload: false, density: true }}
+                options={false}
                 pagination={{
                     showTotal: (total, range) => `${range[0]}-${range[1]} of ${total}`,
                     current: rooms.current_page,
