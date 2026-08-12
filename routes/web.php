@@ -23,6 +23,7 @@ use App\Http\Controllers\Admin\HotelSettingController;
 use App\Http\Controllers\Admin\PromotionCodeController;
 use App\Http\Controllers\Admin\PromotionController;
 use App\Http\Controllers\Admin\RatePlanController;
+use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\SeasonController;
 use App\Http\Controllers\Admin\TaxRuleController;
