@@ -19,7 +19,7 @@ class RolePermissionSeeder extends Seeder
             'reservations.view', 'reservations.create', 'reservations.edit', 'reservations.cancel', 'reservations.checkin', 'reservations.checkout',
             'housekeeping.view', 'housekeeping.manage', 'housekeeping.update_status',
             'maintenance.view', 'maintenance.manage', 'maintenance.create', 'maintenance.escalate',
-            'fb.view', 'fb.manage', 'fb.orders.create',
+            'fb.view', 'fb.manage', 'fb.orders.create', 'fb.orders.update_status',
             'inventory.view', 'purchasing.view', 'purchasing.approve',
             'billing.view', 'billing.manage', 'billing.post', 'billing.payment', 'billing.invoice',
             'folios.view',
@@ -70,7 +70,7 @@ class RolePermissionSeeder extends Seeder
         ],
         'fb' => [
             'telegram.link', 'profile.telegram.view',
-            'fb.view', 'fb.manage', 'fb.orders.create', 'fb.orders.create',
+            'fb.view', 'fb.manage', 'fb.orders.create', 'fb.orders.update_status',
             'inventory.view',
             'reports.fb_sales',
             'guests.view',

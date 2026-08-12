@@ -1,7 +1,8 @@
 import { Head, router } from '@inertiajs/react';
-import { Card, Col, Row, Tag, Typography } from 'antd';
+import { Button, Card, Col, Row, Tag, Typography } from 'antd';
 import { useEffect } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import { useAuth } from '@/hooks/useAuth';
 
 interface KdsOrderItem {
     id: number;
@@ -35,11 +36,29 @@ interface KitchenDisplayProps {
     hotelId: number | null;
 }
 
+const itemStatusColors: Record<string, string> = {
+    new: 'blue',
+    preparing: 'orange',
+    ready: 'green',
+    served: 'default',
+};
+
+function updateItemStatus(orderId: number, itemId: number, status: string): void {
+    router.put(
+        `/fb/orders/${orderId}/items/${itemId}/status`,
+        { status },
+        { preserveScroll: true },
+    );
+}
+
 export default function KitchenDisplay({ columns }: KitchenDisplayProps) {
+    const { can } = useAuth();
+    const canUpdateItemStatus = can('fb.orders.update_status') || can('fb.manage');
+
     useEffect(() => {
         const interval = setInterval(() => {
             router.reload({ only: ['columns'] });
-        }, 10000);
+        }, 30000);
 
         return () => clearInterval(interval);
     }, []);
@@ -48,7 +67,7 @@ export default function KitchenDisplay({ columns }: KitchenDisplayProps) {
         <AuthenticatedLayout title="Kitchen Display">
             <Head title="Kitchen Display" />
             <Typography.Paragraph type="secondary" style={{ marginBottom: 16 }}>
-                Auto-refreshes every 10 seconds. Move orders through New → Preparing → Ready → Served.
+                Auto-refreshes every 30 seconds. Tap items to move them through Preparing → Ready.
             </Typography.Paragraph>
             <Row gutter={[16, 16]}>
                 {columns.map((column) => (
@@ -83,13 +102,85 @@ export default function KitchenDisplay({ columns }: KitchenDisplayProps) {
                                 <Typography.Text type="secondary">
                                     {order.table ?? order.guest ?? '—'}
                                 </Typography.Text>
-                                <ul style={{ margin: '8px 0 0', paddingLeft: 16 }}>
+                                <ul style={{ margin: '8px 0 0', paddingLeft: 0, listStyle: 'none' }}>
                                     {order.items.map((item) => (
-                                        <li key={item.id}>
-                                            <strong>{item.quantity}x</strong> {item.name}
-                                            {item.notes && (
-                                                <Typography.Text type="warning"> ({item.notes})</Typography.Text>
-                                            )}
+                                        <li
+                                            key={item.id}
+                                            style={{
+                                                marginBottom: 8,
+                                                padding: '4px 0',
+                                                borderBottom: '1px solid #f0f0f0',
+                                            }}
+                                        >
+                                            <div
+                                                style={{
+                                                    display: 'flex',
+                                                    justifyContent: 'space-between',
+                                                    alignItems: 'center',
+                                                    gap: 8,
+                                                }}
+                                            >
+                                                <span>
+                                                    <Tag color={itemStatusColors[item.status] ?? 'default'}>
+                                                        {item.status}
+                                                    </Tag>
+                                                    <strong>{item.quantity}x</strong> {item.name}
+                                                    {item.notes && (
+                                                        <Typography.Text type="warning">
+                                                            {' '}
+                                                            ({item.notes})
+                                                        </Typography.Text>
+                                                    )}
+                                                </span>
+                                                {canUpdateItemStatus && (
+                                                    <span style={{ display: 'flex', gap: 4 }}>
+                                                        {item.status === 'new' && (
+                                                            <Button
+                                                                size="small"
+                                                                type="primary"
+                                                                onClick={() =>
+                                                                    updateItemStatus(
+                                                                        order.id,
+                                                                        item.id,
+                                                                        'preparing',
+                                                                    )
+                                                                }
+                                                            >
+                                                                Prepare
+                                                            </Button>
+                                                        )}
+                                                        {item.status === 'preparing' && (
+                                                            <Button
+                                                                size="small"
+                                                                type="primary"
+                                                                onClick={() =>
+                                                                    updateItemStatus(
+                                                                        order.id,
+                                                                        item.id,
+                                                                        'ready',
+                                                                    )
+                                                                }
+                                                            >
+                                                                Ready
+                                                            </Button>
+                                                        )}
+                                                        {can('fb.manage') && item.status === 'ready' && (
+                                                            <Button
+                                                                size="small"
+                                                                onClick={() =>
+                                                                    updateItemStatus(
+                                                                        order.id,
+                                                                        item.id,
+                                                                        'served',
+                                                                    )
+                                                                }
+                                                            >
+                                                                Served
+                                                            </Button>
+                                                        )}
+                                                    </span>
+                                                )}
+                                            </div>
                                         </li>
                                     ))}
                                 </ul>

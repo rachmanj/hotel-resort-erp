@@ -1,5 +1,5 @@
 import { Head, router, useForm } from '@inertiajs/react';
-import { Button, Card, Col, Descriptions, Form, Modal, Row, Select, Table, Tag } from 'antd';
+import { Button, Card, Col, Descriptions, Form, Modal, Row, Select, Space, Table, Tag } from 'antd';
 import { useState } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { useAuth } from '@/hooks/useAuth';
@@ -52,9 +52,14 @@ const statusColors: Record<string, string> = {
     cancelled: 'red',
 };
 
+function updateItemStatus(orderId: number, itemId: number, status: string): void {
+    router.put(`/fb/orders/${orderId}/items/${itemId}/status`, { status }, { preserveScroll: true });
+}
+
 export default function OrdersShow({ order, statusOptions, checkedInReservations }: OrdersShowProps) {
     const { can } = useAuth();
     const canManage = can('fb.manage');
+    const canUpdateItemStatus = can('fb.orders.update_status') || canManage;
     const isActive = !['served', 'cancelled'].includes(order.status);
     const canChargeToRoom = canManage && !order.charged_to_room && order.folio_item_id === null;
     const [chargeModalOpen, setChargeModalOpen] = useState(false);
@@ -62,6 +67,32 @@ export default function OrdersShow({ order, statusOptions, checkedInReservations
     const chargeForm = useForm({
         reservation_id: null as number | null,
     });
+
+    const renderItemActions = (item: OrderItem) => {
+        if (!canUpdateItemStatus || !isActive) {
+            return null;
+        }
+
+        return (
+            <Space size="small">
+                {item.status === 'new' && (
+                    <Button size="small" onClick={() => updateItemStatus(order.id, item.id, 'preparing')}>
+                        Preparing
+                    </Button>
+                )}
+                {item.status === 'preparing' && (
+                    <Button size="small" onClick={() => updateItemStatus(order.id, item.id, 'ready')}>
+                        Ready
+                    </Button>
+                )}
+                {canManage && item.status === 'ready' && (
+                    <Button size="small" onClick={() => updateItemStatus(order.id, item.id, 'served')}>
+                        Served
+                    </Button>
+                )}
+            </Space>
+        );
+    };
 
     return (
         <AuthenticatedLayout title={`Order ${order.order_no}`}>
@@ -138,8 +169,18 @@ export default function OrdersShow({ order, statusOptions, checkedInReservations
                                 { title: 'Notes', dataIndex: 'notes', render: (v) => v ?? '—' },
                                 {
                                     title: 'Status',
-                                    render: (_, r) => <Tag>{r.status_label}</Tag>,
+                                    render: (_, r) => (
+                                        <Tag color={statusColors[r.status]}>{r.status_label}</Tag>
+                                    ),
                                 },
+                                ...(canUpdateItemStatus
+                                    ? [
+                                          {
+                                              title: 'Actions',
+                                              render: (_: unknown, r: OrderItem) => renderItemActions(r),
+                                          },
+                                      ]
+                                    : []),
                             ]}
                         />
                     </Card>

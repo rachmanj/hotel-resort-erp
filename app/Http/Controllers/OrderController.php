@@ -6,8 +6,10 @@ use App\Enums\OrderStatus;
 use App\Enums\OrderType;
 use App\Enums\ReservationStatus;
 use App\Http\Requests\StoreOrderRequest;
+use App\Http\Requests\UpdateOrderItemStatusRequest;
 use App\Models\MenuCategory;
 use App\Models\Order;
+use App\Models\OrderItem;
 use App\Models\Reservation;
 use App\Models\RestaurantTable;
 use App\Services\OrderService;
@@ -153,6 +155,17 @@ class OrderController extends Controller
         $this->orderService->updateStatus($order, $request->string('status')->toString());
 
         return back()->with('success', 'Order status updated.');
+    }
+
+    public function updateItemStatus(UpdateOrderItemStatusRequest $request, Order $order, OrderItem $item): RedirectResponse
+    {
+        if ($item->order_id !== $order->id) {
+            abort(404);
+        }
+
+        $this->orderService->updateItemStatus($item, $request->string('status')->toString());
+
+        return back()->with('success', 'Item status updated.');
     }
 
     /**

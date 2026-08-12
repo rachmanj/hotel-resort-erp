@@ -119,6 +119,7 @@ Route::middleware(['auth', 'hotel.context'])->group(function (): void {
     Route::get('/fb/orders/{order}', [OrderController::class, 'show'])->name('fb.orders.show')->middleware('can:fb.view');
     Route::post('/fb/orders/{order}/cancel', [OrderController::class, 'cancel'])->name('fb.orders.cancel')->middleware('can:fb.manage');
     Route::put('/fb/orders/{order}/status', [OrderController::class, 'updateStatus'])->name('fb.orders.status')->middleware('can:fb.manage');
+    Route::put('/fb/orders/{order}/items/{item}/status', [OrderController::class, 'updateItemStatus'])->name('fb.orders.items.status');
     Route::post('/fb/orders/{order}/charge-to-room', [OrderController::class, 'chargeToRoom'])->name('fb.orders.charge-to-room')->middleware('can:fb.manage');
     Route::get('/fb/kds', [KitchenDisplayController::class, 'index'])->name('fb.kds')->middleware('can:fb.view');
 
