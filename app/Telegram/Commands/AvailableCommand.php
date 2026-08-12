@@ -30,7 +30,7 @@ class AvailableCommand extends BaseCommand
         }
 
         if (count($args) < 2) {
-            $this->reply($tgUser, 'Usage: /available <checkin> <checkout> [room_type_code]');
+            $this->reply($tgUser, 'Usage: /available &lt;checkin&gt; &lt;checkout&gt; [room_type_code]');
 
             return;
         }

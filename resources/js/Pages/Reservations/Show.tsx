@@ -17,7 +17,7 @@ interface ReservationShowProps {
         arrival_date: string;
         departure_date: string;
         adults: number;
-        children: number;
+        children_count: number;
         special_requests?: string | null;
         cancelled_reason?: string | null;
         created_by?: { id: number; name: string } | null;
@@ -101,7 +101,7 @@ export default function ReservationShow({
                 <Descriptions.Item label="Arrival">{reservation.arrival_date}</Descriptions.Item>
                 <Descriptions.Item label="Departure">{reservation.departure_date}</Descriptions.Item>
                 <Descriptions.Item label="Adults">{reservation.adults}</Descriptions.Item>
-                <Descriptions.Item label="Children">{reservation.children}</Descriptions.Item>
+                <Descriptions.Item label="Children">{reservation.children_count}</Descriptions.Item>
                 {reservation.special_requests && (
                     <Descriptions.Item label="Special requests" span={2}>
                         {reservation.special_requests}
@@ -120,7 +120,7 @@ export default function ReservationShow({
                     {reservation.guest?.full_name}
                     {reservation.guest?.vip_tier && reservation.guest.vip_tier !== 'none' && (
                         <Tag color="gold" style={{ marginLeft: 8 }}>
-                            {reservation.guest.vip_tier.toUpperCase()}
+                            {String(reservation.guest.vip_tier).toUpperCase()}
                         </Tag>
                     )}
                     {reservation.guest?.is_blacklisted && (
@@ -137,6 +137,7 @@ export default function ReservationShow({
                 rowKey="id"
                 size="small"
                 pagination={false}
+                childrenColumnName="rowChildren"
                 dataSource={reservation.reservation_rooms}
                 columns={[
                     { title: 'Room', dataIndex: ['room', 'number'], render: (v) => v ?? '—' },

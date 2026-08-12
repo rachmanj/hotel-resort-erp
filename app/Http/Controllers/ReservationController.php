@@ -137,7 +137,7 @@ class ReservationController extends Controller
                 'hotel_id' => $hotelId,
                 'created_by' => $request->user()?->id,
                 'created_via' => 'web',
-            ]);
+            ], $request->user());
         } catch (RoomNotAvailableException $e) {
             return back()->withInput()->with('error', $e->getMessage());
         }
@@ -308,14 +308,22 @@ class ReservationController extends Controller
                 'arrival_date' => $reservation->arrival_date->toDateString(),
                 'departure_date' => $reservation->departure_date->toDateString(),
                 'adults' => $reservation->adults,
-                'children' => $reservation->children,
+                'children_count' => $reservation->children,
                 'special_requests' => $reservation->special_requests,
                 'cancelled_reason' => $reservation->cancelled_reason,
                 'created_by' => $reservation->createdBy?->only(['id', 'name']),
-                'guest' => $reservation->guest?->only([
-                    'id', 'full_name', 'phone', 'email', 'id_number', 'id_type', 'nationality', 'address',
-                    'vip_tier', 'is_blacklisted',
-                ]),
+                'guest' => $reservation->guest ? [
+                    'id' => $reservation->guest->id,
+                    'full_name' => $reservation->guest->full_name,
+                    'phone' => $reservation->guest->phone,
+                    'email' => $reservation->guest->email,
+                    'id_number' => $reservation->guest->id_number,
+                    'id_type' => $reservation->guest->id_type?->value,
+                    'nationality' => $reservation->guest->nationality,
+                    'address' => $reservation->guest->address,
+                    'vip_tier' => $reservation->guest->vip_tier->value,
+                    'is_blacklisted' => $reservation->guest->is_blacklisted,
+                ] : null,
                 'reservation_rooms' => $reservation->reservationRooms->map(fn ($rr) => [
                     'id' => $rr->id,
                     'status' => $rr->status->value,
@@ -347,7 +355,7 @@ class ReservationController extends Controller
             return back()->with('error', 'Reservation is already cancelled.');
         }
 
-        $cancelReservation($reservation, $request->validated());
+        $cancelReservation($reservation, $request->validated(), $request->user());
 
         return back()->with('success', 'Reservation cancelled successfully.');
     }

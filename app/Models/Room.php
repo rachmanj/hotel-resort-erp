@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\RoomStatus;
 use App\Models\Concerns\BelongsToHotel;
+use App\Models\Concerns\LogsActivity;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -20,7 +21,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 ])]
 class Room extends Model
 {
-    use BelongsToHotel;
+    use BelongsToHotel, LogsActivity;
 
     protected function casts(): array
     {

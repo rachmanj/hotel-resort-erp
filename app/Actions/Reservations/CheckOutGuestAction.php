@@ -9,6 +9,7 @@ use App\Models\Folio;
 use App\Models\GuestStay;
 use App\Models\ReservationRoom;
 use App\Models\User;
+use App\Observers\ActivityLogObserver;
 use App\Services\FolioPostingService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -22,7 +23,7 @@ class CheckOutGuestAction
 
     public function __invoke(ReservationRoom $reservationRoom, ?User $performedBy = null): array
     {
-        return DB::transaction(function () use ($reservationRoom): array {
+        return DB::transaction(function () use ($reservationRoom, $performedBy): array {
             $reservationRoom = ReservationRoom::query()->lockForUpdate()->findOrFail($reservationRoom->id);
             $reservationRoom->load(['reservation.guest', 'room']);
 
@@ -87,8 +88,20 @@ class CheckOutGuestAction
                 $this->folioPostingService->closeFolio($folio);
             }
 
+            $reservation = $reservation->fresh(['guest', 'reservationRooms.room']);
+
+            if ($performedBy !== null) {
+                $roomNumber = $reservationRoom->room?->number ?? 'N/A';
+                ActivityLogObserver::logCustom(
+                    $reservation,
+                    'checked_out',
+                    "Reservation {$reservation->reservation_code} room {$roomNumber} checked out by {$performedBy->name}",
+                    $performedBy->id,
+                );
+            }
+
             return [
-                'reservation' => $reservation->fresh(['guest', 'reservationRooms.room']),
+                'reservation' => $reservation,
                 'folio' => $folio?->fresh(),
                 'balance' => $balance,
                 'total_spend' => $totalSpend,

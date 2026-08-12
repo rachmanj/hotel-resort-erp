@@ -1,5 +1,5 @@
 import { router } from '@inertiajs/react';
-import { Descriptions, Modal } from 'antd';
+import { Descriptions, Modal, message } from 'antd';
 
 interface CheckInModalProps {
     open: boolean;
@@ -21,7 +21,13 @@ export default function CheckInModal({ open, reservation, onClose }: CheckInModa
         router.post(
             `/reservations/${reservation.id}/checkin`,
             {},
-            { onSuccess: () => onClose() },
+            {
+                onSuccess: () => onClose(),
+                onError: (errors) => {
+                    const firstError = Object.values(errors)[0];
+                    message.error(typeof firstError === 'string' ? firstError : 'Check-in failed.');
+                },
+            },
         );
     };
 

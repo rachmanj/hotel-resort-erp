@@ -87,7 +87,7 @@ class CancelReservationCommand extends BaseCommand
             return;
         }
 
-        ($this->cancelReservation)($reservation, ['cancelled_reason' => $reason]);
+        ($this->cancelReservation)($reservation, ['cancelled_reason' => $reason], $tgUser->user);
 
         $this->reply($tgUser, "✅ Reservation {$code} has been cancelled.");
     }

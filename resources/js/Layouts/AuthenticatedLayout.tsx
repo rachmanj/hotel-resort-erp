@@ -11,6 +11,7 @@ import {
     DashboardOutlined,
     DollarOutlined,
     HeartOutlined,
+    HistoryOutlined,
     HomeOutlined,
     InboxOutlined,
     LogoutOutlined,
@@ -287,6 +288,11 @@ export default function AuthenticatedLayout({ children, title }: AuthenticatedLa
                 path: '/admin/permissions',
                 name: 'Permissions',
                 icon: <SafetyCertificateOutlined />,
+            },
+            can('admin.manage') && {
+                path: '/admin/activity-logs',
+                name: 'Activity Logs',
+                icon: <HistoryOutlined />,
             },
             can('hotels.manage') && {
                 path: '/admin/hotels',

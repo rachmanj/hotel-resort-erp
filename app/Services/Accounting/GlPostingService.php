@@ -8,6 +8,7 @@ use App\Enums\NormalBalance;
 use App\Models\AccountingPeriod;
 use App\Models\ChartOfAccount;
 use App\Models\GeneralLedger;
+use App\Models\Hotel;
 use Carbon\Carbon;
 use Carbon\CarbonInterface;
 use Illuminate\Support\Collection;
@@ -16,6 +17,10 @@ use InvalidArgumentException;
 
 class GlPostingService
 {
+    public function __construct(
+        private AccountingPeriodService $accountingPeriodService,
+    ) {}
+
     /**
      * @param  array<int, array{
      *     hotel_id: int,
@@ -301,7 +306,13 @@ class GlPostingService
             ->first();
 
         if ($period === null) {
-            throw new InvalidArgumentException("No accounting period found for date {$transactionDate->toDateString()}.");
+            $hotel = Hotel::query()->withoutGlobalScope('hotel')->find($hotelId);
+
+            if ($hotel !== null) {
+                $period = $this->accountingPeriodService->ensurePeriodForDate($hotel, $transactionDate);
+            } else {
+                throw new InvalidArgumentException("No accounting period found for date {$transactionDate->toDateString()}.");
+            }
         }
 
         if ($period->status === AccountingPeriodStatus::Closed) {

@@ -13,6 +13,8 @@ use App\Models\Reservation;
 use App\Models\ReservationRoom;
 use App\Models\Room;
 use App\Models\RoomType;
+use App\Models\User;
+use App\Observers\ActivityLogObserver;
 use App\Services\AvailabilityService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -41,9 +43,9 @@ class CreateReservationAction
      *     created_via?: string,
      * }  $data
      */
-    public function __invoke(array $data): Reservation
+    public function __invoke(array $data, ?User $performedBy = null): Reservation
     {
-        return DB::transaction(function () use ($data): Reservation {
+        return DB::transaction(function () use ($data, $performedBy): Reservation {
             $checkin = Carbon::parse($data['arrival_date'])->startOfDay();
             $checkout = Carbon::parse($data['departure_date'])->startOfDay();
 
@@ -100,7 +102,20 @@ class CreateReservationAction
                 'status' => ReservationRoomStatus::Booked->value,
             ]);
 
-            return $reservation->load(['guest', 'reservationRooms.room', 'reservationRooms.roomType']);
+            $reservation = $reservation->load(['guest', 'reservationRooms.room', 'reservationRooms.roomType']);
+
+            $actor = $performedBy ?? (($data['created_by'] ?? null) !== null ? User::query()->find($data['created_by']) : null);
+
+            if ($actor !== null) {
+                ActivityLogObserver::logCustom(
+                    $reservation,
+                    'created',
+                    "Reservation {$reservation->reservation_code} created for {$reservation->guest?->full_name} by {$actor->name}",
+                    $actor->id,
+                );
+            }
+
+            return $reservation;
         });
     }
 

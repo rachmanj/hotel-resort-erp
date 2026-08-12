@@ -12,6 +12,7 @@ use App\Models\ReservationRoom;
 use App\Models\TelegramUser;
 use App\Models\User;
 use App\Notifications\VipGuestAlertNotification;
+use App\Observers\ActivityLogObserver;
 use App\Services\FolioPostingService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -74,9 +75,20 @@ class CheckInGuestAction
                 'status' => ReservationStatus::CheckedIn->value,
             ]);
 
+            $reservation = $reservation->fresh(['guest', 'reservationRooms.room']);
+
+            if ($performedBy !== null) {
+                ActivityLogObserver::logCustom(
+                    $reservation,
+                    'checked_in',
+                    "Reservation {$reservation->reservation_code} checked in by {$performedBy->name}",
+                    $performedBy->id,
+                );
+            }
+
             $this->dispatchVipAlert($reservation);
 
-            return $reservation->fresh(['guest', 'reservationRooms.room']);
+            return $reservation;
         });
     }
 

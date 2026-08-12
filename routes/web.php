@@ -14,6 +14,7 @@ use App\Http\Controllers\Accounting\Reports\IncomeStatementController;
 use App\Http\Controllers\Accounting\Reports\TrialBalanceController;
 use App\Http\Controllers\Accounting\SupplierInvoiceController;
 use App\Http\Controllers\Accounting\TaxReportController;
+use App\Http\Controllers\Admin\ActivityLogController;
 use App\Http\Controllers\Admin\CurrencyController;
 use App\Http\Controllers\Admin\HotelController;
 use App\Http\Controllers\Admin\HotelSettingController;
@@ -264,6 +265,7 @@ Route::middleware(['auth', 'hotel.context'])->group(function (): void {
         Route::resource('users', UserController::class)->except(['show'])->middleware('can:admin.manage');
         Route::resource('roles', RoleController::class)->except(['create', 'show', 'edit'])->middleware('can:admin.manage');
         Route::get('permissions', [PermissionController::class, 'index'])->name('permissions.index')->middleware('can:admin.manage');
+        Route::get('activity-logs', [ActivityLogController::class, 'index'])->name('activity-logs.index')->middleware('can:admin.manage');
 
         Route::get('/hotels', [HotelController::class, 'index'])->name('hotels.index')->middleware('can:hotels.manage');
         Route::get('/hotels/create', [HotelController::class, 'create'])->name('hotels.create')->middleware('can:hotels.manage');

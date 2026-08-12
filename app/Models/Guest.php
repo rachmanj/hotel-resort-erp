@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\GuestIdType;
 use App\Enums\VipTier;
+use App\Models\Concerns\LogsActivity;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -23,6 +24,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 ])]
 class Guest extends Model
 {
+    use LogsActivity;
+
     protected function casts(): array
     {
         return [

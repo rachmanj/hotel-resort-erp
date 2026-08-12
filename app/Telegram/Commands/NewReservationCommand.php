@@ -257,7 +257,7 @@ class NewReservationCommand extends BaseCommand
                 'source' => ReservationSource::Walkin->value,
                 'created_by' => $tgUser->user_id,
                 'created_via' => CreatedVia::Telegram->value,
-            ]);
+            ], $tgUser->user);
         } catch (RoomNotAvailableException $e) {
             $this->conversationManager->cancelFlow($state);
             $this->reply($tgUser, '❌ '.$e->getMessage());

@@ -64,14 +64,16 @@ class AccountingPeriodService
 
     public function ensureCurrentPeriod(Hotel $hotel): AccountingPeriod
     {
-        $today = now()->startOfMonth();
-        $endOfMonth = now()->endOfMonth();
+        return $this->ensurePeriodForDate($hotel, now());
+    }
 
+    public function ensurePeriodForDate(Hotel $hotel, Carbon $date): AccountingPeriod
+    {
         $existing = AccountingPeriod::query()
             ->withoutGlobalScope('hotel')
             ->where('hotel_id', $hotel->id)
-            ->where('start_date', '<=', $today->toDateString())
-            ->where('end_date', '>=', $today->toDateString())
+            ->where('start_date', '<=', $date->toDateString())
+            ->where('end_date', '>=', $date->toDateString())
             ->first();
 
         if ($existing !== null) {
@@ -80,9 +82,9 @@ class AccountingPeriodService
 
         return $this->openPeriod(
             $hotel,
-            $today->format('Y-m'),
-            $today,
-            $endOfMonth,
+            $date->format('Y-m'),
+            $date->copy()->startOfMonth(),
+            $date->copy()->endOfMonth(),
         );
     }
 }
