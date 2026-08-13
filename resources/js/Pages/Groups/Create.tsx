@@ -100,7 +100,7 @@ export default function GroupCreate({
                             options={groupTypes}
                         />
                     </Form.Item>
-                    <Form.Item label="PIC Guest">
+                    <Form.Item label="PIC Guest" required={isTypeA} extra={isTypeA ? 'Required for single multi-room groups' : undefined}>
                         <GuestSearchSelect
                             value={form.data.pic_guest_id}
                             onChange={(id) => form.setData('pic_guest_id', id)}
@@ -193,7 +193,10 @@ export default function GroupCreate({
 
     const canNext = () => {
         if (step === 0) {
-            return form.data.name.trim().length > 0;
+            const hasName = form.data.name.trim().length > 0;
+            const needsPic = isTypeA && (form.data.pic_guest_id === null || form.data.pic_guest_id === undefined);
+
+            return hasName && !needsPic;
         }
         if (isTypeA && step === 1) {
             return totalRooms > 0;
