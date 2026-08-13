@@ -36,7 +36,7 @@ class TelegramResponder
     {
         $this->sendMessage($chatId, $text, Keyboard::make([
             'inline_keyboard' => $buttons,
-        ]));
+        ])->toArray());
     }
 
     public function answerCallbackQuery(string $callbackQueryId, ?string $text = null): void
