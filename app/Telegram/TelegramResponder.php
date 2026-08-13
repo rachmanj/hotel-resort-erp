@@ -3,7 +3,6 @@
 namespace App\Telegram;
 
 use Telegram\Bot\Api;
-use Telegram\Bot\Keyboard\Keyboard;
 
 class TelegramResponder
 {
@@ -26,7 +25,7 @@ class TelegramResponder
         ];
 
         if ($replyMarkup !== null) {
-            $params['reply_markup'] = $replyMarkup;
+            $params['reply_markup'] = json_encode($replyMarkup);
         }
 
         $this->telegram->sendMessage($params);
@@ -34,9 +33,9 @@ class TelegramResponder
 
     public function sendInlineKeyboard(int $chatId, string $text, array $buttons): void
     {
-        $this->sendMessage($chatId, $text, Keyboard::make([
+        $this->sendMessage($chatId, $text, [
             'inline_keyboard' => $buttons,
-        ])->toArray());
+        ]);
     }
 
     public function answerCallbackQuery(string $callbackQueryId, ?string $text = null): void
@@ -68,7 +67,7 @@ class TelegramResponder
         ];
 
         if ($replyMarkup !== null) {
-            $params['reply_markup'] = $replyMarkup;
+            $params['reply_markup'] = json_encode($replyMarkup);
         }
 
         $this->telegram->editMessageText($params);
