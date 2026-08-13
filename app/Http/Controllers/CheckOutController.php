@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Actions\Reservations\CheckOutGuestAction;
 use App\Enums\ReservationRoomStatus;
+use App\Exceptions\OutstandingBalanceException;
 use App\Models\ReservationRoom;
 use Illuminate\Http\RedirectResponse;
 use InvalidArgumentException;
@@ -18,6 +19,10 @@ class CheckOutController extends Controller
 
         try {
             $result = $checkOut($reservationRoom, request()->user());
+        } catch (OutstandingBalanceException $e) {
+            return back()
+                ->with('error', $e->getMessage())
+                ->with('outstanding_balance', $e->balance);
         } catch (InvalidArgumentException $e) {
             return back()->with('error', $e->getMessage());
         }

@@ -142,6 +142,16 @@ class BillingTest extends TestCase
         app(CheckInGuestAction::class)($reservation, $this->user);
 
         $reservationRoom = $reservation->reservationRooms()->first();
+        $folio = Folio::query()->where('reservation_id', $reservation->id)->firstOrFail();
+        $folioPostingService = app(FolioPostingService::class);
+        $folioPostingService->postPayment(
+            $folio,
+            $folioPostingService->getBalance($folio),
+            'cash',
+            null,
+            $this->user,
+        );
+
         app(CheckOutGuestAction::class)($reservationRoom, $this->user);
 
         $this->room->refresh();

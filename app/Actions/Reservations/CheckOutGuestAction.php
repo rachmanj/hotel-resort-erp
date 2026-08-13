@@ -5,6 +5,7 @@ namespace App\Actions\Reservations;
 use App\Enums\ReservationRoomStatus;
 use App\Enums\ReservationStatus;
 use App\Enums\RoomStatus;
+use App\Exceptions\OutstandingBalanceException;
 use App\Models\Folio;
 use App\Models\GuestStay;
 use App\Models\ReservationRoom;
@@ -53,10 +54,15 @@ class CheckOutGuestAction
 
             if ($folio !== null && $companyId !== null && $folio->company_id === null) {
                 $folio->update(['company_id' => $companyId]);
+                $folio->refresh();
             }
 
             $balance = $folio !== null ? $this->folioPostingService->getBalance($folio) : 0.0;
             $totalSpend = $folio !== null ? $this->folioPostingService->getChargesTotal($folio) : 0.0;
+
+            if ($folio !== null && $folio->company_id === null && $balance > 0) {
+                throw new OutstandingBalanceException($balance);
+            }
 
             $checkInAt = $reservationRoom->check_in_at ?? now();
             $checkOutAt = now();

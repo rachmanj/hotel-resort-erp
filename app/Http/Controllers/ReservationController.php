@@ -16,6 +16,7 @@ use App\Models\Reservation;
 use App\Models\Room;
 use App\Models\RoomType;
 use App\Services\AvailabilityService;
+use App\Services\FolioPostingService;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -283,7 +284,7 @@ class ReservationController extends Controller
         return (string) $roomType->base_rate;
     }
 
-    public function show(Reservation $reservation): Response
+    public function show(Reservation $reservation, FolioPostingService $folioPostingService): Response
     {
         $reservation->load([
             'guest',
@@ -295,10 +296,15 @@ class ReservationController extends Controller
             'reservationRooms.roomType',
             'reservationRooms.ratePlan',
             'reservationRooms.promotion',
-            'folios',
+            'folios.payments',
         ]);
 
         $masterFolio = $reservation->folios->first(fn ($f) => $f->type === FolioType::Master);
+        $folioBalance = $masterFolio !== null ? $folioPostingService->getBalance($masterFolio) : 0.0;
+        $folioChargesTotal = $masterFolio !== null ? $folioPostingService->getChargesTotal($masterFolio) : 0.0;
+        $folioPaymentsTotal = $masterFolio !== null
+            ? $masterFolio->payments->sum(fn ($p) => $p->is_refund ? -(float) $p->amount : (float) $p->amount)
+            : 0.0;
 
         return Inertia::render('Reservations/Show', [
             'reservation' => [
@@ -358,6 +364,10 @@ class ReservationController extends Controller
                 'id' => $masterFolio->id,
                 'folio_no' => $masterFolio->folio_no,
                 'status' => $masterFolio->status->value,
+                'company_id' => $masterFolio->company_id,
+                'balance' => $folioBalance,
+                'charges_total' => $folioChargesTotal,
+                'payments_total' => $folioPaymentsTotal,
             ] : null,
             'canCancel' => request()->user()?->can('reservations.cancel') ?? false,
             'canCheckIn' => request()->user()?->can('reservations.checkin') ?? false,

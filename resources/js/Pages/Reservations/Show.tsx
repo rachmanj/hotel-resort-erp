@@ -51,7 +51,15 @@ interface ReservationShowProps {
             rate_plan?: { id: number; name: string } | null;
         }>;
     };
-    folio?: { id: number; folio_no: string; status: string } | null;
+    folio?: {
+        id: number;
+        folio_no: string;
+        status: string;
+        company_id?: number | null;
+        balance?: number;
+        charges_total?: number;
+        payments_total?: number;
+    } | null;
     canCancel: boolean;
     canCheckIn: boolean;
     canCheckOut: boolean;
@@ -229,6 +237,11 @@ export default function ReservationShow({
                 <CheckOutModal
                     open={!!checkOutRoom}
                     reservationRoom={checkOutRoom}
+                    folioId={folio?.id}
+                    folioBalance={folio?.balance ?? 0}
+                    folioChargesTotal={folio?.charges_total ?? 0}
+                    folioPaymentsTotal={folio?.payments_total ?? 0}
+                    isCompanyBilled={folio?.company_id != null}
                     onClose={() => setCheckOutRoom(null)}
                 />
             )}
