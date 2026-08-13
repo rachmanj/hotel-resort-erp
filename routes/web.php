@@ -265,10 +265,10 @@ Route::middleware(['auth', 'hotel.context'])->group(function (): void {
     Route::get('/guests', [GuestController::class, 'index'])->name('guests.index')->middleware('can:guests.view');
     Route::get('/guests/create', [GuestController::class, 'create'])->name('guests.create')->middleware('can:guests.create');
     Route::post('/guests', [GuestController::class, 'store'])->name('guests.store')->middleware('can:guests.create');
+    Route::get('/guests/search', [GuestController::class, 'search'])->name('guests.search')->middleware('can:reservations.create');
     Route::get('/guests/{guest}', [GuestController::class, 'show'])->name('guests.show')->middleware('can:guests.view');
     Route::get('/guests/{guest}/edit', [GuestController::class, 'edit'])->name('guests.edit')->middleware('can:guests.edit');
     Route::put('/guests/{guest}', [GuestController::class, 'update'])->name('guests.update')->middleware('can:guests.edit');
-    Route::get('/guests/search', [GuestController::class, 'search'])->name('guests.search')->middleware('can:reservations.create');
 
     Route::get('/companies', [CompanyController::class, 'index'])->name('companies.index')->middleware('can:companies.view');
     Route::get('/companies/create', [CompanyController::class, 'create'])->name('companies.create')->middleware('can:companies.manage');
