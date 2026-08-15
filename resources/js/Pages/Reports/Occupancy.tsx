@@ -31,8 +31,8 @@ export default function Occupancy({ report, filters }: OccupancyProps) {
     const columns: ProColumns<OccupancyRow>[] = [
         { title: 'Room Type', dataIndex: 'room_type_name' },
         { title: 'Total Rooms', dataIndex: 'total_rooms', align: 'right' },
-        { title: 'Rooms Sold', dataIndex: 'rooms_sold', align: 'right' },
-        { title: 'Rooms Available', dataIndex: 'rooms_available', align: 'right' },
+        { title: 'Room Nights Sold', dataIndex: 'rooms_sold', align: 'right' },
+        { title: 'Available Room Nights', dataIndex: 'rooms_available', align: 'right' },
         { title: 'Occupancy %', dataIndex: 'occupancy_pct', render: (v) => `${Number(v)}%`, align: 'right' },
     ];
 
@@ -56,10 +56,10 @@ export default function Occupancy({ report, filters }: OccupancyProps) {
                     <Card><Statistic title="Occupancy %" value={report.summary.occupancy_pct} suffix="%" precision={2} /></Card>
                 </Col>
                 <Col span={6}>
-                    <Card><Statistic title="Rooms Sold" value={report.summary.rooms_sold} /></Card>
+                    <Card><Statistic title="Room Nights Sold" value={report.summary.rooms_sold} /></Card>
                 </Col>
                 <Col span={6}>
-                    <Card><Statistic title="Rooms Available" value={report.summary.rooms_available} /></Card>
+                    <Card><Statistic title="Available Room Nights" value={report.summary.rooms_available} /></Card>
                 </Col>
                 <Col span={6}>
                     <Card><Statistic title="Total Rooms" value={report.summary.total_rooms} /></Card>

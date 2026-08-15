@@ -84,6 +84,7 @@ class OccupancyReport
                 ->join('reservations', 'reservation_rooms.reservation_id', '=', 'reservations.id')
                 ->where('reservations.hotel_id', $hotelId)
                 ->whereIn('reservation_rooms.status', [
+                    ReservationRoomStatus::Booked->value,
                     ReservationRoomStatus::CheckedIn->value,
                     ReservationRoomStatus::CheckedOut->value,
                 ])

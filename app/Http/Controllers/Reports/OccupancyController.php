@@ -53,7 +53,7 @@ class OccupancyController extends Controller
 
         return CsvExporter::stream(
             "occupancy-{$startDate->toDateString()}-{$endDate->toDateString()}.csv",
-            ['Room Type', 'Total Rooms', 'Rooms Sold', 'Rooms Available', 'Occupancy %'],
+            ['Room Type', 'Total Rooms', 'Room Nights Sold', 'Available Room Nights', 'Occupancy %'],
             $rows,
         );
     }
