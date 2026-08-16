@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Enums\AgentType;
 use App\Enums\CommissionBasis;
+use App\Enums\CommissionType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StoreAgentRequest;
 use App\Http\Requests\Admin\UpdateAgentRequest;
@@ -43,6 +44,8 @@ class AgentController extends Controller
                 'phone' => $agent->phone,
                 'email' => $agent->email,
                 'commission_percent' => $agent->commission_percent,
+                'commission_type' => $agent->commission_type->value,
+                'commission_flat_amount' => $agent->commission_flat_amount,
                 'commission_basis' => $agent->commission_basis->value,
                 'commission_basis_label' => $agent->commission_basis->label(),
                 'payment_terms_days' => $agent->payment_terms_days,
@@ -62,6 +65,10 @@ class AgentController extends Controller
             'commissionBases' => collect(CommissionBasis::cases())->map(fn (CommissionBasis $b) => [
                 'value' => $b->value,
                 'label' => $b->label(),
+            ]),
+            'commissionTypes' => collect(CommissionType::cases())->map(fn (CommissionType $c) => [
+                'value' => $c->value,
+                'label' => $c->label(),
             ]),
             'filters' => $request->only(['search']),
         ]);

@@ -4,6 +4,7 @@ namespace App\Http\Requests\Admin;
 
 use App\Enums\AgentType;
 use App\Enums\CommissionBasis;
+use App\Enums\CommissionType;
 use App\Models\Agent;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -39,6 +40,8 @@ class UpdateAgentRequest extends FormRequest
             'phone' => ['nullable', 'string', 'max:50'],
             'email' => ['nullable', 'email', 'max:255'],
             'commission_percent' => ['required', 'numeric', 'min:0', 'max:100'],
+            'commission_type' => ['required', Rule::enum(CommissionType::class)],
+            'commission_flat_amount' => ['nullable', 'numeric', 'min:0', Rule::requiredIf(fn (): bool => $this->input('commission_type') === 'flat')],
             'commission_basis' => ['required', Rule::enum(CommissionBasis::class)],
             'payment_terms_days' => ['required', 'integer', 'min:0', 'max:365'],
             'company_id' => ['nullable', 'integer', 'exists:companies,id'],

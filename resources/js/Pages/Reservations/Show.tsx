@@ -14,6 +14,7 @@ interface ReservationShowProps {
         status_color: string;
         source: string;
         source_label: string;
+        agent?: { id: number; name: string; code?: string } | null;
         arrival_date: string;
         departure_date: string;
         adults: number;
@@ -153,6 +154,9 @@ export default function ReservationShow({
                 <Descriptions.Item label="Phone">{reservation.guest?.phone ?? '–'}</Descriptions.Item>
                 <Descriptions.Item label="Email">{reservation.guest?.email ?? '–'}</Descriptions.Item>
                 <Descriptions.Item label="ID">{reservation.guest?.id_number ?? '–'}</Descriptions.Item>
+                <Descriptions.Item label="Travel Agent">
+                    {reservation.agent?.name ?? '–'}
+                </Descriptions.Item>
             </Descriptions>
 
             <h3>Rooms</h3>

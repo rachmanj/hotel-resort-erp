@@ -9,6 +9,7 @@ enum ReservationSource: string
     case Ota = 'ota';
     case Telegram = 'telegram';
     case Web = 'web';
+    case Agent = 'agent';
 
     public function label(): string
     {
@@ -18,6 +19,7 @@ enum ReservationSource: string
             self::Ota => 'OTA',
             self::Telegram => 'Telegram',
             self::Web => 'Web',
+            self::Agent => 'Agent',
         };
     }
 }

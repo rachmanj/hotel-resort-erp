@@ -41,6 +41,7 @@ interface ReservationData {
     children: number;
     special_requests?: string | null;
     source: string;
+    agent_id: number | null;
     guest_id: number | null;
     guest?: {
         full_name: string;
@@ -60,6 +61,7 @@ interface EditProps {
     ratePlans: RatePlan[];
     availability: AvailabilityRow[];
     sources: Array<{ value: string; label: string }>;
+    agents: Array<{ value: number; label: string; code: string }>;
 }
 
 export default function ReservationEdit({
@@ -68,6 +70,7 @@ export default function ReservationEdit({
     ratePlans,
     availability,
     sources,
+    agents,
 }: EditProps) {
     const [step, setStep] = useState(0);
 
@@ -81,6 +84,7 @@ export default function ReservationEdit({
         children: reservation.children,
         special_requests: reservation.special_requests ?? '',
         source: reservation.source,
+        agent_id: reservation.agent_id,
         guest_id: reservation.guest_id,
         guest: {
             full_name: reservation.guest?.full_name ?? '',
@@ -142,6 +146,15 @@ export default function ReservationEdit({
                             value={form.data.source}
                             onChange={(v) => form.setData('source', v)}
                             options={sources.map((s) => ({ value: s.value, label: s.label }))}
+                        />
+                    </Form.Item>
+                    <Form.Item label="Travel Agent" required={form.data.source === 'agent'}>
+                        <Select
+                            allowClear
+                            placeholder="Select travel agent"
+                            value={form.data.agent_id}
+                            onChange={(v) => form.setData('agent_id', v)}
+                            options={agents}
                         />
                     </Form.Item>
                 </Form>

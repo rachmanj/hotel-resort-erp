@@ -36,6 +36,12 @@ class UpdateReservationRequest extends FormRequest
             'children' => ['sometimes', 'integer', 'min:0', 'max:20'],
             'special_requests' => ['nullable', 'string'],
             'source' => ['sometimes', Rule::enum(ReservationSource::class)],
+            'agent_id' => [
+                'nullable',
+                'integer',
+                'exists:agents,id',
+                Rule::requiredIf(fn (): bool => $this->input('source') === 'agent'),
+            ],
         ];
     }
 }

@@ -38,6 +38,7 @@ interface CreateProps {
     availability: AvailabilityRow[];
     defaults: { arrival_date: string; departure_date: string };
     sources: Array<{ value: string; label: string }>;
+    agents: Array<{ value: number; label: string; code: string }>;
 }
 
 export default function ReservationCreate({
@@ -46,6 +47,7 @@ export default function ReservationCreate({
     availability,
     defaults,
     sources,
+    agents,
 }: CreateProps) {
     const [step, setStep] = useState(0);
 
@@ -59,6 +61,7 @@ export default function ReservationCreate({
         children: 0,
         special_requests: '',
         source: 'walkin',
+        agent_id: null as number | null,
         guest_id: null as number | null,
         guest: {
             full_name: '',
@@ -120,6 +123,15 @@ export default function ReservationCreate({
                             value={form.data.source}
                             onChange={(v) => form.setData('source', v)}
                             options={sources.map((s) => ({ value: s.value, label: s.label }))}
+                        />
+                    </Form.Item>
+                    <Form.Item label="Travel Agent" required={form.data.source === 'agent'}>
+                        <Select
+                            allowClear
+                            placeholder="Select travel agent"
+                            value={form.data.agent_id}
+                            onChange={(v) => form.setData('agent_id', v)}
+                            options={agents}
                         />
                     </Form.Item>
                 </Form>

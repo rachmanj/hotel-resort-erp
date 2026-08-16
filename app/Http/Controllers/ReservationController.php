@@ -11,6 +11,7 @@ use App\Exceptions\RoomNotAvailableException;
 use App\Http\Requests\CancelReservationRequest;
 use App\Http\Requests\StoreReservationRequest;
 use App\Http\Requests\UpdateReservationRequest;
+use App\Models\Agent;
 use App\Models\RatePlan;
 use App\Models\Reservation;
 use App\Models\Room;
@@ -20,6 +21,7 @@ use App\Services\FolioPostingService;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -29,7 +31,7 @@ class ReservationController extends Controller
     public function index(Request $request): Response
     {
         $reservations = Reservation::query()
-            ->with(['guest:id,full_name,phone', 'reservationRooms.room:id,number', 'reservationRooms.roomType:id,name'])
+            ->with(['guest:id,full_name,phone', 'agent:id,name', 'reservationRooms.room:id,number', 'reservationRooms.roomType:id,name'])
             ->when($request->filled('status'), fn ($q) => $q->where('status', $request->string('status')))
             ->when($request->filled('source'), fn ($q) => $q->where('source', $request->string('source')))
             ->when($request->filled('date_from'), fn ($q) => $q->where('arrival_date', '>=', $request->string('date_from')))
@@ -58,6 +60,7 @@ class ReservationController extends Controller
                 'adults' => $reservation->adults,
                 'children' => $reservation->children,
                 'guest' => $reservation->guest?->only(['id', 'full_name', 'phone']),
+                'agent' => $reservation->agent?->only(['id', 'name']),
                 'rooms' => $reservation->reservationRooms->map(fn ($rr) => [
                     'room_number' => $rr->room?->number,
                     'room_type' => $rr->roomType?->name,
@@ -107,6 +110,8 @@ class ReservationController extends Controller
                 'season' => $plan->season?->only(['id', 'name']),
             ]);
 
+        $hotelId = session('current_hotel_id');
+
         return Inertia::render('Reservations/Create', [
             'roomTypes' => $roomTypes,
             'ratePlans' => $ratePlans,
@@ -119,6 +124,7 @@ class ReservationController extends Controller
                 'value' => $s->value,
                 'label' => $s->label(),
             ]),
+            'agents' => $this->activeAgentOptions($hotelId),
         ]);
     }
 
@@ -170,6 +176,7 @@ class ReservationController extends Controller
                 'children' => $reservation->children,
                 'special_requests' => $reservation->special_requests,
                 'source' => $reservation->source->value,
+                'agent_id' => $reservation->agent_id,
                 'guest_id' => $reservation->guest_id,
                 'guest' => $reservation->guest ? [
                     'full_name' => $reservation->guest->full_name,
@@ -204,6 +211,7 @@ class ReservationController extends Controller
                 'value' => $s->value,
                 'label' => $s->label(),
             ]),
+            'agents' => $this->activeAgentOptions($reservation->hotel_id),
         ]);
     }
 
@@ -244,6 +252,7 @@ class ReservationController extends Controller
                     'children' => $validated['children'] ?? $reservation->children,
                     'special_requests' => $validated['special_requests'] ?? null,
                     'source' => $validated['source'] ?? $reservation->source->value,
+                    'agent_id' => $validated['agent_id'] ?? null,
                 ]);
 
                 $reservationRoom = $reservation->reservationRooms()->first();
@@ -288,6 +297,7 @@ class ReservationController extends Controller
     {
         $reservation->load([
             'guest',
+            'agent',
             'createdBy:id,name',
             'promotion',
             'promotionRedemptions.promotion',
@@ -315,6 +325,7 @@ class ReservationController extends Controller
                 'status_color' => $reservation->status->color(),
                 'source' => $reservation->source->value,
                 'source_label' => $reservation->source->label(),
+                'agent' => $reservation->agent?->only(['id', 'name', 'code']),
                 'arrival_date' => $reservation->arrival_date->toDateString(),
                 'departure_date' => $reservation->departure_date->toDateString(),
                 'adults' => $reservation->adults,
@@ -388,5 +399,19 @@ class ReservationController extends Controller
         $cancelReservation($reservation, $request->validated(), $request->user());
 
         return back()->with('success', 'Reservation cancelled successfully.');
+    }
+
+    /**
+     * @return Collection<int, array{value: int, label: string, code: string}>
+     */
+    private function activeAgentOptions(?int $hotelId): Collection
+    {
+        return Agent::query()
+            ->when($hotelId !== null, fn ($q) => $q->where('hotel_id', $hotelId))
+            ->where('is_active', true)
+            ->orderBy('name')
+            ->get(['id', 'name', 'code'])
+            ->map(fn (Agent $a) => ['value' => $a->id, 'label' => $a->name, 'code' => $a->code])
+            ->values();
     }
 }

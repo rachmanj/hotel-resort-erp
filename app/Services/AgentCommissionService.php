@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Enums\AgentCommissionStatus;
 use App\Enums\CommissionBasis;
+use App\Enums\CommissionType;
 use App\Enums\FolioItemType;
 use App\Models\Agent;
 use App\Models\AgentCommission;
@@ -38,7 +39,13 @@ class AgentCommissionService
         }
 
         $baseAmount = $this->calculateBaseAmount($folio, $agent->commission_basis);
-        $commissionAmount = round($baseAmount * ((float) $agent->commission_percent / 100), 2);
+
+        if ($agent->commission_type === CommissionType::Flat) {
+            $commissionAmount = round((float) $agent->commission_flat_amount, 2);
+            $baseAmount = $commissionAmount;
+        } else {
+            $commissionAmount = round($baseAmount * ((float) $agent->commission_percent / 100), 2);
+        }
 
         return [
             'base_amount' => $baseAmount,
@@ -70,6 +77,10 @@ class AgentCommissionService
                 'folio_id' => $folio?->id,
                 'base_amount' => $calculation['base_amount'],
                 'commission_percent' => $agent->commission_percent,
+                'commission_type' => $agent->commission_type->value,
+                'commission_flat_amount' => $agent->commission_type === CommissionType::Flat
+                    ? $agent->commission_flat_amount
+                    : null,
                 'commission_amount' => $calculation['commission_amount'],
                 'status' => AgentCommissionStatus::Pending->value,
                 'earned_at' => now(),

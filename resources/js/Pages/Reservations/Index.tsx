@@ -20,6 +20,7 @@ interface ReservationRow {
     adults: number;
     children: number;
     guest?: { id: number; full_name: string; phone?: string };
+    agent?: { id: number; name: string } | null;
     rooms: Array<{ room_number?: string; room_type?: string; nightly_rate: string }>;
 }
 
@@ -60,6 +61,11 @@ export default function ReservationsIndex({
             title: 'Guest',
             dataIndex: ['guest', 'full_name'],
             render: (_, record) => record.guest?.full_name ?? '–',
+        },
+        {
+            title: 'Agent',
+            dataIndex: ['agent', 'name'],
+            render: (_, record) => record.agent?.name ?? '–',
         },
         {
             title: 'Arrival',

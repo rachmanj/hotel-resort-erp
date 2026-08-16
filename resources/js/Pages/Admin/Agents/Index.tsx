@@ -17,6 +17,8 @@ interface AgentRow {
     phone?: string | null;
     email?: string | null;
     commission_percent: string;
+    commission_type: string;
+    commission_flat_amount?: string | null;
     commission_basis: string;
     commission_basis_label: string;
     payment_terms_days: number;
@@ -31,6 +33,7 @@ interface AgentsIndexProps {
     users: Array<{ id: number; name: string; email: string }>;
     agentTypes: Array<{ value: string; label: string }>;
     commissionBases: Array<{ value: string; label: string }>;
+    commissionTypes: Array<{ value: string; label: string }>;
     filters: { search?: string };
 }
 
@@ -40,6 +43,7 @@ export default function AgentsIndex({
     users,
     agentTypes,
     commissionBases,
+    commissionTypes,
     filters,
 }: AgentsIndexProps) {
     const [modalOpen, setModalOpen] = useState(false);
@@ -54,6 +58,8 @@ export default function AgentsIndex({
         phone: '',
         email: '',
         commission_percent: 10,
+        commission_type: 'percent',
+        commission_flat_amount: null as number | null,
         commission_basis: 'net_room',
         payment_terms_days: 30,
         company_id: null as number | null,
@@ -73,6 +79,8 @@ export default function AgentsIndex({
             phone: '',
             email: '',
             commission_percent: 10,
+            commission_type: 'percent',
+            commission_flat_amount: null,
             commission_basis: 'net_room',
             payment_terms_days: 30,
             company_id: null,
@@ -93,6 +101,10 @@ export default function AgentsIndex({
             phone: record.phone ?? '',
             email: record.email ?? '',
             commission_percent: Number(record.commission_percent),
+            commission_type: record.commission_type,
+            commission_flat_amount: record.commission_flat_amount != null
+                ? Number(record.commission_flat_amount)
+                : null,
             commission_basis: record.commission_basis,
             payment_terms_days: record.payment_terms_days,
             company_id: record.company?.id ?? null,
@@ -129,7 +141,10 @@ export default function AgentsIndex({
         },
         {
             title: 'Commission',
-            render: (_, r) => `${r.commission_percent}% (${r.commission_basis_label})`,
+            render: (_, r) =>
+                r.commission_type === 'flat'
+                    ? `Rp ${Number(r.commission_flat_amount ?? 0).toLocaleString('id-ID')} flat`
+                    : `${r.commission_percent}% (${r.commission_basis_label})`,
         },
         {
             title: 'Active',
@@ -227,22 +242,43 @@ export default function AgentsIndex({
                             onChange={(e) => form.setData('email', e.target.value)}
                         />
                     </Form.Item>
-                    <Form.Item label="Commission %" required>
-                        <InputNumber
-                            min={0}
-                            max={100}
-                            style={{ width: '100%' }}
-                            value={form.data.commission_percent}
-                            onChange={(v) => form.setData('commission_percent', v ?? 0)}
-                        />
-                    </Form.Item>
-                    <Form.Item label="Commission Basis" required>
+                    <Form.Item label="Commission Type" required>
                         <Select
-                            value={form.data.commission_basis}
-                            onChange={(v) => form.setData('commission_basis', v)}
-                            options={commissionBases.map((b) => ({ value: b.value, label: b.label }))}
+                            value={form.data.commission_type}
+                            onChange={(v) => form.setData('commission_type', v)}
+                            options={commissionTypes.map((t) => ({ value: t.value, label: t.label }))}
                         />
                     </Form.Item>
+                    {form.data.commission_type === 'percent' ? (
+                        <>
+                            <Form.Item label="Commission %" required>
+                                <InputNumber
+                                    min={0}
+                                    max={100}
+                                    style={{ width: '100%' }}
+                                    value={form.data.commission_percent}
+                                    onChange={(v) => form.setData('commission_percent', v ?? 0)}
+                                />
+                            </Form.Item>
+                            <Form.Item label="Commission Basis" required>
+                                <Select
+                                    value={form.data.commission_basis}
+                                    onChange={(v) => form.setData('commission_basis', v)}
+                                    options={commissionBases.map((b) => ({ value: b.value, label: b.label }))}
+                                />
+                            </Form.Item>
+                        </>
+                    ) : (
+                        <Form.Item label="Flat Commission Amount" required>
+                            <InputNumber
+                                min={0}
+                                prefix="Rp"
+                                style={{ width: '100%' }}
+                                value={form.data.commission_flat_amount}
+                                onChange={(v) => form.setData('commission_flat_amount', v)}
+                            />
+                        </Form.Item>
+                    )}
                     <Form.Item label="Payment Terms (days)" required>
                         <InputNumber
                             min={0}

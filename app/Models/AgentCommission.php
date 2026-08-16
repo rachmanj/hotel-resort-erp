@@ -14,6 +14,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
     'folio_id',
     'base_amount',
     'commission_percent',
+    'commission_type',
+    'commission_flat_amount',
     'commission_amount',
     'status',
     'ar_invoice_id',
@@ -30,6 +32,8 @@ class AgentCommission extends Model
             'status' => AgentCommissionStatus::class,
             'base_amount' => 'decimal:2',
             'commission_percent' => 'decimal:2',
+            'commission_type' => 'string',
+            'commission_flat_amount' => 'decimal:2',
             'commission_amount' => 'decimal:2',
             'earned_at' => 'datetime',
         ];
