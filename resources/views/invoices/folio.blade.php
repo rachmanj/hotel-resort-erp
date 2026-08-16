@@ -20,8 +20,8 @@
     <h1>Invoice</h1>
     <div class="meta">
         <strong>Folio:</strong> {{ $folio['folio_no'] }}<br>
-        <strong>Guest:</strong> {{ $folio['guest']['full_name'] ?? '—' }}<br>
-        <strong>Reservation:</strong> {{ $folio['reservation']['reservation_code'] ?? '—' }}<br>
+        <strong>Guest:</strong> {{ $folio['guest']['full_name'] ?? '–' }}<br>
+        <strong>Reservation:</strong> {{ $folio['reservation']['reservation_code'] ?? '–' }}<br>
         <strong>Date:</strong> {{ $folio['opened_at'] }}
     </div>
 

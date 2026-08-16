@@ -36,10 +36,10 @@ class GroupsCommand extends BaseCommand
         }
 
         $lines = $groups->map(function (ReservationGroup $group): string {
-            $pic = $group->picGuest?->full_name ?? '—';
+            $pic = $group->picGuest?->full_name ?? '–';
             $arrival = $group->arrival_date?->format('d M Y') ?? 'TBD';
 
-            return "• {$group->group_code} — {$group->name}\n  {$group->status->label()} | {$arrival} | PIC: {$pic}";
+            return "• {$group->group_code} · {$group->name}\n  {$group->status->label()} | {$arrival} | PIC: {$pic}";
         });
 
         $this->reply(

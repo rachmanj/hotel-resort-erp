@@ -1,5 +1,5 @@
 import { Head, Link, router } from '@inertiajs/react';
-import { Card, Col, Row, Tag, Typography } from 'antd';
+import { Card, Col, Row, Tag, theme, Typography } from 'antd';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 
 interface BoardRoom {
@@ -42,6 +42,7 @@ const COLUMN_HEADER_COLORS: Record<string, string> = {
 };
 
 export default function HousekeepingIndex({ columns, outOfOrderRooms, filters, summary }: HousekeepingIndexProps) {
+    const { token } = theme.useToken();
     const activeFilter = filters.filter || 'all';
 
     return (
@@ -112,7 +113,7 @@ export default function HousekeepingIndex({ columns, outOfOrderRooms, filters, s
                                             </div>
                                         )}
                                         {room.last_updated_human && (
-                                            <div style={{ fontSize: 11, color: '#999', marginTop: 2 }}>
+                                            <div style={{ fontSize: 11, color: token.colorTextSecondary, marginTop: 2 }}>
                                                 {room.last_updated_human}
                                             </div>
                                         )}

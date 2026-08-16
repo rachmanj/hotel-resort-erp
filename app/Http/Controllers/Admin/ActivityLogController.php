@@ -79,7 +79,7 @@ class ActivityLogController extends Controller
         if ($log->event === 'cancelled' && $subject instanceof Reservation) {
             $reason = $properties['cancellation_reason'] ?? $subject->cancelled_reason ?? 'N/A';
 
-            return "Reservation {$subject->reservation_code} cancelled — reason: {$reason}";
+            return "Reservation {$subject->reservation_code} cancelled · reason: {$reason}";
         }
 
         if ($log->event === 'created' && $subject instanceof Reservation) {
@@ -102,7 +102,7 @@ class ActivityLogController extends Controller
             if (isset($changes['status']) && $changes['status'] === 'cancelled') {
                 $reason = $properties['cancellation_reason'] ?? $subject->cancelled_reason ?? 'N/A';
 
-                return "Reservation {$subject->reservation_code} cancelled — reason: {$reason}";
+                return "Reservation {$subject->reservation_code} cancelled · reason: {$reason}";
             }
         }
 

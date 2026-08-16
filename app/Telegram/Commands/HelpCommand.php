@@ -22,13 +22,13 @@ class HelpCommand extends BaseCommand
             $handler = app($info['class']);
 
             if ($handler->authorize($tgUser)) {
-                $lines[] = "{$command} — {$info['description']}";
+                $lines[] = "{$command} · {$info['description']}";
             }
         }
 
         if (count($lines) === 1) {
-            $lines[] = '/start — Welcome & link instructions';
-            $lines[] = '/link <code> — Link your account';
+            $lines[] = '/start · Welcome & link instructions';
+            $lines[] = '/link <code> · Link your account';
         }
 
         $this->reply($tgUser, implode("\n", $lines));

@@ -156,7 +156,7 @@ class ReportCommand extends BaseCommand
     private function formatVariance(?float $pct): string
     {
         if ($pct === null) {
-            return '—';
+            return '–';
         }
 
         $sign = $pct >= 0 ? '+' : '';

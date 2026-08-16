@@ -11,7 +11,7 @@ class ConsolidatedReportController extends Controller
     public function index(): Response
     {
         return Inertia::render('Reports/Consolidated', [
-            'message' => 'Group-consolidated reporting across all properties — coming soon.',
+            'message' => 'Group-consolidated reporting across all properties · coming soon.',
         ]);
     }
 }

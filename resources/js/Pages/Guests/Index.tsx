@@ -81,6 +81,7 @@ export default function GuestsIndex({ guests, filters }: GuestsIndexProps) {
                 dataSource={guests.data}
                 columns={columns}
                 scroll={{ x: 'max-content' }}
+                locale={{ emptyText: 'No guests yet. Add the first guest.' }}
             />
         </AuthenticatedLayout>
     );

@@ -46,7 +46,7 @@ class WorkOrdersCommand extends BaseCommand
         foreach ($workOrders as $workOrder) {
             $location = $workOrder->maintenanceRequest?->room?->number
                 ? 'Room '.$workOrder->maintenanceRequest->room->number
-                : ($workOrder->asset?->name ?? '—');
+                : ($workOrder->asset?->name ?? '–');
 
             $lines[] = "*#{$workOrder->id}* [{$workOrder->status->label()}]";
             $lines[] = "Location: {$location}";

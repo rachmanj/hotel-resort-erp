@@ -87,7 +87,7 @@ class AvailableCommand extends BaseCommand
             $rate = $roomType ? $this->formatIdr($roomType->base_rate) : 'N/A';
 
             return sprintf(
-                '🛏 %s: %d available (of %d) — %s/night',
+                '🛏 %s: %d available (of %d) · %s/night',
                 $row['name'],
                 $row['available_count'],
                 $row['total_count'],

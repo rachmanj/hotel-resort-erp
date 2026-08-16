@@ -1,7 +1,7 @@
 import { Head, router } from '@inertiajs/react';
 import type { ProColumns } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
-import { Select, Tag } from 'antd';
+import { Select, Tag, theme } from 'antd';
 import AgentPortalLayout from '@/Layouts/AgentPortalLayout';
 import type { Paginated } from '@/types';
 
@@ -33,6 +33,7 @@ const statusColors: Record<string, string> = {
 };
 
 export default function BookingsIndex({ bookings, agent, filters }: BookingsIndexProps) {
+    const { token } = theme.useToken();
     const columns: ProColumns<BookingRow>[] = [
         { title: 'Code', dataIndex: 'reservation_code' },
         { title: 'Guest', dataIndex: 'guest_name' },
@@ -51,7 +52,7 @@ export default function BookingsIndex({ bookings, agent, filters }: BookingsInde
     return (
         <AgentPortalLayout title="My Bookings">
             <Head title="Agent Bookings" />
-            <p style={{ marginBottom: 16, color: '#666' }}>
+            <p style={{ marginBottom: 16, color: token.colorTextSecondary }}>
                 Agent: <strong>{agent.name}</strong> ({agent.code})
             </p>
             <ProTable<BookingRow>

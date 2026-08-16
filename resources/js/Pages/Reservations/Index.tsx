@@ -171,6 +171,7 @@ export default function ReservationsIndex({
                         router.get('/reservations', { ...filters, page }, { preserveState: true }),
                 }}
                 scroll={{ x: 'max-content' }}
+                locale={{ emptyText: 'No reservations yet. Create the first reservation.' }}
             />
         </AuthenticatedLayout>
     );

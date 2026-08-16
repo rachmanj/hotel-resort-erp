@@ -36,6 +36,6 @@ class VipGuestAlertNotification extends Notification implements ShouldQueue
             "Guest: {$guest?->full_name}\n".
             "Tier: {$tier}\n".
             "Reservation: {$this->reservation->reservation_code}\n".
-            'Room(s): '.($roomNumbers ?: '—');
+            'Room(s): '.($roomNumbers ?: '–');
     }
 }

@@ -1,5 +1,5 @@
 import { Head, router, useForm } from '@inertiajs/react';
-import { Button, DatePicker, Form, Input, InputNumber, Select, Space, Steps } from 'antd';
+import { Button, DatePicker, Form, Input, InputNumber, Select, Space, Steps, theme } from 'antd';
 import dayjs from 'dayjs';
 import { useMemo, useState } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
@@ -28,6 +28,7 @@ export default function GroupCreate({
     invoiceModes,
     defaults,
 }: CreateProps) {
+    const { token } = theme.useToken();
     const [step, setStep] = useState(0);
     const [roomSelections, setRoomSelections] = useState<RoomSelection[]>([]);
 
@@ -183,7 +184,7 @@ export default function GroupCreate({
                             formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                         />
                     </Form.Item>
-                    <p style={{ color: '#666' }}>
+                    <p style={{ color: token.colorTextSecondary }}>
                         Deposit can be collected after the group is created from the group detail page.
                     </p>
                 </Form>

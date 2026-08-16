@@ -66,7 +66,7 @@ class GlCommand extends BaseCommand
                 $amount = (float) $entry->debit > 0
                     ? 'Dr '.$this->formatIdr($entry->debit)
                     : 'Cr '.$this->formatIdr($entry->credit);
-                $lines[] = "{$entry->transaction_date->format('d M')} — {$amount}";
+                $lines[] = "{$entry->transaction_date->format('d M')} · {$amount}";
                 $lines[] = "  {$entry->description}";
             }
         }

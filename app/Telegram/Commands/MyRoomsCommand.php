@@ -83,7 +83,7 @@ class MyRoomsCommand extends BaseCommand
                 : $hkStatus->label();
 
             return sprintf(
-                '%d. %s Room %s (%s) — %s',
+                '%d. %s Room %s (%s) · %s',
                 $index + 1,
                 $statusEmoji,
                 $roomNumber,
@@ -138,7 +138,7 @@ class MyRoomsCommand extends BaseCommand
             };
 
             return sprintf(
-                "%s %s — Room %s (%s)\n   %s",
+                "%s %s · Room %s (%s)\n   %s",
                 $tag,
                 $reservation->reservation_code,
                 $roomNumber,

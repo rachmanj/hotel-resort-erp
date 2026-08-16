@@ -79,7 +79,7 @@ class CheckInCommand extends BaseCommand
             $tgUser,
             "✅ Guest checked in.\n".
             "Room {$roomNumbers}.\n".
-            'Folio '.($folio?->folio_no ?? '—').' opened.',
+            'Folio '.($folio?->folio_no ?? '–').' opened.',
         );
     }
 }

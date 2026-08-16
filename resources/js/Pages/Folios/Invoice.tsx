@@ -1,5 +1,5 @@
 import { Head, Link } from '@inertiajs/react';
-import { Button, Descriptions, Table } from 'antd';
+import { Button, Descriptions, Table, theme } from 'antd';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 
 interface FolioInvoiceProps {
@@ -35,6 +35,7 @@ interface FolioInvoiceProps {
 const formatIdr = (v: number | string) => `Rp ${Number(v).toLocaleString('id-ID')}`;
 
 export default function FolioInvoice({ folio, balance, charges_total }: FolioInvoiceProps) {
+    const { token } = theme.useToken();
     return (
         <AuthenticatedLayout title={`Invoice ${folio.folio_no}`}>
             <Head title={`Invoice ${folio.folio_no}`} />
@@ -47,7 +48,7 @@ export default function FolioInvoice({ folio, balance, charges_total }: FolioInv
                 </div>
 
                 <h1 style={{ textAlign: 'center' }}>INVOICE</h1>
-                <p style={{ textAlign: 'center', color: '#666' }}>{folio.folio_no}</p>
+                <p style={{ textAlign: 'center', color: token.colorTextSecondary }}>{folio.folio_no}</p>
 
                 <Descriptions bordered column={2} size="small" style={{ marginBottom: 24 }}>
                     <Descriptions.Item label="Guest">{folio.guest?.full_name}</Descriptions.Item>

@@ -1,5 +1,5 @@
 import { router } from '@inertiajs/react';
-import { Descriptions, Modal, message } from 'antd';
+import { Descriptions, Modal, message, theme } from 'antd';
 
 interface CheckInModalProps {
     open: boolean;
@@ -17,6 +17,7 @@ interface CheckInModalProps {
 }
 
 export default function CheckInModal({ open, reservation, onClose }: CheckInModalProps) {
+    const { token } = theme.useToken();
     const handleConfirm = () => {
         router.post(
             `/reservations/${reservation.id}/checkin`,
@@ -50,7 +51,7 @@ export default function CheckInModal({ open, reservation, onClose }: CheckInModa
                         .join(', ')}
                 </Descriptions.Item>
             </Descriptions>
-            <p style={{ marginTop: 16, color: '#666' }}>
+            <p style={{ marginTop: 16, color: token.colorTextSecondary }}>
                 Room charges will be posted to the folio with applicable taxes (SC 10% + PPN 11%).
             </p>
         </Modal>

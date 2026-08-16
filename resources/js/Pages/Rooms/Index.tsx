@@ -181,6 +181,7 @@ export default function RoomsIndex({
                         : []
                 }
                 scroll={{ x: 'max-content' }}
+                locale={{ emptyText: 'No rooms yet. Add the first room.' }}
             />
 
             <Modal

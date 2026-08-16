@@ -108,7 +108,7 @@ class PromoCommand extends BaseCommand
             $code,
         );
 
-        $lines = collect($applicable)->map(fn ($p) => "• {$p->name} — {$p->discountSummary()}")->implode("\n");
+        $lines = collect($applicable)->map(fn ($p) => "• {$p->name} · {$p->discountSummary()}")->implode("\n");
 
         $message = sprintf(
             "🏷 Promo check: %s\n📅 %s → %s (%d night%s)\n🛏 %s\n\nApplicable:\n%s\n\nBase: %s/night\nAfter promo: %s/night\nTotal discount: %s",

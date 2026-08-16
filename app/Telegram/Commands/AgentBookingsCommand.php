@@ -71,7 +71,7 @@ class AgentBookingsCommand extends BaseCommand
             $room = $reservation->reservationRooms->first();
 
             return sprintf(
-                "%s — %s\n   %s → %s | Room %s | %s",
+                "%s · %s\n   %s → %s | Room %s | %s",
                 $reservation->reservation_code,
                 $reservation->status->label(),
                 $reservation->arrival_date?->format('d M Y') ?? '-',
@@ -81,6 +81,6 @@ class AgentBookingsCommand extends BaseCommand
             );
         })->implode("\n\n");
 
-        $this->reply($tgUser, "📋 Agent Bookings — {$agent->name}\n\n{$lines}");
+        $this->reply($tgUser, "📋 Agent Bookings · {$agent->name}\n\n{$lines}");
     }
 }

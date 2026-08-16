@@ -52,7 +52,7 @@ class DeductGroupDepositAction
                 $this->folioPostingService->postCharge(
                     $folio,
                     FolioItemType::DepositCredit->value,
-                    "Group deposit credit — {$group->group_code}",
+                    "Group deposit credit · {$group->group_code}",
                     -$amount,
                     1,
                     ReservationGroup::class,

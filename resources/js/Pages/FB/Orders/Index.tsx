@@ -119,6 +119,7 @@ export default function OrdersIndex({ orders, filters, statusOptions, typeOption
                     onChange: (page) => router.get('/fb/orders', { ...filters, page }, { preserveState: true }),
                 }}
                 scroll={{ x: 'max-content' }}
+                locale={{ emptyText: 'No orders yet. Create the first order.' }}
             />
         </AuthenticatedLayout>
     );

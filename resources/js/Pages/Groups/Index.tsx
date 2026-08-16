@@ -127,6 +127,7 @@ export default function GroupsIndex({ groups, statuses, groupTypes, filters }: G
                 dataSource={groups.data}
                 columns={columns}
                 scroll={{ x: 'max-content' }}
+                locale={{ emptyText: 'No group bookings yet. Create the first group.' }}
             />
         </AuthenticatedLayout>
     );

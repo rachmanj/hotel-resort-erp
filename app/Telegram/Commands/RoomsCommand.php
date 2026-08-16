@@ -72,7 +72,7 @@ class RoomsCommand extends BaseCommand
         }
 
         $lines = $rooms->map(fn (Room $room) => sprintf(
-            '%s %s — %s (%s)',
+            '%s %s · %s (%s)',
             $this->statusEmoji($room->status),
             $room->number,
             $room->roomType?->name ?? 'Unknown',

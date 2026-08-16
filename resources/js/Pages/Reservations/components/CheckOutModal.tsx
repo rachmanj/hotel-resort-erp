@@ -1,5 +1,5 @@
 import { router } from '@inertiajs/react';
-import { Alert, Button, Descriptions, Modal, Tag } from 'antd';
+import { Alert, Button, Descriptions, Modal, Tag, theme } from 'antd';
 
 interface CheckOutModalProps {
     open: boolean;
@@ -28,6 +28,7 @@ export default function CheckOutModal({
     isCompanyBilled = false,
     onClose,
 }: CheckOutModalProps) {
+    const { token } = theme.useToken();
     const hasOutstanding = folioBalance > 0;
     const settlementRequired = hasOutstanding && !isCompanyBilled;
     const balanceColor = folioBalance <= 0 ? 'green' : 'orange';
@@ -96,7 +97,7 @@ export default function CheckOutModal({
             )}
 
             {!settlementRequired && !isCompanyBilled && (
-                <p style={{ marginTop: 16, color: '#666' }}>
+                <p style={{ marginTop: 16, color: token.colorTextSecondary }}>
                     The room will be marked vacant/dirty for housekeeping. The folio will be closed unless billed to a company account.
                 </p>
             )}

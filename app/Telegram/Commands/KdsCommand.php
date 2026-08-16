@@ -36,7 +36,7 @@ class KdsCommand extends BaseCommand
         $lines = ["🍳 *Kitchen Display Summary*\n"];
 
         foreach ($orders as $order) {
-            $table = $order->restaurantTable?->name ?? ($order->reservation?->guest?->full_name ?? '—');
+            $table = $order->restaurantTable?->name ?? ($order->reservation?->guest?->full_name ?? '–');
             $items = $order->items->map(fn ($i) => "  • {$i->quantity}x {$i->menuItem?->name}")->implode("\n");
 
             $lines[] = "*{$order->order_no}* [{$order->status->label()}]";

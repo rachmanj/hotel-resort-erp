@@ -76,7 +76,7 @@ class CheckInGuestAction
                 $this->folioPostingService->postCharge(
                     $folio,
                     FolioItemType::Room->value,
-                    "Room {$reservationRoom->room?->number} — {$nights} night(s)",
+                    "Room {$reservationRoom->room?->number} · {$nights} night(s)",
                     (float) $reservationRoom->nightly_rate,
                     $nights,
                     ReservationRoom::class,
@@ -103,7 +103,7 @@ class CheckInGuestAction
                 ActivityLogObserver::logCustom(
                     $reservation,
                     'checked_in',
-                    "Reservation {$reservation->reservation_code} — {$roomCount} room(s) checked in by {$performedBy->name}",
+                    "Reservation {$reservation->reservation_code} · {$roomCount} room(s) checked in by {$performedBy->name}",
                     $performedBy->id,
                 );
             }
