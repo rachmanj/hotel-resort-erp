@@ -144,6 +144,7 @@ export default function AgentRates({ agent, rates, roomTypes, ratePlans, discoun
                     onChange: (page) =>
                         router.get(`/admin/agents/${agent.id}/rates`, { page }, { preserveState: true }),
                 }}
+                scroll={{ x: 'max-content' }}
             />
 
             <Modal

@@ -63,6 +63,7 @@ export default function PermissionsIndex({ permissions, filters }: PermissionsIn
                             { preserveState: true },
                         ),
                 }}
+                scroll={{ x: 'max-content' }}
             />
         </AuthenticatedLayout>
     );

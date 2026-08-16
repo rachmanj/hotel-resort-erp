@@ -83,6 +83,7 @@ export default function BookingsIndex({ bookings, agent, filters }: BookingsInde
                     onChange: (page) =>
                         router.get('/agent-portal/bookings', { ...filters, page }, { preserveState: true }),
                 }}
+                scroll={{ x: 'max-content' }}
             />
         </AgentPortalLayout>
     );

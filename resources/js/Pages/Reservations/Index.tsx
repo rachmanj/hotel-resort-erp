@@ -170,6 +170,7 @@ export default function ReservationsIndex({
                     onChange: (page) =>
                         router.get('/reservations', { ...filters, page }, { preserveState: true }),
                 }}
+                scroll={{ x: 'max-content' }}
             />
         </AuthenticatedLayout>
     );

@@ -92,6 +92,7 @@ export default function TreatmentsIndex({ treatments }: TreatmentsIndexProps) {
                 pagination={false}
                 dataSource={treatments}
                 columns={columns}
+                scroll={{ x: 'max-content' }}
             />
 
             <Modal

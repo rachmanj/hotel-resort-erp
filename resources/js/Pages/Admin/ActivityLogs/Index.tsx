@@ -163,6 +163,7 @@ export default function ActivityLogsIndex({
                             { preserveState: true },
                         ),
                 }}
+                scroll={{ x: 'max-content' }}
             />
         </AuthenticatedLayout>
     );

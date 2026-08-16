@@ -72,6 +72,7 @@ export default function Occupancy({ report, filters }: OccupancyProps) {
                 dataSource={report.by_room_type}
                 columns={columns}
                 pagination={false}
+                scroll={{ x: 'max-content' }}
             />
         </AuthenticatedLayout>
     );

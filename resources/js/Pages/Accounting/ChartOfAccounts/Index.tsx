@@ -59,7 +59,7 @@ export default function ChartOfAccountsIndex({ accounts, filters, accountTypeOpt
                     onChange={(v) => router.get('/accounting/chart-of-accounts', { ...filters, account_type: v }, { preserveState: true })}
                 />
             </div>
-            <ProTable rowKey="id" search={false} options={false} dataSource={accounts} columns={columns} pagination={false} />
+            <ProTable rowKey="id" search={false} options={false} dataSource={accounts} columns={columns} pagination={false} scroll={{ x: 'max-content' }} />
         </AuthenticatedLayout>
     );
 }

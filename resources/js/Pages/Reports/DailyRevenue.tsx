@@ -90,6 +90,7 @@ export default function DailyRevenue({ report, filters }: DailyRevenueProps) {
                 dataSource={report.by_date}
                 columns={columns}
                 pagination={false}
+                scroll={{ x: 'max-content' }}
             />
         </AuthenticatedLayout>
     );

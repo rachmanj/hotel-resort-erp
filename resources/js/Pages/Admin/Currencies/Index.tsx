@@ -90,6 +90,7 @@ export default function CurrenciesIndex({ currencies }: CurrenciesIndexProps) {
                 search={false}
                 options={false}
                 pagination={false}
+                scroll={{ x: 'max-content' }}
             />
 
             {currencies.map((currency) => (
@@ -119,6 +120,7 @@ export default function CurrenciesIndex({ currencies }: CurrenciesIndexProps) {
                             },
                         ]}
                         dataSource={currency.exchange_rates}
+                        scroll={{ x: 'max-content' }}
                     />
                 </Card>
             ))}

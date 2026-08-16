@@ -74,6 +74,7 @@ export default function CompaniesIndex({ companies, filters }: CompaniesIndexPro
                 }}
                 dataSource={companies.data}
                 columns={columns}
+                scroll={{ x: 'max-content' }}
             />
         </AuthenticatedLayout>
     );

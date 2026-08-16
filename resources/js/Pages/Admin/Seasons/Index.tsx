@@ -95,6 +95,7 @@ export default function SeasonsIndex({ seasons, filters }: SeasonsIndexProps) {
                     onChange: (page) =>
                         router.get('/admin/seasons', { ...filters, page }, { preserveState: true }),
                 }}
+                scroll={{ x: 'max-content' }}
             />
 
             <Modal

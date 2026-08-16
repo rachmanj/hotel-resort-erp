@@ -90,6 +90,7 @@ export default function FbSales({ report, filters }: FbSalesProps) {
                             dataSource={report.by_category}
                             columns={categoryColumns}
                             pagination={false}
+                            scroll={{ x: 'max-content' }}
                         />
                     </Card>
                 </Col>
@@ -102,6 +103,7 @@ export default function FbSales({ report, filters }: FbSalesProps) {
                             dataSource={report.by_shift}
                             columns={shiftColumns}
                             pagination={false}
+                            scroll={{ x: 'max-content' }}
                         />
                     </Card>
                 </Col>
@@ -113,6 +115,7 @@ export default function FbSales({ report, filters }: FbSalesProps) {
                     options={false}
                     dataSource={report.by_item}
                     columns={itemColumns}
+                    scroll={{ x: 'max-content' }}
                 />
             </Card>
         </AuthenticatedLayout>

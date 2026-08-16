@@ -70,6 +70,7 @@ export default function HotelsIndex({ hotels, filters }: HotelsIndexProps) {
                     onChange: (page) =>
                         router.get('/admin/hotels', { ...filters, page }, { preserveState: true }),
                 }}
+                scroll={{ x: 'max-content' }}
             />
         </AuthenticatedLayout>
     );

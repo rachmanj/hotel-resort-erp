@@ -132,6 +132,7 @@ export default function RatePlansIndex({
                     onChange: (page) =>
                         router.get('/admin/rate-plans', { ...filters, page }, { preserveState: true }),
                 }}
+                scroll={{ x: 'max-content' }}
             />
 
             <Modal

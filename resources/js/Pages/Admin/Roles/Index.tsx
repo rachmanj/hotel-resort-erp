@@ -124,6 +124,7 @@ export default function RolesIndex({ roles, permissionGroups }: RolesIndexProps)
                         New Role
                     </Button>,
                 ]}
+                scroll={{ x: 'max-content' }}
             />
 
             <Modal

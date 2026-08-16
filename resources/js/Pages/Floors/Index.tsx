@@ -86,6 +86,7 @@ export default function FloorsIndex({ floors, filters }: FloorsIndexProps) {
                     onChange: (page) =>
                         router.get('/floors', { ...filters, page }, { preserveState: true }),
                 }}
+                scroll={{ x: 'max-content' }}
             />
 
             <Modal

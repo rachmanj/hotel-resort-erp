@@ -53,7 +53,7 @@ export default function BudgetActual({ rows, year, month }: BudgetActualProps) {
                     onChange={(v) => router.get('/accounting/budgets/actual', { year, month: v }, { preserveState: true })}
                 />
             </div>
-            <ProTable rowKey={(_, i) => String(i)} search={false} options={false} pagination={{ showTotal: (total, range) => `${range[0]}-${range[1]} of ${total}` }} dataSource={rows} columns={columns} />
+            <ProTable rowKey={(_, i) => String(i)} search={false} options={false} pagination={{ showTotal: (total, range) => `${range[0]}-${range[1]} of ${total}` }} dataSource={rows} columns={columns} scroll={{ x: 'max-content' }} />
         </AuthenticatedLayout>
     );
 }

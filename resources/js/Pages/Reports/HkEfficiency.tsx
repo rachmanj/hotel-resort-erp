@@ -91,6 +91,7 @@ export default function HkEfficiency({ report, filters }: HkEfficiencyProps) {
                 dataSource={report.by_housekeeper}
                 columns={columns}
                 pagination={false}
+                scroll={{ x: 'max-content' }}
             />
         </AuthenticatedLayout>
     );

@@ -80,6 +80,7 @@ export default function TherapistsIndex({ therapists, userOptions }: TherapistsI
                 pagination={false}
                 dataSource={therapists}
                 columns={columns}
+                scroll={{ x: 'max-content' }}
             />
 
             <Modal

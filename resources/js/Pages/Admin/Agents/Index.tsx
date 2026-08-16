@@ -171,6 +171,7 @@ export default function AgentsIndex({
                     onChange: (page) =>
                         router.get('/admin/agents', { ...filters, page }, { preserveState: true }),
                 }}
+                scroll={{ x: 'max-content' }}
             />
 
             <Modal

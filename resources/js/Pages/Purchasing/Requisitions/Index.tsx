@@ -43,7 +43,7 @@ export default function RequisitionsIndex({ requisitions, filters, statusOptions
                 <Select allowClear placeholder="Status" style={{ width: 160 }} value={filters.status} options={statusOptions}
                     onChange={(v) => router.get('/purchasing/requisitions', { status: v }, { preserveState: true })} />
             </div>
-            <ProTable rowKey="id" search={false} options={false} pagination={{ showTotal: (total, range) => `${range[0]}-${range[1]} of ${total}` }} dataSource={requisitions.data} columns={columns} />
+            <ProTable rowKey="id" search={false} options={false} pagination={{ showTotal: (total, range) => `${range[0]}-${range[1]} of ${total}` }} dataSource={requisitions.data} columns={columns} scroll={{ x: 'max-content' }} />
         </AuthenticatedLayout>
     );
 }

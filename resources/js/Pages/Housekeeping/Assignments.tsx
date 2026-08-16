@@ -131,6 +131,7 @@ export default function HousekeepingAssignments({
                 }}
                 dataSource={assignments.data}
                 columns={columns}
+                scroll={{ x: 'max-content' }}
             />
 
             <Modal

@@ -120,6 +120,7 @@ export default function RoomTypesIndex({ roomTypes, filters }: RoomTypesIndexPro
                     onChange: (page) =>
                         router.get('/room-types', { ...filters, page }, { preserveState: true }),
                 }}
+                scroll={{ x: 'max-content' }}
             />
 
             <Modal

@@ -59,7 +59,7 @@ export default function BudgetIndex({ budgets, year, departments }: BudgetIndexP
                     onChange={(v) => router.get('/accounting/budgets', { year: v }, { preserveState: true })}
                 />
             </div>
-            <ProTable rowKey="id" search={false} options={false} pagination={{ showTotal: (total, range) => `${range[0]}-${range[1]} of ${total}` }} dataSource={budgets} columns={columns} />
+            <ProTable rowKey="id" search={false} options={false} pagination={{ showTotal: (total, range) => `${range[0]}-${range[1]} of ${total}` }} dataSource={budgets} columns={columns} scroll={{ x: 'max-content' }} />
             <Modal
                 title="New Budget"
                 open={open}

@@ -167,6 +167,7 @@ export default function AppointmentsIndex({
                     pageSize: appointments.per_page ?? 20,
                     onChange: (page) => router.get('/spa/appointments', { ...filters, page }, { preserveState: true }),
                 }}
+                scroll={{ x: 'max-content' }}
             />
 
             <Modal

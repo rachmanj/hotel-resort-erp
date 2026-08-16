@@ -154,6 +154,7 @@ export default function UsersIndex({ users, hotels, roles, filters }: UsersIndex
                     onChange: (page) =>
                         router.get('/admin/users', { ...filters, page }, { preserveState: true }),
                 }}
+                scroll={{ x: 'max-content' }}
             />
 
             <Modal

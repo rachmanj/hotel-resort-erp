@@ -91,6 +91,7 @@ export default function TaxRulesIndex({ taxRules }: TaxRulesIndexProps) {
                 pagination={false}
                 dataSource={taxRules}
                 columns={columns}
+                scroll={{ x: 'max-content' }}
             />
 
             <Modal

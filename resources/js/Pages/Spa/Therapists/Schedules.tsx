@@ -81,6 +81,7 @@ export default function Schedules({ schedules, therapists, filters }: SchedulesP
                 pagination={false}
                 dataSource={schedules}
                 columns={columns}
+                scroll={{ x: 'max-content' }}
             />
 
             <Modal

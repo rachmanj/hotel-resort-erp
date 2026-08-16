@@ -252,6 +252,7 @@ export default function PromotionsIndex({
                     onChange: (page) =>
                         router.get('/admin/promotions', { ...filters, page }, { preserveState: true }),
                 }}
+                scroll={{ x: 'max-content' }}
             />
 
             <Modal

@@ -180,6 +180,7 @@ export default function RoomsIndex({
                           ]
                         : []
                 }
+                scroll={{ x: 'max-content' }}
             />
 
             <Modal

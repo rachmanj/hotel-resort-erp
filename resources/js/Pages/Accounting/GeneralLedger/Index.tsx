@@ -63,7 +63,7 @@ export default function GeneralLedgerIndex({ entries, accounts, filters, account
                     <Statistic title="Account Balance" value={accountBalance} precision={0} prefix="Rp" />
                 )}
             </div>
-            <ProTable rowKey="id" search={false} options={false} pagination={{ showTotal: (total, range) => `${range[0]}-${range[1]} of ${total}` }} dataSource={entries.data} columns={columns} />
+            <ProTable rowKey="id" search={false} options={false} pagination={{ showTotal: (total, range) => `${range[0]}-${range[1]} of ${total}` }} dataSource={entries.data} columns={columns} scroll={{ x: 'max-content' }} />
         </AuthenticatedLayout>
     );
 }

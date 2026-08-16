@@ -105,6 +105,7 @@ export default function RequisitionsShow({ requisition, canApprove }: Requisitio
                     pagination={false}
                     dataSource={requisition.items}
                     columns={columns}
+                    scroll={{ x: 'max-content' }}
                 />
             </Card>
         </AuthenticatedLayout>

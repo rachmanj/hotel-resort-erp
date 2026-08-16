@@ -118,6 +118,7 @@ export default function OrdersIndex({ orders, filters, statusOptions, typeOption
                     pageSize: (orders as { per_page?: number }).per_page ?? 20,
                     onChange: (page) => router.get('/fb/orders', { ...filters, page }, { preserveState: true }),
                 }}
+                scroll={{ x: 'max-content' }}
             />
         </AuthenticatedLayout>
     );

@@ -145,6 +145,7 @@ export default function OrdersShow({ order }: OrdersShowProps) {
                             Total: Rp {order.total_amount.toLocaleString('id-ID')}
                         </div>
                     )}
+                    scroll={{ x: 'max-content' }}
                 />
             </Card>
 

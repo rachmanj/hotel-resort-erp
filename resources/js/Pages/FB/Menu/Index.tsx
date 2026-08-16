@@ -110,6 +110,7 @@ export default function MenuIndex({ categories, categoryOptions }: MenuIndexProp
                 pagination={false}
                 dataSource={flatItems}
                 columns={columns}
+                scroll={{ x: 'max-content' }}
             />
 
             <Modal
