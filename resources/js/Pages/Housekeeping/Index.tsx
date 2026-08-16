@@ -73,7 +73,7 @@ export default function HousekeepingIndex({ columns, outOfOrderRooms, filters, s
                     ))}
                 </div>
                 <Link href="/housekeeping/assignments">
-                    <Tag color="purple" style={{ cursor: 'pointer' }}>Manage Assignments →</Tag>
+                    <Tag color="purple" style={{ cursor: 'pointer' }}>Manage Assignments</Tag>
                 </Link>
             </div>
 

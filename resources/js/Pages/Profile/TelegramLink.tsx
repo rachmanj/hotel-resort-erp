@@ -1,6 +1,6 @@
 import { Head, router, usePage } from '@inertiajs/react';
 import { CheckCircleOutlined, LinkOutlined, SendOutlined } from '@ant-design/icons';
-import { Alert, Button, Card, Space, Statistic, Typography } from 'antd';
+import { Alert, Button, Card, Space, Statistic, theme, Typography } from 'antd';
 import { useEffect, useState } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import type { PageProps } from '@/types';
@@ -14,6 +14,7 @@ interface TelegramLinkProps {
 }
 
 export default function TelegramLink() {
+    const { token } = theme.useToken();
     const { botUsername, linkCode, linkCodeExpiresAt, isLinked, linkedAt } =
         usePage<PageProps & TelegramLinkProps>().props;
 
@@ -76,7 +77,7 @@ export default function TelegramLink() {
                     </div>
 
                     {linkCode && secondsLeft !== null && secondsLeft > 0 && (
-                        <Card size="small" style={{ background: '#f6ffed', borderColor: '#b7eb8f' }}>
+                        <Card size="small" style={{ background: token.colorSuccessBg, borderColor: token.colorSuccessBorder }}>
                             <Space direction="vertical" style={{ width: '100%' }}>
                                 <Typography.Text strong>Your link code:</Typography.Text>
                                 <Typography.Title level={2} style={{ margin: 0, letterSpacing: 8 }}>

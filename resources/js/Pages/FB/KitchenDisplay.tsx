@@ -1,5 +1,5 @@
 import { Head, router } from '@inertiajs/react';
-import { Button, Card, Col, Row, Tag, Typography } from 'antd';
+import { Button, Card, Col, Row, Tag, theme, Typography } from 'antd';
 import { useEffect } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { useAuth } from '@/hooks/useAuth';
@@ -53,6 +53,7 @@ function updateItemStatus(orderId: number, itemId: number, status: string): void
 
 export default function KitchenDisplay({ columns }: KitchenDisplayProps) {
     const { can } = useAuth();
+    const { token } = theme.useToken();
     const canUpdateItemStatus = can('fb.orders.update_status') || can('fb.manage');
 
     useEffect(() => {
@@ -109,7 +110,7 @@ export default function KitchenDisplay({ columns }: KitchenDisplayProps) {
                                             style={{
                                                 marginBottom: 8,
                                                 padding: '4px 0',
-                                                borderBottom: '1px solid #f0f0f0',
+                                                borderBottom: `1px solid ${token.colorBorderSecondary}`,
                                             }}
                                         >
                                             <div

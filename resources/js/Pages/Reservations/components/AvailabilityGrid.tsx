@@ -1,4 +1,4 @@
-import { Table, Tag } from 'antd';
+import { Table, Tag, theme } from 'antd';
 
 interface AvailabilityRow {
     room_type_id: number;
@@ -19,6 +19,8 @@ export default function AvailabilityGrid({
     selectedRoomTypeId,
     onSelect,
 }: AvailabilityGridProps) {
+    const { token } = theme.useToken();
+
     return (
         <Table
             size="small"
@@ -30,7 +32,7 @@ export default function AvailabilityGrid({
                 style: {
                     cursor: 'pointer',
                     background:
-                        selectedRoomTypeId === record.room_type_id ? '#e6f4ff' : undefined,
+                        selectedRoomTypeId === record.room_type_id ? token.colorPrimaryBg : undefined,
                 },
             })}
             columns={[

@@ -1,7 +1,7 @@
 import '../css/app.css';
 import { createInertiaApp } from '@inertiajs/react';
 import { createRoot } from 'react-dom/client';
-import { ConfigProvider, theme as antTheme } from 'antd';
+import { ConfigProvider, theme as antTheme, Empty } from 'antd';
 import enUS from 'antd/locale/en_US';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { ThemeProvider, useTheme } from './hooks/useTheme';
@@ -25,9 +25,12 @@ function AppWrapper({ children }) {
                 token: {
                     colorPrimary: '#1677ff',
                     borderRadius: 6,
-                    controlHeight: 40,
+                    controlHeight: 44,
                 },
             }}
+            renderEmpty={() => (
+                <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="No records yet" />
+            )}
         >
             {children}
         </ConfigProvider>
