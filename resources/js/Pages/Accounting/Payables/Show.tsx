@@ -53,7 +53,7 @@ export default function PayablesShow({ invoice }: PayablesShowProps) {
                 <Descriptions bordered column={2}>
                     <Descriptions.Item label="Invoice No">{invoice.invoice_no}</Descriptions.Item>
                     <Descriptions.Item label="Supplier">{invoice.supplier_name}</Descriptions.Item>
-                    <Descriptions.Item label="PO">{invoice.purchase_order_no ?? '—'}</Descriptions.Item>
+                    <Descriptions.Item label="PO">{invoice.purchase_order_no ?? '–'}</Descriptions.Item>
                     <Descriptions.Item label="Status">
                         <Tag>{invoice.status_label}</Tag>
                     </Descriptions.Item>

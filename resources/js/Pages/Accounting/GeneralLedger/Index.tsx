@@ -36,7 +36,7 @@ export default function GeneralLedgerIndex({ entries, accounts, filters, account
         { title: 'Ref', dataIndex: 'reference_number', width: 120 },
     ];
 
-    const accountOptions = accounts.map((a) => ({ value: a.id, label: `${a.account_code} — ${a.name}` }));
+    const accountOptions = accounts.map((a) => ({ value: a.id, label: `${a.account_code} · ${a.name}` }));
 
     return (
         <AuthenticatedLayout title="General Ledger">

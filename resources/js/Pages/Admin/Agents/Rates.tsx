@@ -88,18 +88,18 @@ export default function AgentRates({ agent, rates, roomTypes, ratePlans, discoun
 
     const columns: ProColumns<AgentRateRow>[] = [
         { title: 'Room Type', dataIndex: ['room_type', 'name'] },
-        { title: 'Rate Plan', dataIndex: ['rate_plan', 'name'], render: (v) => v ?? '—' },
+        { title: 'Rate Plan', dataIndex: ['rate_plan', 'name'], render: (v) => v ?? '–' },
         {
             title: 'Nightly Rate',
             dataIndex: 'nightly_rate',
-            render: (v) => (v ? `Rp ${Number(v).toLocaleString('id-ID')}` : '—'),
+            render: (v) => (v ? `Rp ${Number(v).toLocaleString('id-ID')}` : '–'),
         },
         {
             title: 'Discount',
             render: (_, r) =>
                 r.discount_type
                     ? `${r.discount_type_label}: ${r.discount_value}`
-                    : '—',
+                    : '–',
         },
         {
             title: 'Valid',
@@ -122,8 +122,8 @@ export default function AgentRates({ agent, rates, roomTypes, ratePlans, discoun
     ];
 
     return (
-        <AuthenticatedLayout title={`Agent Rates — ${agent.name}`}>
-            <Head title={`Agent Rates — ${agent.name}`} />
+        <AuthenticatedLayout title={`Agent Rates · ${agent.name}`}>
+            <Head title={`Agent Rates · ${agent.name}`} />
             <p style={{ marginBottom: 16 }}>
                 <Link href="/admin/agents">← Back to Agents</Link>
             </p>

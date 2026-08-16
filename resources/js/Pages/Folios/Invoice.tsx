@@ -51,14 +51,14 @@ export default function FolioInvoice({ folio, balance, charges_total }: FolioInv
 
                 <Descriptions bordered column={2} size="small" style={{ marginBottom: 24 }}>
                     <Descriptions.Item label="Guest">{folio.guest?.full_name}</Descriptions.Item>
-                    <Descriptions.Item label="Phone">{folio.guest?.phone ?? '—'}</Descriptions.Item>
+                    <Descriptions.Item label="Phone">{folio.guest?.phone ?? '–'}</Descriptions.Item>
                     <Descriptions.Item label="Reservation">{folio.reservation?.reservation_code}</Descriptions.Item>
                     <Descriptions.Item label="Stay">
-                        {folio.reservation?.arrival_date} — {folio.reservation?.departure_date}
+                        {folio.reservation?.arrival_date} · {folio.reservation?.departure_date}
                     </Descriptions.Item>
                     {folio.company && (
                         <Descriptions.Item label="Bill To" span={2}>
-                            {folio.company.name} (NPWP: {folio.company.tax_id ?? '—'})
+                            {folio.company.name} (NPWP: {folio.company.tax_id ?? '–'})
                         </Descriptions.Item>
                     )}
                 </Descriptions>

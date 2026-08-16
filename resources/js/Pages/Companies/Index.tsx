@@ -26,9 +26,9 @@ const formatIdr = (v: string) => `Rp ${Number(v).toLocaleString('id-ID')}`;
 export default function CompaniesIndex({ companies, filters }: CompaniesIndexProps) {
     const columns: ProColumns<CompanyRow>[] = [
         { title: 'Name', dataIndex: 'name' },
-        { title: 'NPWP', dataIndex: 'tax_id', render: (v) => v ?? '—' },
-        { title: 'Phone', dataIndex: 'phone', render: (v) => v ?? '—' },
-        { title: 'Email', dataIndex: 'email', render: (v) => v ?? '—' },
+        { title: 'NPWP', dataIndex: 'tax_id', render: (v) => v ?? '–' },
+        { title: 'Phone', dataIndex: 'phone', render: (v) => v ?? '–' },
+        { title: 'Email', dataIndex: 'email', render: (v) => v ?? '–' },
         { title: 'Credit Limit', dataIndex: 'credit_limit', render: formatIdr },
         { title: 'Terms (days)', dataIndex: 'payment_terms_days' },
         {

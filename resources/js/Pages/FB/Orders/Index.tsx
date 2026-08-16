@@ -59,14 +59,14 @@ export default function OrdersIndex({ orders, filters, statusOptions, typeOption
             dataIndex: 'total_amount',
             render: (v) => `Rp ${Number(v).toLocaleString('id-ID')}`,
         },
-        { title: 'Table', dataIndex: 'table', render: (v) => v ?? '—' },
-        { title: 'Guest', dataIndex: 'guest', render: (v) => v ?? '—' },
+        { title: 'Table', dataIndex: 'table', render: (v) => v ?? '–' },
+        { title: 'Guest', dataIndex: 'guest', render: (v) => v ?? '–' },
         { title: 'Opened By', dataIndex: 'opened_by' },
         { title: 'Created', dataIndex: 'created_at' },
         {
             title: 'Room Charge',
             dataIndex: 'charged_to_room',
-            render: (v) => (v ? <Tag color="purple">Yes</Tag> : '—'),
+            render: (v) => (v ? <Tag color="purple">Yes</Tag> : '–'),
         },
     ];
 

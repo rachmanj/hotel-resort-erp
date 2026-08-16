@@ -42,11 +42,11 @@ export default function CheckInModal({ open, reservation, onClose }: CheckInModa
             <Descriptions column={1} size="small" bordered>
                 <Descriptions.Item label="Reservation">{reservation.reservation_code}</Descriptions.Item>
                 <Descriptions.Item label="Guest">{reservation.guest?.full_name}</Descriptions.Item>
-                <Descriptions.Item label="ID">{reservation.guest?.id_number ?? '—'}</Descriptions.Item>
-                <Descriptions.Item label="Phone">{reservation.guest?.phone ?? '—'}</Descriptions.Item>
+                <Descriptions.Item label="ID">{reservation.guest?.id_number ?? '–'}</Descriptions.Item>
+                <Descriptions.Item label="Phone">{reservation.guest?.phone ?? '–'}</Descriptions.Item>
                 <Descriptions.Item label="Room(s)">
                     {reservation.reservation_rooms
-                        .map((rr) => `${rr.room?.number ?? '—'} (${rr.room_type?.name})`)
+                        .map((rr) => `${rr.room?.number ?? '–'} (${rr.room_type?.name})`)
                         .join(', ')}
                 </Descriptions.Item>
             </Descriptions>

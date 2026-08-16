@@ -10,7 +10,7 @@ import 'dayjs/locale/en';
 
 dayjs.locale('en');
 
-const appName = import.meta.env.VITE_APP_NAME || 'Hotel ERP';
+const appName = import.meta.env.VITE_APP_NAME || 'Pratasaba ERP';
 
 export { useTheme };
 

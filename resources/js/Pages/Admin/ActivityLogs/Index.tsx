@@ -65,7 +65,7 @@ export default function ActivityLogsIndex({
             title: 'User',
             dataIndex: ['user', 'name'],
             width: 140,
-            render: (_, row) => row.user?.name ?? '—',
+            render: (_, row) => row.user?.name ?? '–',
         },
         {
             title: 'Action',

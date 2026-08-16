@@ -51,14 +51,14 @@ export default function GuestShow({ guest, canEdit }: GuestShowProps) {
                         {guest.vip_tier !== 'none' ? (
                             <Tag color="gold">{guest.vip_tier_label}</Tag>
                         ) : (
-                            '—'
+                            '–'
                         )}
                     </Descriptions.Item>
-                    <Descriptions.Item label="Phone">{guest.phone ?? '—'}</Descriptions.Item>
-                    <Descriptions.Item label="Email">{guest.email ?? '—'}</Descriptions.Item>
-                    <Descriptions.Item label="ID Type">{guest.id_type_label ?? '—'}</Descriptions.Item>
-                    <Descriptions.Item label="ID Number">{guest.id_number ?? '—'}</Descriptions.Item>
-                    <Descriptions.Item label="Nationality">{guest.nationality ?? '—'}</Descriptions.Item>
+                    <Descriptions.Item label="Phone">{guest.phone ?? '–'}</Descriptions.Item>
+                    <Descriptions.Item label="Email">{guest.email ?? '–'}</Descriptions.Item>
+                    <Descriptions.Item label="ID Type">{guest.id_type_label ?? '–'}</Descriptions.Item>
+                    <Descriptions.Item label="ID Number">{guest.id_number ?? '–'}</Descriptions.Item>
+                    <Descriptions.Item label="Nationality">{guest.nationality ?? '–'}</Descriptions.Item>
                     <Descriptions.Item label="Status">
                         {guest.is_blacklisted ? (
                             <Tag color="red">Blacklisted</Tag>
@@ -71,7 +71,7 @@ export default function GuestShow({ guest, canEdit }: GuestShowProps) {
                             {guest.blacklist_reason}
                         </Descriptions.Item>
                     )}
-                    <Descriptions.Item label="Address" span={2}>{guest.address ?? '—'}</Descriptions.Item>
+                    <Descriptions.Item label="Address" span={2}>{guest.address ?? '–'}</Descriptions.Item>
                 </Descriptions>
             ),
         },
@@ -107,7 +107,7 @@ export default function GuestShow({ guest, canEdit }: GuestShowProps) {
                     columns={[
                         { title: 'Key', dataIndex: 'key' },
                         { title: 'Value', dataIndex: 'value' },
-                        { title: 'Notes', dataIndex: 'notes', render: (v) => v ?? '—' },
+                        { title: 'Notes', dataIndex: 'notes', render: (v) => v ?? '–' },
                     ]}
                 />
             ),

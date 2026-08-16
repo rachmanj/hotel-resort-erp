@@ -50,12 +50,12 @@ export default function HousekeepingAssignments({
     const columns: ProColumns<AssignmentRow>[] = [
         {
             title: 'Room',
-            render: (_, record) => record.room?.number ?? '—',
+            render: (_, record) => record.room?.number ?? '–',
         },
-        { title: 'Type', dataIndex: 'room_type', render: (v) => v ?? '—' },
+        { title: 'Type', dataIndex: 'room_type', render: (v) => v ?? '–' },
         {
             title: 'Housekeeper',
-            render: (_, record) => record.housekeeper?.name ?? '—',
+            render: (_, record) => record.housekeeper?.name ?? '–',
         },
         { title: 'Shift', dataIndex: 'shift_label' },
         { title: 'Status', dataIndex: 'status_label' },
@@ -155,7 +155,7 @@ export default function HousekeepingAssignments({
                             placeholder="Select rooms"
                             options={rooms.map((r) => ({
                                 value: r.id,
-                                label: `Room ${r.number} (${r.room_type ?? '—'})`,
+                                label: `Room ${r.number} (${r.room_type ?? '–'})`,
                             }))}
                             value={form.data.room_ids}
                             onChange={(value) => form.setData('room_ids', value)}

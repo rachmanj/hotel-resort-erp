@@ -28,7 +28,7 @@ export default function RateSelector({
 
     const options = filtered.map((p) => ({
         value: p.id,
-        label: `${p.name} — Rp ${Number(p.nightly_rate).toLocaleString('id-ID')}`,
+        label: `${p.name} · Rp ${Number(p.nightly_rate).toLocaleString('id-ID')}`,
         nightly_rate: Number(p.nightly_rate),
     }));
 

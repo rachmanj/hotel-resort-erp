@@ -38,11 +38,11 @@ export default function RequisitionsShow({ requisition, canApprove }: Requisitio
     const columns: ProColumns<RequisitionItem>[] = [
         {
             title: 'Item Name',
-            render: (_, r) => r.inventory_item?.name ?? '—',
+            render: (_, r) => r.inventory_item?.name ?? '–',
         },
         {
             title: 'Unit',
-            render: (_, r) => r.inventory_item?.unit ?? '—',
+            render: (_, r) => r.inventory_item?.unit ?? '–',
         },
         {
             title: 'Quantity Requested',
@@ -84,10 +84,10 @@ export default function RequisitionsShow({ requisition, canApprove }: Requisitio
                     <Descriptions.Item label="Department">{requisition.department}</Descriptions.Item>
                     <Descriptions.Item label="Created">{requisition.created_at}</Descriptions.Item>
                     <Descriptions.Item label="Requested By">
-                        {requisition.requested_by?.name ?? '—'}
+                        {requisition.requested_by?.name ?? '–'}
                     </Descriptions.Item>
                     <Descriptions.Item label="Approved By">
-                        {requisition.approved_by?.name ?? '—'}
+                        {requisition.approved_by?.name ?? '–'}
                     </Descriptions.Item>
                     {requisition.notes && (
                         <Descriptions.Item label="Notes" span={2}>

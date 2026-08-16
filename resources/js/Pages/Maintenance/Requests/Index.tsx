@@ -33,11 +33,11 @@ export default function MaintenanceRequestsIndex({ requests, filters, statusOpti
     const { can } = useAuth();
     const columns: ProColumns<RequestRow>[] = [
         { title: 'Description', dataIndex: 'description', ellipsis: true },
-        { title: 'Room', render: (_, r) => r.room?.number ?? '—' },
+        { title: 'Room', render: (_, r) => r.room?.number ?? '–' },
         { title: 'Priority', render: (_, r) => <Tag color={priorityColors[r.priority]}>{r.priority_label}</Tag> },
         { title: 'Status', render: (_, r) => <Tag>{r.status_label}</Tag> },
         { title: 'Reporter', render: (_, r) => r.reporter?.name },
-        { title: 'Assigned', render: (_, r) => r.assignee?.name ?? '—' },
+        { title: 'Assigned', render: (_, r) => r.assignee?.name ?? '–' },
         { title: 'Created', dataIndex: 'created_at' },
         can('maintenance.manage') && {
             title: 'Actions',

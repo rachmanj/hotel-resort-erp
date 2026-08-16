@@ -130,7 +130,7 @@ export default function ReservationCreate({
             content: (
                 <div>
                     <p style={{ marginBottom: 12 }}>
-                        {nights} night(s) — select a room type with availability
+                        {nights} night(s) · select a room type with availability
                     </p>
                     <AvailabilityGrid
                         availability={availability}
@@ -239,7 +239,7 @@ export default function ReservationCreate({
                     <p><strong>Departure:</strong> {form.data.departure_date}</p>
                     <p><strong>Room type:</strong> {selectedRoomType?.name}</p>
                     <p><strong>Guest:</strong> {form.data.guest.full_name}</p>
-                    <p><strong>Phone:</strong> {form.data.guest.phone || '—'}</p>
+                    <p><strong>Phone:</strong> {form.data.guest.phone || '–'}</p>
                     <p><strong>Nights:</strong> {nights}</p>
                 </div>
             ),

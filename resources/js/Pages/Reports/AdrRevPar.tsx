@@ -23,7 +23,7 @@ interface AdrRevParProps {
 
 function formatVariance(pct: number | null): string {
     if (pct === null) {
-        return '—';
+        return '–';
     }
 
     const sign = pct >= 0 ? '+' : '';

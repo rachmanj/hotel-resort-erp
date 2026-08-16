@@ -75,11 +75,11 @@ export default function OrdersShow({ order }: OrdersShowProps) {
     const columns: ProColumns<OrderItem>[] = [
         {
             title: 'Item',
-            render: (_, r) => r.inventory_item?.name ?? '—',
+            render: (_, r) => r.inventory_item?.name ?? '–',
         },
         {
             title: 'Unit',
-            render: (_, r) => r.inventory_item?.unit ?? '—',
+            render: (_, r) => r.inventory_item?.unit ?? '–',
         },
         { title: 'Qty Ordered', dataIndex: 'quantity_ordered' },
         { title: 'Qty Received', dataIndex: 'quantity_received' },
@@ -115,16 +115,16 @@ export default function OrdersShow({ order }: OrdersShowProps) {
                         <Tag color={statusColors[order.status]}>{order.status_label}</Tag>
                     </Descriptions.Item>
                     <Descriptions.Item label="Supplier">
-                        {order.supplier?.name ?? '—'}
+                        {order.supplier?.name ?? '–'}
                     </Descriptions.Item>
                     <Descriptions.Item label="Requisition">
-                        {order.requisition_no ?? '—'}
+                        {order.requisition_no ?? '–'}
                     </Descriptions.Item>
                     <Descriptions.Item label="Ordered At">
-                        {order.ordered_at ?? '—'}
+                        {order.ordered_at ?? '–'}
                     </Descriptions.Item>
                     <Descriptions.Item label="Expected Delivery">
-                        {order.expected_at ?? '—'}
+                        {order.expected_at ?? '–'}
                     </Descriptions.Item>
                     <Descriptions.Item label="Total Amount">
                         Rp {order.total_amount.toLocaleString('id-ID')}

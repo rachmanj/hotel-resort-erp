@@ -131,7 +131,7 @@ export default function ReservationShow({
                 {reservation.promotion && (
                     <Descriptions.Item label="Promotion" span={2}>
                         <Tag color="green">
-                            {reservation.promotion.name} — {reservation.promotion.discount_summary}
+                            {reservation.promotion.name} · {reservation.promotion.discount_summary}
                         </Tag>
                     </Descriptions.Item>
                 )}
@@ -150,9 +150,9 @@ export default function ReservationShow({
                         <Tag color="red" style={{ marginLeft: 8 }}>BLACKLISTED</Tag>
                     )}
                 </Descriptions.Item>
-                <Descriptions.Item label="Phone">{reservation.guest?.phone ?? '—'}</Descriptions.Item>
-                <Descriptions.Item label="Email">{reservation.guest?.email ?? '—'}</Descriptions.Item>
-                <Descriptions.Item label="ID">{reservation.guest?.id_number ?? '—'}</Descriptions.Item>
+                <Descriptions.Item label="Phone">{reservation.guest?.phone ?? '–'}</Descriptions.Item>
+                <Descriptions.Item label="Email">{reservation.guest?.email ?? '–'}</Descriptions.Item>
+                <Descriptions.Item label="ID">{reservation.guest?.id_number ?? '–'}</Descriptions.Item>
             </Descriptions>
 
             <h3>Rooms</h3>
@@ -163,7 +163,7 @@ export default function ReservationShow({
                 childrenColumnName="rowChildren"
                 dataSource={reservation.reservation_rooms}
                 columns={[
-                    { title: 'Room', dataIndex: ['room', 'number'], render: (v) => v ?? '—' },
+                    { title: 'Room', dataIndex: ['room', 'number'], render: (v) => v ?? '–' },
                     { title: 'Type', dataIndex: ['room_type', 'name'] },
                     { title: 'Rate plan', dataIndex: ['rate_plan', 'name'], render: (v) => v ?? 'Base' },
                     {
@@ -173,7 +173,7 @@ export default function ReservationShow({
                             record.promotion ? (
                                 <Tag color="green">{record.promotion.name}</Tag>
                             ) : (
-                                '—'
+                                '–'
                             ),
                     },
                     {

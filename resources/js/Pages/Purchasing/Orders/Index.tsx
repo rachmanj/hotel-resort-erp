@@ -27,7 +27,7 @@ export default function PurchaseOrdersIndex({ orders, filters, statusOptions }: 
             dataIndex: 'po_no',
             render: (_, r) => <Link href={`/purchasing/orders/${r.id}`}>{r.po_no}</Link>,
         },
-        { title: 'Supplier', render: (_, r) => r.supplier?.name ?? '—' },
+        { title: 'Supplier', render: (_, r) => r.supplier?.name ?? '–' },
         { title: 'Status', dataIndex: 'status_label', render: (_, r) => <Tag>{r.status_label}</Tag> },
         { title: 'Total', render: (_, r) => `Rp ${r.total_amount.toLocaleString('id-ID')}` },
         { title: 'Ordered', dataIndex: 'ordered_at' },

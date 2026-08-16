@@ -52,7 +52,7 @@ export default function GuestSearchSelect({
 
     const selectOptions = options.map((g) => ({
         value: g.id,
-        label: `${g.full_name}${g.phone ? ` — ${g.phone}` : ''}`,
+        label: `${g.full_name}${g.phone ? ` · ${g.phone}` : ''}`,
         guest: g,
     }));
 

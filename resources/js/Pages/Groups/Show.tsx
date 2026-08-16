@@ -123,10 +123,10 @@ export default function GroupShow({
                 </Descriptions.Item>
                 <Descriptions.Item label="Name">{group.name}</Descriptions.Item>
                 <Descriptions.Item label="Type">{group.group_type_label}</Descriptions.Item>
-                <Descriptions.Item label="PIC">{group.pic_guest?.full_name ?? '—'}</Descriptions.Item>
-                <Descriptions.Item label="Company">{group.company?.name ?? '—'}</Descriptions.Item>
-                <Descriptions.Item label="Arrival">{group.arrival_date ?? '—'}</Descriptions.Item>
-                <Descriptions.Item label="Departure">{group.departure_date ?? '—'}</Descriptions.Item>
+                <Descriptions.Item label="PIC">{group.pic_guest?.full_name ?? '–'}</Descriptions.Item>
+                <Descriptions.Item label="Company">{group.company?.name ?? '–'}</Descriptions.Item>
+                <Descriptions.Item label="Arrival">{group.arrival_date ?? '–'}</Descriptions.Item>
+                <Descriptions.Item label="Departure">{group.departure_date ?? '–'}</Descriptions.Item>
                 <Descriptions.Item label="Rooms">{group.room_count}</Descriptions.Item>
                 <Descriptions.Item label="Invoice Mode">{group.invoice_mode_label}</Descriptions.Item>
                 <Descriptions.Item label="Deposit Required">{formatIdr(group.deposit_amount)}</Descriptions.Item>
@@ -155,7 +155,7 @@ export default function GroupShow({
                     },
                     {
                         title: 'Guest',
-                        render: (_, record) => record.guest?.full_name ?? '—',
+                        render: (_, record) => record.guest?.full_name ?? '–',
                     },
                     {
                         title: 'Status',

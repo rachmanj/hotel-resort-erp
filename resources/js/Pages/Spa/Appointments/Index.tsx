@@ -84,7 +84,7 @@ export default function AppointmentsIndex({
         { title: 'Date/Time', dataIndex: 'scheduled_at' },
         { title: 'Treatment', dataIndex: ['treatment', 'name'] },
         { title: 'Therapist', dataIndex: ['therapist', 'name'] },
-        { title: 'Guest', dataIndex: ['guest', 'full_name'], render: (_, r) => r.guest?.full_name ?? '—' },
+        { title: 'Guest', dataIndex: ['guest', 'full_name'], render: (_, r) => r.guest?.full_name ?? '–' },
         {
             title: 'Status',
             dataIndex: 'status_label',
@@ -98,7 +98,7 @@ export default function AppointmentsIndex({
         {
             title: 'Room Charge',
             dataIndex: 'charged_to_room',
-            render: (v) => (v ? <Tag color="purple">Yes</Tag> : '—'),
+            render: (v) => (v ? <Tag color="purple">Yes</Tag> : '–'),
         },
         can('spa.manage') && {
             title: 'Actions',
@@ -217,7 +217,7 @@ export default function AppointmentsIndex({
                             value={createForm.data.reservation_id}
                             options={checkedInReservations.map((r) => ({
                                 value: r.id,
-                                label: `${r.reservation_code} — ${r.guest_name}`,
+                                label: `${r.reservation_code} · ${r.guest_name}`,
                             }))}
                             onChange={onReservationChange}
                         />
@@ -261,7 +261,7 @@ export default function AppointmentsIndex({
                             value={chargeForm.data.reservation_id}
                             options={checkedInReservations.map((r) => ({
                                 value: r.id,
-                                label: `${r.reservation_code} — ${r.guest_name}`,
+                                label: `${r.reservation_code} · ${r.guest_name}`,
                             }))}
                             onChange={(v) => chargeForm.setData('reservation_id', v)}
                         />

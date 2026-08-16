@@ -125,7 +125,7 @@ export default function AgentsIndex({
         {
             title: 'Channel',
             dataIndex: 'channel_code',
-            render: (v) => v ?? '—',
+            render: (v) => v ?? '–',
         },
         {
             title: 'Commission',

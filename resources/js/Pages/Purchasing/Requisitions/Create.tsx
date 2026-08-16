@@ -146,12 +146,12 @@ export default function RequisitionsCreate({ inventoryItems }: RequisitionsCreat
                         {
                             title: 'Unit',
                             width: 100,
-                            render: (_, row) => row.unit || '—',
+                            render: (_, row) => row.unit || '–',
                         },
                         {
                             title: 'Current Stock',
                             width: 120,
-                            render: (_, row) => row.inventory_item_id ? row.current_stock : '—',
+                            render: (_, row) => row.inventory_item_id ? row.current_stock : '–',
                         },
                         {
                             title: '',

@@ -46,8 +46,8 @@ export default function TherapistsIndex({ therapists, userOptions }: TherapistsI
 
     const columns: ProColumns<TherapistRow>[] = [
         { title: 'Name', dataIndex: 'name' },
-        { title: 'Phone', dataIndex: 'phone', render: (v) => v ?? '—' },
-        { title: 'Linked User', dataIndex: ['user', 'name'], render: (_, r) => r.user?.name ?? '—' },
+        { title: 'Phone', dataIndex: 'phone', render: (v) => v ?? '–' },
+        { title: 'Linked User', dataIndex: ['user', 'name'], render: (_, r) => r.user?.name ?? '–' },
         can('spa.manage') && {
             title: 'Actions',
             render: (_, record) => (

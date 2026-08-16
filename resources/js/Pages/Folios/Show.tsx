@@ -109,7 +109,7 @@ export default function FolioShow({
                 {folio.reservation?.promotion && (
                     <Descriptions.Item label="Promotion" span={2}>
                         <Tag color="green">
-                            {folio.reservation.promotion.name} —{' '}
+                            {folio.reservation.promotion.name} ·{' '}
                             {folio.reservation.promotion.discount_summary}
                         </Tag>
                     </Descriptions.Item>
@@ -155,7 +155,7 @@ export default function FolioShow({
                 columns={[
                     { title: 'Date', dataIndex: 'paid_at' },
                     { title: 'Method', dataIndex: 'method_label' },
-                    { title: 'Reference', dataIndex: 'reference_no', render: (v) => v ?? '—' },
+                    { title: 'Reference', dataIndex: 'reference_no', render: (v) => v ?? '–' },
                     { title: 'Amount', dataIndex: 'amount', render: formatIdr },
                     { title: 'Received By', dataIndex: ['received_by', 'name'] },
                 ]}

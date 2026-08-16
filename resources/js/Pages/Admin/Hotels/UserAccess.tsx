@@ -20,8 +20,8 @@ export default function UserAccess({ hotel, assignedUserIds, users }: UserAccess
     });
 
     return (
-        <AuthenticatedLayout title={`User Access — ${hotel.name}`}>
-            <Head title={`User Access — ${hotel.name}`} />
+        <AuthenticatedLayout title={`User Access · ${hotel.name}`}>
+            <Head title={`User Access · ${hotel.name}`} />
             <Link href="/admin/hotels" style={{ display: 'inline-block', marginBottom: 16 }}>
                 &larr; Back to Hotels
             </Link>

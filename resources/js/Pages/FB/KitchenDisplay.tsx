@@ -100,7 +100,7 @@ export default function KitchenDisplay({ columns }: KitchenDisplayProps) {
                                 extra={<Tag>{order.order_type}</Tag>}
                             >
                                 <Typography.Text type="secondary">
-                                    {order.table ?? order.guest ?? '—'}
+                                    {order.table ?? order.guest ?? '–'}
                                 </Typography.Text>
                                 <ul style={{ margin: '8px 0 0', paddingLeft: 0, listStyle: 'none' }}>
                                     {order.items.map((item) => (

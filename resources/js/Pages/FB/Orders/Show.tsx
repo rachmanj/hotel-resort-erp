@@ -109,8 +109,8 @@ export default function OrdersShow({ order, statusOptions, checkedInReservations
                             <Descriptions.Item label="Total">
                                 Rp {order.total_amount.toLocaleString('id-ID')}
                             </Descriptions.Item>
-                            <Descriptions.Item label="Table">{order.table ?? '—'}</Descriptions.Item>
-                            <Descriptions.Item label="Guest">{order.guest ?? '—'}</Descriptions.Item>
+                            <Descriptions.Item label="Table">{order.table ?? '–'}</Descriptions.Item>
+                            <Descriptions.Item label="Guest">{order.guest ?? '–'}</Descriptions.Item>
                             <Descriptions.Item label="Opened By">{order.opened_by}</Descriptions.Item>
                             <Descriptions.Item label="Created">{order.created_at}</Descriptions.Item>
                             <Descriptions.Item label="Charged to Room">
@@ -166,7 +166,7 @@ export default function OrdersShow({ order, statusOptions, checkedInReservations
                                     title: 'Line Total',
                                     render: (_, r) => `Rp ${r.line_total.toLocaleString('id-ID')}`,
                                 },
-                                { title: 'Notes', dataIndex: 'notes', render: (v) => v ?? '—' },
+                                { title: 'Notes', dataIndex: 'notes', render: (v) => v ?? '–' },
                                 {
                                     title: 'Status',
                                     render: (_, r) => (
@@ -205,7 +205,7 @@ export default function OrdersShow({ order, statusOptions, checkedInReservations
                             value={chargeForm.data.reservation_id}
                             options={checkedInReservations.map((r) => ({
                                 value: r.id,
-                                label: `${r.reservation_code} — ${r.guest_name}`,
+                                label: `${r.reservation_code} · ${r.guest_name}`,
                             }))}
                             onChange={(v) => chargeForm.setData('reservation_id', v)}
                         />

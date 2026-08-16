@@ -95,7 +95,7 @@ export default function CurrenciesIndex({ currencies }: CurrenciesIndexProps) {
             {currencies.map((currency) => (
                 <Card
                     key={currency.id}
-                    title={`${currency.code} — Rate History`}
+                    title={`${currency.code} · Rate History`}
                     style={{ marginTop: 16 }}
                     size="small"
                 >
@@ -124,7 +124,7 @@ export default function CurrenciesIndex({ currencies }: CurrenciesIndexProps) {
             ))}
 
             <Modal
-                title={selectedCurrency ? `New Rate — ${selectedCurrency.code}` : 'New Rate'}
+                title={selectedCurrency ? `New Rate · ${selectedCurrency.code}` : 'New Rate'}
                 open={modalOpen}
                 onCancel={() => setModalOpen(false)}
                 onOk={submitRate}

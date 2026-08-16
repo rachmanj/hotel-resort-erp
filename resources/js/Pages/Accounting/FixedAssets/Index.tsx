@@ -27,7 +27,7 @@ interface FixedAssetsIndexProps {
     accumAccounts: Array<{ id: number; account_code: string; name: string }>;
 }
 
-const formatIdr = (n: number | null) => (n !== null ? `Rp ${n.toLocaleString('id-ID')}` : '—');
+const formatIdr = (n: number | null) => (n !== null ? `Rp ${n.toLocaleString('id-ID')}` : '–');
 
 export default function FixedAssetsIndex({
     assets,

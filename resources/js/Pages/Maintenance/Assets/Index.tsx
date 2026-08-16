@@ -24,9 +24,9 @@ export default function AssetsIndex({ assets }: AssetsIndexProps) {
     const columns: ProColumns<AssetRow>[] = [
         { title: 'Name', dataIndex: 'name' },
         { title: 'Type', dataIndex: 'asset_type_label' },
-        { title: 'Location', dataIndex: 'location', render: (v, r) => v ?? r.room?.number ?? '—' },
+        { title: 'Location', dataIndex: 'location', render: (v, r) => v ?? r.room?.number ?? '–' },
         { title: 'Status', render: (_, r) => <Tag>{r.status_label}</Tag> },
-        { title: 'Warranty Until', dataIndex: 'warranty_until', render: (v) => v ?? '—' },
+        { title: 'Warranty Until', dataIndex: 'warranty_until', render: (v) => v ?? '–' },
     ];
 
     return (

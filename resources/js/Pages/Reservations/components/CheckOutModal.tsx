@@ -42,7 +42,7 @@ export default function CheckOutModal({
 
     return (
         <Modal
-            title={`Check Out — Room ${reservationRoom.room?.number ?? '—'}`}
+            title={`Check Out · Room ${reservationRoom.room?.number ?? '–'}`}
             open={open}
             onCancel={onClose}
             footer={[
@@ -66,7 +66,7 @@ export default function CheckOutModal({
             ]}
         >
             <Descriptions column={1} size="small" bordered>
-                <Descriptions.Item label="Room">{reservationRoom.room?.number ?? '—'}</Descriptions.Item>
+                <Descriptions.Item label="Room">{reservationRoom.room?.number ?? '–'}</Descriptions.Item>
                 <Descriptions.Item label="Nightly Rate">
                     {formatIdr(Number(reservationRoom.nightly_rate))}
                 </Descriptions.Item>
@@ -82,7 +82,7 @@ export default function CheckOutModal({
                     style={{ marginTop: 16 }}
                     type="info"
                     showIcon
-                    message="Billed to company — no settlement required"
+                    message="Billed to company · no settlement required"
                 />
             )}
 
@@ -91,7 +91,7 @@ export default function CheckOutModal({
                     style={{ marginTop: 16 }}
                     type="warning"
                     showIcon
-                    message={`Outstanding balance: ${formatIdr(folioBalance)} — settle before checkout`}
+                    message={`Outstanding balance: ${formatIdr(folioBalance)} · settle before checkout`}
                 />
             )}
 

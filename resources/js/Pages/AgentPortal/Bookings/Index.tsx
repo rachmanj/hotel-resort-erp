@@ -36,7 +36,7 @@ export default function BookingsIndex({ bookings, agent, filters }: BookingsInde
     const columns: ProColumns<BookingRow>[] = [
         { title: 'Code', dataIndex: 'reservation_code' },
         { title: 'Guest', dataIndex: 'guest_name' },
-        { title: 'Phone', dataIndex: 'guest_phone', render: (v) => v ?? '—' },
+        { title: 'Phone', dataIndex: 'guest_phone', render: (v) => v ?? '–' },
         {
             title: 'Status',
             dataIndex: 'status_label',
@@ -45,7 +45,7 @@ export default function BookingsIndex({ bookings, agent, filters }: BookingsInde
         { title: 'Arrival', dataIndex: 'arrival_date' },
         { title: 'Departure', dataIndex: 'departure_date' },
         { title: 'Room', dataIndex: 'room_number', render: (v) => v ?? 'TBA' },
-        { title: 'Room Type', dataIndex: 'room_type', render: (v) => v ?? '—' },
+        { title: 'Room Type', dataIndex: 'room_type', render: (v) => v ?? '–' },
     ];
 
     return (

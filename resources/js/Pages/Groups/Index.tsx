@@ -49,7 +49,7 @@ export default function GroupsIndex({ groups, statuses, groupTypes, filters }: G
         {
             title: 'PIC',
             dataIndex: ['pic_guest', 'full_name'],
-            render: (v) => v ?? '—',
+            render: (v) => v ?? '–',
         },
         { title: 'Rooms', dataIndex: 'room_count' },
         {
@@ -60,12 +60,12 @@ export default function GroupsIndex({ groups, statuses, groupTypes, filters }: G
         {
             title: 'Arrival',
             dataIndex: 'arrival_date',
-            render: (v) => v ?? '—',
+            render: (v) => v ?? '–',
         },
         {
             title: 'Departure',
             dataIndex: 'departure_date',
-            render: (v) => v ?? '—',
+            render: (v) => v ?? '–',
         },
         {
             title: 'Deposit',

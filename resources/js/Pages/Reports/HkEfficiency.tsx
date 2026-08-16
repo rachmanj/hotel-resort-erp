@@ -36,7 +36,7 @@ export default function HkEfficiency({ report, filters }: HkEfficiencyProps) {
         {
             title: 'Avg Clean (min)',
             dataIndex: 'avg_clean_minutes',
-            render: (v) => v !== null && v !== undefined ? Number(v).toFixed(1) : '—',
+            render: (v) => v !== null && v !== undefined ? Number(v).toFixed(1) : '–',
             align: 'right',
         },
     ];

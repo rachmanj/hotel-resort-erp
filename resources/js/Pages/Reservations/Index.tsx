@@ -59,7 +59,7 @@ export default function ReservationsIndex({
         {
             title: 'Guest',
             dataIndex: ['guest', 'full_name'],
-            render: (_, record) => record.guest?.full_name ?? '—',
+            render: (_, record) => record.guest?.full_name ?? '–',
         },
         {
             title: 'Arrival',
@@ -74,7 +74,7 @@ export default function ReservationsIndex({
             dataIndex: 'rooms',
             render: (_, record) =>
                 record.rooms
-                    .map((r) => `${r.room_number ?? '—'} (${r.room_type ?? ''})`)
+                    .map((r) => `${r.room_number ?? '–'} (${r.room_type ?? ''})`)
                     .join(', '),
         },
         {

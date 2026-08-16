@@ -24,9 +24,9 @@ interface GuestsIndexProps {
 export default function GuestsIndex({ guests, filters }: GuestsIndexProps) {
     const columns: ProColumns<GuestRow>[] = [
         { title: 'Name', dataIndex: 'full_name' },
-        { title: 'Phone', dataIndex: 'phone', render: (v) => v ?? '—' },
-        { title: 'Email', dataIndex: 'email', render: (v) => v ?? '—' },
-        { title: 'ID Number', dataIndex: 'id_number', render: (v) => v ?? '—' },
+        { title: 'Phone', dataIndex: 'phone', render: (v) => v ?? '–' },
+        { title: 'Email', dataIndex: 'email', render: (v) => v ?? '–' },
+        { title: 'ID Number', dataIndex: 'id_number', render: (v) => v ?? '–' },
         {
             title: 'VIP',
             dataIndex: 'vip_tier_label',
@@ -34,7 +34,7 @@ export default function GuestsIndex({ guests, filters }: GuestsIndexProps) {
                 record.vip_tier !== 'none' ? (
                     <Tag color="gold">{record.vip_tier_label}</Tag>
                 ) : (
-                    '—'
+                    '–'
                 ),
         },
         {

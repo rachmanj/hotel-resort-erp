@@ -141,7 +141,7 @@ export default function OrdersCreate({
                                         value={form.data.reservation_id}
                                         options={checkedInReservations.map((r) => ({
                                             value: r.id,
-                                            label: `${r.reservation_code} — ${r.guest_name}`,
+                                            label: `${r.reservation_code} · ${r.guest_name}`,
                                         }))}
                                         onChange={(v) => form.setData('reservation_id', v)}
                                     />

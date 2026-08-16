@@ -41,7 +41,7 @@ export default function DashboardIndex({ roomStatusSummary, rooms }: DashboardIn
                 <Col xs={24} sm={12} lg={6}>
                     <Card>
                         <Typography.Text type="secondary">Occupancy</Typography.Text>
-                        <div style={{ fontSize: 24, fontWeight: 600 }}>—</div>
+                        <div style={{ fontSize: 24, fontWeight: 600 }}>–</div>
                     </Card>
                 </Col>
                 <Col xs={24} sm={12} lg={6}>
@@ -53,7 +53,7 @@ export default function DashboardIndex({ roomStatusSummary, rooms }: DashboardIn
                 <Col xs={24} sm={12} lg={6}>
                     <Card>
                         <Typography.Text type="secondary">Check-ins Today</Typography.Text>
-                        <div style={{ fontSize: 24, fontWeight: 600 }}>—</div>
+                        <div style={{ fontSize: 24, fontWeight: 600 }}>–</div>
                     </Card>
                 </Col>
                 <Col xs={24} sm={12} lg={6}>
@@ -68,7 +68,7 @@ export default function DashboardIndex({ roomStatusSummary, rooms }: DashboardIn
 
             <Card
                 title="Room Status"
-                extra={<Link href="/housekeeping">View Board →</Link>}
+                extra={<Link href="/housekeeping">View Board</Link>}
                 style={{ marginTop: 16 }}
             >
                 <div style={{ marginBottom: 16, display: 'flex', gap: 8, flexWrap: 'wrap' }}>

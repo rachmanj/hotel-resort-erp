@@ -79,7 +79,7 @@ export default function UsersIndex({ users, hotels, roles, filters }: UsersIndex
             title: 'Hotel',
             dataIndex: ['home_hotel', 'name'],
             fieldProps: { placeholder: 'Hotel' },
-            render: (_, record) => record.home_hotel?.name ?? '—',
+            render: (_, record) => record.home_hotel?.name ?? '–',
         },
         {
             title: 'Roles',

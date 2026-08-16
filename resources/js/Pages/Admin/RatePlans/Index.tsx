@@ -94,7 +94,7 @@ export default function RatePlansIndex({
             dataIndex: 'nightly_rate',
             render: (_, r) => `Rp ${Number(r.nightly_rate).toLocaleString('id-ID')}`,
         },
-        { title: 'Season', dataIndex: ['season', 'name'], render: (v) => v ?? '—' },
+        { title: 'Season', dataIndex: ['season', 'name'], render: (v) => v ?? '–' },
         {
             title: 'Active',
             dataIndex: 'is_active',

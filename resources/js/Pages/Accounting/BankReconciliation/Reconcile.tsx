@@ -147,7 +147,7 @@ export default function Reconcile({ reconciliation, unmatchedLedger }: Reconcile
                                         <option value="">Select GL entry</option>
                                         {unmatchedLedger.map((gl) => (
                                             <option key={gl.id} value={gl.id}>
-                                                {gl.transaction_date} — {gl.description} ({formatIdr(gl.amount)})
+                                                {gl.transaction_date} · {gl.description} ({formatIdr(gl.amount)})
                                             </option>
                                         ))}
                                     </select>

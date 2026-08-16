@@ -36,7 +36,7 @@ export default function JournalEntryCreate({ accounts }: JournalEntryCreateProps
 
     const accountOptions = accounts.map((a) => ({
         value: a.id,
-        label: `${a.account_code} — ${a.name}`,
+        label: `${a.account_code} · ${a.name}`,
     }));
 
     const totalDebit = lines.reduce((sum, l) => sum + (l.debit || 0), 0);

@@ -38,7 +38,7 @@ export default function OrdersCreate({ suppliers, approvedRequisitions }: Orders
 
     const requisitionOptions = approvedRequisitions.map((r) => ({
         value: r.id,
-        label: `${r.requisition_no} — ${r.department}`,
+        label: `${r.requisition_no} · ${r.department}`,
     }));
 
     const supplierOptions = suppliers.map((s) => ({ value: s.id, label: s.name }));
@@ -102,7 +102,7 @@ export default function OrdersCreate({ suppliers, approvedRequisitions }: Orders
                 </Form>
 
                 {selectedRequisition && (
-                    <Card type="inner" title={`Requisition Items — ${selectedRequisition.requisition_no}`}>
+                    <Card type="inner" title={`Requisition Items · ${selectedRequisition.requisition_no}`}>
                         <Table
                             rowKey={(r) => r.id ?? r.inventory_item?.id ?? Math.random()}
                             pagination={false}
@@ -110,15 +110,15 @@ export default function OrdersCreate({ suppliers, approvedRequisitions }: Orders
                             columns={[
                                 {
                                     title: 'Item',
-                                    render: (_, r) => r.inventory_item?.name ?? '—',
+                                    render: (_, r) => r.inventory_item?.name ?? '–',
                                 },
                                 {
                                     title: 'Unit',
-                                    render: (_, r) => r.inventory_item?.unit ?? '—',
+                                    render: (_, r) => r.inventory_item?.unit ?? '–',
                                 },
                                 {
                                     title: 'Qty Requested',
-                                    render: (_, r) => r.quantity_requested ?? '—',
+                                    render: (_, r) => r.quantity_requested ?? '–',
                                 },
                             ]}
                         />

@@ -29,7 +29,7 @@ export default function RequisitionsIndex({ requisitions, filters, statusOptions
         { title: 'PR #', dataIndex: 'requisition_no', render: (_, r) => <Link href={`/purchasing/requisitions/${r.id}`}>{r.requisition_no}</Link> },
         { title: 'Department', dataIndex: 'department' },
         { title: 'Status', render: (_, r) => <Tag color={statusColors[r.status]}>{r.status_label}</Tag> },
-        { title: 'Requested By', render: (_, r) => r.requested_by?.name ?? '—' },
+        { title: 'Requested By', render: (_, r) => r.requested_by?.name ?? '–' },
         { title: 'Created', dataIndex: 'created_at' },
     ];
 

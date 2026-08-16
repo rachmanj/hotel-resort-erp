@@ -349,7 +349,7 @@ export default function AuthenticatedLayout({ children, title }: AuthenticatedLa
 
     return (
         <ProLayout
-            title={currentHotel?.name ?? 'Hotel ERP'}
+            title={currentHotel?.name ?? 'Pratasaba ERP'}
             logo={false}
             layout="mix"
             fixSiderbar

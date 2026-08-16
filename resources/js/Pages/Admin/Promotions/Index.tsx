@@ -418,7 +418,7 @@ export default function PromotionsIndex({
             </Modal>
 
             <Modal
-                title={`Promo Codes — ${codesPromotion?.name ?? ''}`}
+                title={`Promo Codes · ${codesPromotion?.name ?? ''}`}
                 open={codesModalOpen}
                 onCancel={() => setCodesModalOpen(false)}
                 footer={null}
