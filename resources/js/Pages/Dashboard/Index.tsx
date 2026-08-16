@@ -20,6 +20,10 @@ interface RoomStatusSummary {
 }
 
 interface DashboardIndexProps {
+    occupancy: number;
+    checkinsToday: number;
+    occupiedRooms: number;
+    sellableRooms: number;
     roomStatusSummary: RoomStatusSummary;
     rooms: RoomChip[];
 }
@@ -33,7 +37,14 @@ const FILTER_OPTIONS = [
     { key: 'out_of_order', label: 'Out of Order' },
 ];
 
-export default function DashboardIndex({ roomStatusSummary, rooms }: DashboardIndexProps) {
+export default function DashboardIndex({
+    occupancy,
+    checkinsToday,
+    occupiedRooms,
+    sellableRooms,
+    roomStatusSummary,
+    rooms,
+}: DashboardIndexProps) {
     return (
         <AuthenticatedLayout title="Dashboard">
             <Head title="Dashboard" />
@@ -41,7 +52,10 @@ export default function DashboardIndex({ roomStatusSummary, rooms }: DashboardIn
                 <Col xs={24} sm={12} lg={6}>
                     <Card>
                         <Typography.Text type="secondary">Occupancy</Typography.Text>
-                        <div style={{ fontSize: 24, fontWeight: 600 }}>–</div>
+                        <div style={{ fontSize: 24, fontWeight: 600 }}>{occupancy}%</div>
+                        <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+                            {occupiedRooms} of {sellableRooms} rooms occupied
+                        </Typography.Text>
                     </Card>
                 </Col>
                 <Col xs={24} sm={12} lg={6}>
@@ -53,7 +67,7 @@ export default function DashboardIndex({ roomStatusSummary, rooms }: DashboardIn
                 <Col xs={24} sm={12} lg={6}>
                     <Card>
                         <Typography.Text type="secondary">Check-ins Today</Typography.Text>
-                        <div style={{ fontSize: 24, fontWeight: 600 }}>–</div>
+                        <div style={{ fontSize: 24, fontWeight: 600 }}>{checkinsToday}</div>
                     </Card>
                 </Col>
                 <Col xs={24} sm={12} lg={6}>
