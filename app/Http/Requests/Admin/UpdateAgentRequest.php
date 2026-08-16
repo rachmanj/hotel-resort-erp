@@ -41,7 +41,7 @@ class UpdateAgentRequest extends FormRequest
             'email' => ['nullable', 'email', 'max:255'],
             'commission_percent' => ['required', 'numeric', 'min:0', 'max:100'],
             'commission_type' => ['required', Rule::enum(CommissionType::class)],
-            'commission_flat_amount' => ['numeric', 'min:0', Rule::requiredIf(fn (): bool => $this->input('commission_type') === 'flat')],
+            'commission_flat_amount' => ['nullable', 'numeric', 'min:0', 'required_if:commission_type,flat'],
             'commission_basis' => ['required', Rule::enum(CommissionBasis::class)],
             'payment_terms_days' => ['required', 'integer', 'min:0', 'max:365'],
             'company_id' => ['nullable', 'integer', 'exists:companies,id'],
