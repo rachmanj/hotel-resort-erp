@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Enums\HousekeepingStatus;
 use App\Enums\ReservationRoomStatus;
 use App\Enums\RoomStatus;
+use App\Models\Payment;
 use App\Models\ReservationRoom;
 use App\Models\Room;
 use App\Services\HousekeepingService;
@@ -46,11 +47,18 @@ class DashboardController extends Controller
             ->whereHas('reservation', fn ($query) => $query->where('hotel_id', $hotelId))
             ->count();
 
+        $revenueToday = (float) Payment::query()
+            ->where('is_refund', false)
+            ->whereDate('paid_at', today())
+            ->whereHas('folio', fn ($query) => $query->where('hotel_id', $hotelId))
+            ->sum('amount');
+
         return Inertia::render('Dashboard/Index', [
             'occupancy' => $occupancy,
             'checkinsToday' => $checkinsToday,
             'occupiedRooms' => $occupiedRooms,
             'sellableRooms' => $sellableRooms,
+            'revenueToday' => $revenueToday,
             'roomStatusSummary' => [
                 'total' => $board->count(),
                 'dirty' => $board->where('housekeeping_status', HousekeepingStatus::Dirty->value)->count(),

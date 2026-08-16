@@ -25,6 +25,7 @@ function AppWrapper({ children }) {
                 token: {
                     colorPrimary: '#1677ff',
                     borderRadius: 6,
+                    controlHeight: 40,
                 },
             }}
         >

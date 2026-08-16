@@ -24,6 +24,7 @@ interface DashboardIndexProps {
     checkinsToday: number;
     occupiedRooms: number;
     sellableRooms: number;
+    revenueToday: number;
     roomStatusSummary: RoomStatusSummary;
     rooms: RoomChip[];
 }
@@ -42,6 +43,7 @@ export default function DashboardIndex({
     checkinsToday,
     occupiedRooms,
     sellableRooms,
+    revenueToday,
     roomStatusSummary,
     rooms,
 }: DashboardIndexProps) {
@@ -61,7 +63,9 @@ export default function DashboardIndex({
                 <Col xs={24} sm={12} lg={6}>
                     <Card>
                         <Typography.Text type="secondary">Revenue Today</Typography.Text>
-                        <div style={{ fontSize: 24, fontWeight: 600 }}>Rp 0</div>
+                        <div style={{ fontSize: 24, fontWeight: 600 }}>
+                            Rp {revenueToday.toLocaleString('id-ID')}
+                        </div>
                     </Card>
                 </Col>
                 <Col xs={24} sm={12} lg={6}>
