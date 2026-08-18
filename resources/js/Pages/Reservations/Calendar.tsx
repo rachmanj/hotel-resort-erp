@@ -1,5 +1,5 @@
-import { Head, Link } from '@inertiajs/react';
-import { Button, Space, theme } from 'antd';
+import { Head, Link, router } from '@inertiajs/react';
+import { Button, DatePicker, Space, theme } from 'antd';
 import dayjs from 'dayjs';
 import { useMemo } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
@@ -33,6 +33,7 @@ interface CalendarProps {
     reservations: CalendarReservation[];
     dateColumns: DateColumn[];
     startDate: string;
+    endDate: string;
     days: number;
 }
 
@@ -45,10 +46,12 @@ export default function ReservationCalendar({
     reservations,
     dateColumns,
     startDate,
+    endDate,
     days,
 }: CalendarProps) {
     const { isDark } = useTheme();
     const { token } = theme.useToken();
+    const { RangePicker } = DatePicker;
 
     const bg = isDark ? token.colorBgContainer : '#fff';
     const headerBg = isDark ? token.colorBgElevated : '#fafafa';
@@ -58,7 +61,31 @@ export default function ReservationCalendar({
     const textColor = isDark ? token.colorText : 'inherit';
 
     const start = dayjs(startDate);
+    const end = dayjs(endDate);
     const gridWidth = days * CELL_WIDTH;
+
+    const goTo = (startStr: string, endStr: string) => {
+        router.get(
+            '/reservations/calendar',
+            { start_date: startStr, end_date: endStr },
+            { preserveState: true, preserveScroll: true },
+        );
+    };
+
+    const shift = (deltaDays: number) => {
+        goTo(
+            start.add(deltaDays, 'day').format('YYYY-MM-DD'),
+            end.add(deltaDays, 'day').format('YYYY-MM-DD'),
+        );
+    };
+
+    const goToday = () => {
+        const weekStart = dayjs().startOfWeek();
+        goTo(
+            weekStart.format('YYYY-MM-DD'),
+            weekStart.add(13, 'day').format('YYYY-MM-DD'),
+        );
+    };
 
     const blocksByRoom = useMemo(() => {
         const map = new Map<number, CalendarReservation[]>();
@@ -102,13 +129,28 @@ export default function ReservationCalendar({
     return (
         <AuthenticatedLayout title="Reservation Calendar">
             <Head title="Reservation Calendar" />
-            <Space style={{ marginBottom: 16 }}>
+            <Space style={{ marginBottom: 16 }} wrap>
                 <Link href="/reservations">
                     <Button>List View</Button>
                 </Link>
                 <Link href="/reservations/create">
                     <Button type="primary">New Reservation</Button>
                 </Link>
+                <RangePicker
+                    value={[start, end]}
+                    allowClear={false}
+                    onChange={(range) => {
+                        if (range?.[0] && range?.[1]) {
+                            goTo(
+                                range[0].format('YYYY-MM-DD'),
+                                range[1].format('YYYY-MM-DD'),
+                            );
+                        }
+                    }}
+                />
+                <Button onClick={() => shift(-days)}>Prev</Button>
+                <Button onClick={goToday}>Today</Button>
+                <Button onClick={() => shift(days)}>Next</Button>
             </Space>
 
             <div

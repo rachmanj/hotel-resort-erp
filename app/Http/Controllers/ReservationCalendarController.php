@@ -13,16 +13,36 @@ use Inertia\Response;
 
 class ReservationCalendarController extends Controller
 {
+    private const DEFAULT_DAYS = 14;
+    private const MIN_DAYS = 7;
+    private const MAX_DAYS = 62;
+
     public function index(Request $request): Response
     {
+        $hotelId = (int) session('current_hotel_id');
+
         $startDate = $request->string('start_date')->toString() ?: now()->startOfWeek()->toDateString();
-        $days = (int) $request->input('days', 14);
-        $days = max(7, min($days, 31));
+        $endDate = $request->string('end_date')->toString();
 
         $start = Carbon::parse($startDate)->startOfDay();
+
+        if ($endDate !== '') {
+            $end = Carbon::parse($endDate)->startOfDay();
+
+            if ($end->lt($start)) {
+                $end = $start->copy()->addDays(self::DEFAULT_DAYS - 1);
+            }
+
+            $days = min($start->diffInDays($end) + 1, self::MAX_DAYS);
+        } else {
+            $days = (int) $request->input('days', self::DEFAULT_DAYS);
+            $days = max(self::MIN_DAYS, min($days, self::MAX_DAYS));
+        }
+
         $end = $start->copy()->addDays($days);
 
         $rooms = Room::query()
+            ->where('hotel_id', $hotelId)
             ->with(['roomType:id,name,code', 'floor:id,name'])
             ->orderBy('number')
             ->get()
@@ -34,6 +54,7 @@ class ReservationCalendarController extends Controller
             ]);
 
         $reservations = Reservation::query()
+            ->where('hotel_id', $hotelId)
             ->with(['guest:id,full_name', 'reservationRooms.room:id,number'])
             ->where('arrival_date', '<', $end->toDateString())
             ->where('departure_date', '>', $start->toDateString())
@@ -73,6 +94,7 @@ class ReservationCalendarController extends Controller
             'reservations' => $reservations,
             'dateColumns' => $dateColumns,
             'startDate' => $start->toDateString(),
+            'endDate' => $end->copy()->subDay()->toDateString(),
             'days' => $days,
         ]);
     }
