@@ -130,6 +130,10 @@ class ActivityLogController extends Controller
 
         $identifier = $this->subjectIdentifier($subject);
 
+        if ($identifier === null) {
+            $identifier = $this->extractIdentifier($properties['attributes'] ?? []);
+        }
+
         return $identifier !== null
             ? "{$modelName} \"{$identifier}\" {$eventLabel}"
             : "{$modelName} {$eventLabel}";
