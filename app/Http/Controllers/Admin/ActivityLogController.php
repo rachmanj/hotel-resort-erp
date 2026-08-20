@@ -7,6 +7,7 @@ use App\Models\ActivityLog;
 use App\Models\Payment;
 use App\Models\Reservation;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -111,10 +112,49 @@ class ActivityLogController extends Controller
 
         if ($log->event === 'updated' && isset($properties['changes']) && is_array($properties['changes'])) {
             $fields = implode(', ', array_keys($properties['changes']));
+            $identifier = $this->subjectIdentifier($subject);
 
-            return "{$modelName} {$eventLabel}: {$fields}";
+            return $identifier !== null
+                ? "{$modelName} \"{$identifier}\" {$eventLabel}: {$fields}"
+                : "{$modelName} {$eventLabel}: {$fields}";
         }
 
-        return "{$modelName} {$eventLabel}";
+        if ($log->event === 'deleted') {
+            $attributes = $subject !== null ? $subject->getAttributes() : ($properties['attributes'] ?? []);
+            $identifier = $this->extractIdentifier($attributes);
+
+            return $identifier !== null
+                ? "{$modelName} \"{$identifier}\" {$eventLabel}"
+                : "{$modelName} {$eventLabel}";
+        }
+
+        $identifier = $this->subjectIdentifier($subject);
+
+        return $identifier !== null
+            ? "{$modelName} \"{$identifier}\" {$eventLabel}"
+            : "{$modelName} {$eventLabel}";
+    }
+
+    private function subjectIdentifier(?Model $subject): ?string
+    {
+        if ($subject === null) {
+            return null;
+        }
+
+        return $this->extractIdentifier($subject->getAttributes());
+    }
+
+    /**
+     * @param  array<string, mixed>  $attributes
+     */
+    private function extractIdentifier(array $attributes): ?string
+    {
+        foreach (['reservation_code', 'folio_no', 'requisition_no', 'order_no', 'work_order_no', 'code', 'number', 'name', 'full_name', 'title', 'email', 'sku'] as $attribute) {
+            if (isset($attributes[$attribute]) && $attributes[$attribute] !== null && $attributes[$attribute] !== '') {
+                return (string) $attributes[$attribute];
+            }
+        }
+
+        return null;
     }
 }
