@@ -110,6 +110,33 @@ Ini pengganti laporan PAA-26 manual. Fitur:
 4. **Checkout** → OTA fee + komisi agen terakrual otomatis.
 5. **Akhir bulan** → buka Reports → Revenue, pilih bulan, export CSV.
 
+### Flowchart Alur Kerja Harian
+
+```mermaid
+flowchart TD
+    A["Reservasi<br/>pilih source: Walk-in / OTA / Agent"] --> B["Check-in<br/>charge kamar otomatis → kategori villa"]
+    B --> C{"Ada dive / trip?"}
+    C -->|"Ya"| D["Boat Charter<br/>destinasi · guide · BBM"]
+    D --> E["Bill ke folio<br/>→ kategori dive_center / boat"]
+    E --> F["Checkout"]
+    C -->|"Tidak"| F
+    F --> G["OTA fee + komisi agen<br/>auto accrual saat checkout"]
+    G --> H["Reports → Revenue<br/>pilih bulan · export CSV"]
+```
+
+## 8. Flowchart Alur Data Pendapatan (sistem)
+
+```mermaid
+flowchart LR
+    A["Folio Charge<br/>room / dive / resto"] --> B["revenue_category_id<br/>(16 kategori)"]
+    B --> C["Revenue Report<br/>bulanan (PAA-26)"]
+    B --> D["Chart of Accounts<br/>akun revenue"]
+    D --> E["General Ledger<br/>auto posting"]
+    C --> F["CSV Export"]
+```
+
+> Gambar versi PNG (untuk dibagikan ke WhatsApp/email) tersedia di `docs/images/alur-kerja-pendapatan.png`.
+
 ## Catatan
 
 - Import data historis saat ini via CSV (Dea konversi XLSX→CSV). Upload XLSX langsung = enhancement berikutnya.
