@@ -20,10 +20,11 @@ use App\Http\Controllers\Admin\AgentRateController;
 use App\Http\Controllers\Admin\CurrencyController;
 use App\Http\Controllers\Admin\HotelController;
 use App\Http\Controllers\Admin\HotelSettingController;
+use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\PromotionCodeController;
 use App\Http\Controllers\Admin\PromotionController;
 use App\Http\Controllers\Admin\RatePlanController;
-use App\Http\Controllers\Admin\PermissionController;
+use App\Http\Controllers\Admin\RevenueCategoryController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\SeasonController;
 use App\Http\Controllers\Admin\TaxRuleController;
@@ -332,6 +333,11 @@ Route::middleware(['auth', 'hotel.context'])->group(function (): void {
         Route::post('/agents/{agent}/rates', [AgentRateController::class, 'store'])->name('agents.rates.store')->middleware('can:agents.manage');
         Route::put('/agents/rates/{rate}', [AgentRateController::class, 'update'])->name('agents.rates.update')->middleware('can:agents.manage');
         Route::delete('/agents/rates/{rate}', [AgentRateController::class, 'destroy'])->name('agents.rates.destroy')->middleware('can:agents.manage');
+
+        Route::get('/revenue-categories', [RevenueCategoryController::class, 'index'])->name('revenue-categories.index')->middleware('can:revenue-categories.view');
+        Route::post('/revenue-categories', [RevenueCategoryController::class, 'store'])->name('revenue-categories.store')->middleware('can:revenue-categories.manage');
+        Route::put('/revenue-categories/{revenueCategory}', [RevenueCategoryController::class, 'update'])->name('revenue-categories.update')->middleware('can:revenue-categories.manage');
+        Route::delete('/revenue-categories/{revenueCategory}', [RevenueCategoryController::class, 'destroy'])->name('revenue-categories.destroy')->middleware('can:revenue-categories.manage');
     });
 
     Route::prefix('agent-portal')->name('agent.')->middleware('agent.portal')->group(function (): void {

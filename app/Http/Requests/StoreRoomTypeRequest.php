@@ -19,6 +19,8 @@ class StoreRoomTypeRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:100'],
             'code' => ['required', 'string', 'max:20', 'unique:room_types,code'],
+            'bed_type' => ['nullable', 'string', 'in:king,twin'],
+            'view' => ['nullable', 'string', 'in:gardenview,seaview'],
             'max_occupancy' => ['required', 'integer', 'min:1', 'max:20'],
             'base_rate' => ['required', 'numeric', 'min:0'],
             'description' => ['nullable', 'string'],

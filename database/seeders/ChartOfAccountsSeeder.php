@@ -15,6 +15,8 @@ class ChartOfAccountsSeeder extends Seeder
         $this->seedGroupAccounts();
 
         Hotel::query()->each(fn (Hotel $hotel) => $this->forHotel($hotel));
+
+        Hotel::query()->each(fn (Hotel $hotel) => $this->syncAdditionalRevenueAccounts($hotel));
     }
 
     public function forHotel(Hotel $hotel): void
@@ -111,6 +113,7 @@ class ChartOfAccountsSeeder extends Seeder
             $this->postable('4-1100', 'Room Revenue - Standard', AccountType::Revenue, NormalBalance::Credit, '4-1000'),
             $this->postable('4-1200', 'Room Revenue - Deluxe', AccountType::Revenue, NormalBalance::Credit, '4-1000'),
             $this->postable('4-1300', 'Room Revenue - Suite', AccountType::Revenue, NormalBalance::Credit, '4-1000'),
+            $this->postable('4-1400', 'Room Revenue - Grand Deluxe', AccountType::Revenue, NormalBalance::Credit, '4-1000'),
             $this->postable('4-1500', 'Service Charge Revenue', AccountType::Revenue, NormalBalance::Credit, '4-0000'),
             $this->postable('4-1600', 'Laundry Revenue', AccountType::Revenue, NormalBalance::Credit, '4-0000'),
             $this->postable('4-1700', 'Telephone Revenue', AccountType::Revenue, NormalBalance::Credit, '4-0000'),
@@ -120,6 +123,7 @@ class ChartOfAccountsSeeder extends Seeder
             $this->postable('4-2200', 'Banquet Revenue', AccountType::Revenue, NormalBalance::Credit, '4-2000'),
             $this->postable('4-2300', 'Room Service Revenue', AccountType::Revenue, NormalBalance::Credit, '4-2000'),
             $this->postable('4-2400', 'Bar Revenue', AccountType::Revenue, NormalBalance::Credit, '4-2000'),
+            $this->postable('4-2500', 'Prata Coffee Revenue', AccountType::Revenue, NormalBalance::Credit, '4-2000'),
 
             $this->header('4-3000', 'Pendapatan Spa', AccountType::Revenue, NormalBalance::Credit, '4-0000'),
             $this->postable('4-3100', 'Spa Treatment Revenue', AccountType::Revenue, NormalBalance::Credit, '4-3000'),
@@ -128,6 +132,13 @@ class ChartOfAccountsSeeder extends Seeder
             $this->header('4-4000', 'Departemen Lain', AccountType::Revenue, NormalBalance::Credit, '4-0000'),
             $this->postable('4-4100', 'Golf Revenue', AccountType::Revenue, NormalBalance::Credit, '4-4000'),
             $this->postable('4-4200', 'Banquet Service Charge', AccountType::Revenue, NormalBalance::Credit, '4-4000'),
+            $this->postable('4-4300', 'Dive Center Revenue', AccountType::Revenue, NormalBalance::Credit, '4-4000'),
+            $this->postable('4-4310', 'Boat Charter Revenue', AccountType::Revenue, NormalBalance::Credit, '4-4000'),
+            $this->postable('4-4400', 'Merchandise Revenue', AccountType::Revenue, NormalBalance::Credit, '4-4000'),
+            $this->postable('4-4500', 'Showcase Revenue', AccountType::Revenue, NormalBalance::Credit, '4-4000'),
+            $this->postable('4-4600', 'Tiket Pantai Revenue', AccountType::Revenue, NormalBalance::Credit, '4-4000'),
+            $this->postable('4-4700', 'Transport Revenue', AccountType::Revenue, NormalBalance::Credit, '4-4000'),
+            $this->postable('4-4800', 'Meeting Package Revenue', AccountType::Revenue, NormalBalance::Credit, '4-4000'),
             $this->postable('4-9000', 'Pendapatan Lain-lain', AccountType::Revenue, NormalBalance::Credit, '4-0000'),
 
             $this->header('5-0000', 'HARGA POKOK PENJUALAN', AccountType::Cogs, NormalBalance::Debit),
@@ -179,6 +190,50 @@ class ChartOfAccountsSeeder extends Seeder
             $this->postable('6-9000', 'Pajak & Perizinan', AccountType::Expense, NormalBalance::Debit, '6-0000'),
             $this->postable('6-9100', 'PBB & Retribusi', AccountType::Expense, NormalBalance::Debit, '6-0000'),
         ];
+    }
+
+    private function syncAdditionalRevenueAccounts(Hotel $hotel): void
+    {
+        $additionalAccounts = [
+            $this->postable('4-1400', 'Room Revenue - Grand Deluxe', AccountType::Revenue, NormalBalance::Credit, '4-1000'),
+            $this->postable('4-2500', 'Prata Coffee Revenue', AccountType::Revenue, NormalBalance::Credit, '4-2000'),
+            $this->postable('4-4300', 'Dive Center Revenue', AccountType::Revenue, NormalBalance::Credit, '4-4000'),
+            $this->postable('4-4310', 'Boat Charter Revenue', AccountType::Revenue, NormalBalance::Credit, '4-4000'),
+            $this->postable('4-4400', 'Merchandise Revenue', AccountType::Revenue, NormalBalance::Credit, '4-4000'),
+            $this->postable('4-4500', 'Showcase Revenue', AccountType::Revenue, NormalBalance::Credit, '4-4000'),
+            $this->postable('4-4600', 'Tiket Pantai Revenue', AccountType::Revenue, NormalBalance::Credit, '4-4000'),
+            $this->postable('4-4700', 'Transport Revenue', AccountType::Revenue, NormalBalance::Credit, '4-4000'),
+            $this->postable('4-4800', 'Meeting Package Revenue', AccountType::Revenue, NormalBalance::Credit, '4-4000'),
+        ];
+
+        $codeToId = ChartOfAccount::query()
+            ->withoutGlobalScope('hotel')
+            ->where('hotel_id', $hotel->id)
+            ->pluck('id', 'account_code')
+            ->all();
+
+        foreach ($additionalAccounts as $account) {
+            $parentCode = $account['parent_code'] ?? null;
+            unset($account['parent_code']);
+
+            $existing = ChartOfAccount::query()
+                ->withoutGlobalScope('hotel')
+                ->where('hotel_id', $hotel->id)
+                ->where('account_code', $account['account_code'])
+                ->first();
+
+            if ($existing !== null) {
+                continue;
+            }
+
+            $created = ChartOfAccount::query()->create([
+                'hotel_id' => $hotel->id,
+                'parent_id' => $parentCode !== null ? ($codeToId[$parentCode] ?? null) : null,
+                ...$account,
+            ]);
+
+            $codeToId[$account['account_code']] = $created->id;
+        }
     }
 
     /**

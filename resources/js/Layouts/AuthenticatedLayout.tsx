@@ -339,6 +339,11 @@ export default function AuthenticatedLayout({ children, title }: AuthenticatedLa
                 name: 'Tax Rules',
                 icon: <DollarOutlined />,
             },
+            can('revenue-categories.view') && {
+                path: '/admin/revenue-categories',
+                name: 'Revenue Categories',
+                icon: <TagsOutlined />,
+            },
             can('admin.manage') && {
                 path: '/admin/hotel-settings',
                 name: 'Hotel Settings',

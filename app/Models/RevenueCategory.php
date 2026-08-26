@@ -10,17 +10,13 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 #[Fillable([
     'hotel_id',
-    'name',
     'code',
-    'bed_type',
-    'view',
-    'max_occupancy',
-    'base_rate',
-    'description',
-    'amenities',
+    'name',
+    'coa_account_code',
+    'sort_order',
     'is_active',
 ])]
-class RoomType extends Model
+class RevenueCategory extends Model
 {
     use BelongsToHotel;
 
@@ -32,8 +28,7 @@ class RoomType extends Model
     protected function casts(): array
     {
         return [
-            'base_rate' => 'decimal:2',
-            'amenities' => 'array',
+            'sort_order' => 'integer',
             'is_active' => 'boolean',
         ];
     }
@@ -43,8 +38,8 @@ class RoomType extends Model
         return $this->belongsTo(Hotel::class);
     }
 
-    public function rooms(): HasMany
+    public function folioItems(): HasMany
     {
-        return $this->hasMany(Room::class);
+        return $this->hasMany(FolioItem::class);
     }
 }

@@ -12,6 +12,8 @@ class DemoDataSeeder extends Seeder
             RolePermissionSeeder::class,
             HotelCurrencySeeder::class,
             ChartOfAccountsSeeder::class,
+            RevenueCategorySeeder::class,
+            PratasabaRoomTypeSeeder::class,
             AccountingDemoSeeder::class,
             AccountingExtensionSeeder::class,
             BillingDemoSeeder::class,

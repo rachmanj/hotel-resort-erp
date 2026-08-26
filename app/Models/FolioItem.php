@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 #[Fillable([
     'folio_id',
+    'revenue_category_id',
     'item_type',
     'description',
     'reference_type',
@@ -43,6 +44,11 @@ class FolioItem extends Model
     public function folio(): BelongsTo
     {
         return $this->belongsTo(Folio::class);
+    }
+
+    public function revenueCategory(): BelongsTo
+    {
+        return $this->belongsTo(RevenueCategory::class);
     }
 
     public function postedBy(): BelongsTo

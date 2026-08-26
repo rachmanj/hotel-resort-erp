@@ -1,7 +1,7 @@
 import { Head, router, useForm } from '@inertiajs/react';
 import type { ProColumns } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
-import { Button, Form, Input, InputNumber, Modal, Switch } from 'antd';
+import { Button, Form, Input, InputNumber, Modal, Select, Switch } from 'antd';
 import { useState } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import type { Paginated } from '@/types';
@@ -10,6 +10,8 @@ interface RoomType {
     id: number;
     name: string;
     code: string;
+    bed_type?: string | null;
+    view?: string | null;
     max_occupancy: number;
     base_rate: string;
     description?: string | null;
@@ -21,6 +23,22 @@ interface RoomTypesIndexProps {
     filters: { search?: string };
 }
 
+const bedTypeOptions = [
+    { value: 'king', label: 'King' },
+    { value: 'twin', label: 'Twin' },
+];
+
+const viewOptions = [
+    { value: 'gardenview', label: 'Gardenview' },
+    { value: 'seaview', label: 'Seaview' },
+];
+
+const bedTypeLabel = (value?: string | null) =>
+    bedTypeOptions.find((o) => o.value === value)?.label ?? '–';
+
+const viewLabel = (value?: string | null) =>
+    viewOptions.find((o) => o.value === value)?.label ?? '–';
+
 export default function RoomTypesIndex({ roomTypes, filters }: RoomTypesIndexProps) {
     const [modalOpen, setModalOpen] = useState(false);
     const [editing, setEditing] = useState<RoomType | null>(null);
@@ -28,6 +46,8 @@ export default function RoomTypesIndex({ roomTypes, filters }: RoomTypesIndexPro
     const form = useForm({
         name: '',
         code: '',
+        bed_type: null as string | null,
+        view: null as string | null,
         max_occupancy: 2,
         base_rate: 0,
         description: '',
@@ -40,6 +60,8 @@ export default function RoomTypesIndex({ roomTypes, filters }: RoomTypesIndexPro
         form.setData({
             name: '',
             code: '',
+            bed_type: null,
+            view: null,
             max_occupancy: 2,
             base_rate: 0,
             description: '',
@@ -53,6 +75,8 @@ export default function RoomTypesIndex({ roomTypes, filters }: RoomTypesIndexPro
         form.setData({
             name: record.name,
             code: record.code,
+            bed_type: record.bed_type ?? null,
+            view: record.view ?? null,
             max_occupancy: record.max_occupancy,
             base_rate: Number(record.base_rate),
             description: record.description ?? '',
@@ -76,6 +100,16 @@ export default function RoomTypesIndex({ roomTypes, filters }: RoomTypesIndexPro
     const columns: ProColumns<RoomType>[] = [
         { title: 'Name', dataIndex: 'name' },
         { title: 'Code', dataIndex: 'code' },
+        {
+            title: 'Bed Type',
+            dataIndex: 'bed_type',
+            render: (_, record) => bedTypeLabel(record.bed_type),
+        },
+        {
+            title: 'View',
+            dataIndex: 'view',
+            render: (_, record) => viewLabel(record.view),
+        },
         { title: 'Max Occupancy', dataIndex: 'max_occupancy' },
         {
             title: 'Base Rate',
@@ -141,6 +175,24 @@ export default function RoomTypesIndex({ roomTypes, filters }: RoomTypesIndexPro
                         <Input
                             value={form.data.code}
                             onChange={(e) => form.setData('code', e.target.value)}
+                        />
+                    </Form.Item>
+                    <Form.Item label="Bed Type">
+                        <Select
+                            allowClear
+                            placeholder="Select bed type"
+                            value={form.data.bed_type}
+                            onChange={(v) => form.setData('bed_type', v ?? null)}
+                            options={bedTypeOptions}
+                        />
+                    </Form.Item>
+                    <Form.Item label="View">
+                        <Select
+                            allowClear
+                            placeholder="Select view"
+                            value={form.data.view}
+                            onChange={(v) => form.setData('view', v ?? null)}
+                            options={viewOptions}
                         />
                     </Form.Item>
                     <Form.Item label="Max Occupancy" required>
