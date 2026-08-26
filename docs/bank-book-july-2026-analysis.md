@@ -108,3 +108,21 @@ Distribusi kasar (total BKM ≈ Rp 1,38 M; angka *cash-basis*, DP+pelunasan terp
 3. **Petty cash** — ERP belum punya modul PC + alur replenishment (JVC "Tarik Dana").
 4. **Cash vs accrual** — Bank Book cash-basis (DP+pelunasan terpisah), ERP accrual (folio saat checkout). Bagaimana rekonsiliasi?
 5. **Migrasi historis** — data Jul 2026 ini dijadikan referensi struktur saja, atau perlu di-import sebagai opening balance/transaksi historis?
+
+---
+
+## 8. Keputusan (hasil grill, 26 Aug 2026)
+
+| # | Topik | Keputusan |
+|---|---|---|
+| 1 | Entity TravyDoor | **Out of scope dulu** — transfer antar-entity dicatat ke akun intercompany |
+| 2 | GOL cost center | **Ya, fase terpisah (Phase 8+)** — dimensi departemen di posting biaya |
+| 3 | Petty Cash | **Ya, fase terpisah** — ERP kelola PC + alur replenishment |
+| 4 | Rekonsiliasi | **ERP accrual + modul bank reconciliation** (cocokkan statement) |
+| 5 | Migrasi data | **Referensi struktur saja** (mapping akun/GOL), bukan import |
+
+### Scope Phase 8+ (digabung dari keputusan #2, #3, #4)
+1. Dimensi **cost-center/departemen** di posting biaya (mirror GOL: Kitchen/FO/HK/HO/CME/Civil/BAR/DRV/MKT).
+2. Modul **Petty Cash** (rekening PC + replenishment "Tarik Dana" via JVC).
+3. Modul **Bank Reconciliation** (accrual ERP ↔ statement bank cash-basis).
+4. Akun **intercompany** untuk transfer antar-entity (Pratasaba ↔ TravyDoor).
