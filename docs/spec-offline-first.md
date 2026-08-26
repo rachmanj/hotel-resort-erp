@@ -85,9 +85,11 @@ Pendekatan **client-side PWA** (tanpa server lokal tambahan), pakai mekanisme Wo
 
 ---
 
-## 5. Open Decisions (perlu konfirmasi)
+## 5. Keputusan (konfirmasi 26 Aug 2026)
 
-1. **Lokasi queue** — browser (per-terminal) vs edge server lokal (shared). Rekomendasi: browser dulu (v1), edge fase lanjutan.
-2. **Scope offline** — hanya operasional front-desk (rekomendasi), atau termasuk laporan?
-3. **Konflik double-booking** — saat replay ada kamar bentrok: flag manual (rekomendasi) atau auto-reject?
-4. **Timeline** — ini butuh cepat (sebelum musim ramai), atau bisa bertahap (9A→9D)?
+| # | Topik | Keputusan |
+|---|---|---|
+| 1 | Lokasi queue | **Browser dulu (PWA queue)** — v1 cepat; edge server lokal = fase lanjutan |
+| 2 | Scope offline | **Operasional front-desk saja** (check-in/out, folio, petty cash, F&B, reservasi) |
+| 3 | Konflik replay | **Flag manual** — antri & tampilkan untuk diputuskan staf (bukan auto-reject) |
+| 4 | Timeline | **Bertahap 9A→9D** (PWA shell dulu, queue belakangan) |
