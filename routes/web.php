@@ -63,6 +63,7 @@ use App\Http\Controllers\Reports\DailyRevenueController;
 use App\Http\Controllers\Reports\FbSalesController;
 use App\Http\Controllers\Reports\HousekeepingEfficiencyController;
 use App\Http\Controllers\Reports\OccupancyController;
+use App\Http\Controllers\Reports\RevenueController;
 use App\Http\Controllers\ReservationCalendarController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\RoomController;
@@ -205,6 +206,7 @@ Route::middleware(['auth', 'hotel.context'])->group(function (): void {
 
     Route::prefix('reports')->name('reports.')->group(function (): void {
         Route::get('/daily-revenue', [DailyRevenueController::class, 'index'])->name('daily-revenue')->middleware('can:reports.view');
+        Route::get('/revenue', [RevenueController::class, 'index'])->name('revenue')->middleware('can:reports.view');
         Route::get('/occupancy', [OccupancyController::class, 'index'])->name('occupancy')->middleware('can:reports.view');
         Route::get('/adr-revpar', [AdrRevParController::class, 'index'])->name('adr-revpar')->middleware('can:reports.view');
         Route::get('/fb-sales', [FbSalesController::class, 'index'])->name('fb-sales')->middleware('can:reports.fb_sales');

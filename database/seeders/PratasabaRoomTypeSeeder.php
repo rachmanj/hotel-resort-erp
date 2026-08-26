@@ -3,11 +3,20 @@
 namespace Database\Seeders;
 
 use App\Models\Hotel;
+use App\Models\RevenueCategory;
 use App\Models\RoomType;
 use Illuminate\Database\Seeder;
 
 class PratasabaRoomTypeSeeder extends Seeder
 {
+    /** @var array<string, string> */
+    private const REVENUE_CATEGORY_CODES = [
+        'SRJ' => 'room_seroja',
+        'KSL' => 'room_kasilasa',
+        'SHK' => 'room_seheku',
+        'JNT' => 'room_janti',
+    ];
+
     public function run(): void
     {
         Hotel::query()->each(function (Hotel $hotel): void {
@@ -49,6 +58,11 @@ class PratasabaRoomTypeSeeder extends Seeder
         ];
 
         foreach ($roomTypes as $roomType) {
+            $revenueCategoryId = RevenueCategory::query()
+                ->where('hotel_id', $hotel->id)
+                ->where('code', self::REVENUE_CATEGORY_CODES[$roomType['code']])
+                ->value('id');
+
             RoomType::query()->updateOrCreate(
                 ['code' => $roomType['code']],
                 [
@@ -58,6 +72,7 @@ class PratasabaRoomTypeSeeder extends Seeder
                     'base_rate' => $roomType['base_rate'],
                     'description' => $roomType['description'],
                     'is_active' => true,
+                    'revenue_category_id' => $revenueCategoryId,
                 ],
             );
         }

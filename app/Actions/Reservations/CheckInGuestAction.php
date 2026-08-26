@@ -32,7 +32,7 @@ class CheckInGuestAction
     {
         return DB::transaction(function () use ($reservation, $performedBy, $reservationRoomIds): Reservation {
             $reservation = Reservation::query()->lockForUpdate()->findOrFail($reservation->id);
-            $reservation->load(['guest', 'reservationRooms.room', 'reservationGroup']);
+            $reservation->load(['guest', 'reservationRooms.room.roomType', 'reservationGroup']);
 
             if (! in_array($reservation->status, [ReservationStatus::Confirmed, ReservationStatus::CheckedIn], true)) {
                 throw new InvalidArgumentException('Reservation must be in confirmed or partially checked-in status to check in.');
@@ -82,6 +82,7 @@ class CheckInGuestAction
                     ReservationRoom::class,
                     $reservationRoom->id,
                     $performedBy,
+                    revenueCategoryId: $reservationRoom->room?->roomType?->revenue_category_id,
                 );
             }
 

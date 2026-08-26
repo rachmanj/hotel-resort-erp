@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 #[Fillable([
     'hotel_id',
+    'revenue_category_id',
     'name',
     'code',
     'bed_type',
@@ -41,6 +42,11 @@ class RoomType extends Model
     public function hotel(): BelongsTo
     {
         return $this->belongsTo(Hotel::class);
+    }
+
+    public function revenueCategory(): BelongsTo
+    {
+        return $this->belongsTo(RevenueCategory::class);
     }
 
     public function rooms(): HasMany

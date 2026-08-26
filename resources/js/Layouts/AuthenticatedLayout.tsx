@@ -254,6 +254,11 @@ export default function AuthenticatedLayout({ children, title }: AuthenticatedLa
                 icon: <BarChartOutlined />,
             },
             can('reports.view') && {
+                path: '/reports/revenue',
+                name: 'Revenue',
+                icon: <BarChartOutlined />,
+            },
+            can('reports.view') && {
                 path: '/reports/occupancy',
                 name: 'Occupancy',
                 icon: <BarChartOutlined />,
