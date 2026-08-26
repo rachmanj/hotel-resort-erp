@@ -1,7 +1,7 @@
 import { Head, router } from '@inertiajs/react';
 import type { ProColumns } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
-import { Button, Card, Col, DatePicker, Row, Statistic, Table, theme } from 'antd';
+import { Button, Card, Col, DatePicker, Row, Statistic, Table, Tag, theme } from 'antd';
 import dayjs from 'dayjs';
 import { useMemo } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
@@ -22,6 +22,7 @@ interface ByDateRow {
 
 interface RevenueProps {
     report: {
+        data_source?: 'live' | 'imported';
         categories: CategoryRow[];
         by_date: ByDateRow[];
         totals: {
@@ -112,17 +113,26 @@ export default function Revenue({ report, filters }: RevenueProps) {
         return columns;
     }, [report.categories]);
 
+    const dataSourceTag = report.data_source === 'imported'
+        ? <Tag color="blue">Imported</Tag>
+        : report.data_source === 'live'
+            ? <Tag color="green">Live</Tag>
+            : null;
+
     return (
         <AuthenticatedLayout title="Revenue Report">
             <Head title="Revenue Report" />
-            <div style={{ marginBottom: 16, display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'space-between' }}>
-                <DatePicker
-                    picker="month"
-                    value={dayjs(`${filters.month}-01`)}
-                    onChange={(date) => router.get('/reports/revenue', {
-                        month: date?.format('YYYY-MM'),
-                    }, { preserveState: true })}
-                />
+            <div style={{ marginBottom: 16, display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+                    {dataSourceTag}
+                    <DatePicker
+                        picker="month"
+                        value={dayjs(`${filters.month}-01`)}
+                        onChange={(date) => router.get('/reports/revenue', {
+                            month: date?.format('YYYY-MM'),
+                        }, { preserveState: true })}
+                    />
+                </div>
                 <Button href={exportUrl}>Export CSV</Button>
             </div>
 
