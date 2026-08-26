@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Accounting;
 
+use App\Enums\BankAccountType;
 use App\Http\Controllers\Controller;
 use App\Models\BankAccount;
 use App\Models\ChartOfAccount;
@@ -23,6 +24,8 @@ class BankAccountController extends Controller
                 'bank_name' => $account->bank_name,
                 'account_no' => $account->account_no,
                 'account_name' => $account->account_name,
+                'type' => $account->type->value,
+                'type_label' => $account->type->label(),
                 'currency_code' => $account->currency_code,
                 'gl_account' => $account->chartOfAccount
                     ? "{$account->chartOfAccount->account_code} - {$account->chartOfAccount->name}"
@@ -32,6 +35,10 @@ class BankAccountController extends Controller
 
         return Inertia::render('Accounting/BankReconciliation/Accounts', [
             'bankAccounts' => $accounts,
+            'typeOptions' => collect(BankAccountType::cases())->map(fn (BankAccountType $type) => [
+                'value' => $type->value,
+                'label' => $type->label(),
+            ]),
             'glAccounts' => ChartOfAccount::query()
                 ->where('is_postable', true)
                 ->where('is_active', true)
@@ -47,6 +54,7 @@ class BankAccountController extends Controller
             'bank_name' => ['required', 'string', 'max:100'],
             'account_no' => ['required', 'string', 'max:50'],
             'account_name' => ['required', 'string', 'max:100'],
+            'type' => ['required', 'string', 'in:bank,petty_cash'],
             'chart_of_account_id' => ['required', 'exists:chart_of_accounts,id'],
             'currency_code' => ['required', 'string', 'size:3'],
         ]);
@@ -62,6 +70,7 @@ class BankAccountController extends Controller
             'bank_name' => ['required', 'string', 'max:100'],
             'account_no' => ['required', 'string', 'max:50'],
             'account_name' => ['required', 'string', 'max:100'],
+            'type' => ['required', 'string', 'in:bank,petty_cash'],
             'chart_of_account_id' => ['required', 'exists:chart_of_accounts,id'],
             'currency_code' => ['required', 'string', 'size:3'],
             'is_active' => ['required', 'boolean'],

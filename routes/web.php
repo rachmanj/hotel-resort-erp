@@ -7,8 +7,10 @@ use App\Http\Controllers\Accounting\BudgetController;
 use App\Http\Controllers\Accounting\ChartOfAccountController;
 use App\Http\Controllers\Accounting\DepartmentController;
 use App\Http\Controllers\Accounting\FixedAssetController;
+use App\Http\Controllers\Accounting\FundTransferController;
 use App\Http\Controllers\Accounting\GeneralLedgerController;
 use App\Http\Controllers\Accounting\JournalEntryController;
+use App\Http\Controllers\Accounting\PettyCashController;
 use App\Http\Controllers\Accounting\Reports\BalanceSheetController;
 use App\Http\Controllers\Accounting\Reports\CashFlowController;
 use App\Http\Controllers\Accounting\Reports\IncomeStatementController;
@@ -250,6 +252,13 @@ Route::middleware(['auth', 'hotel.context'])->group(function (): void {
         Route::get('/bank-accounts', [BankAccountController::class, 'index'])->name('bank-accounts.index')->middleware('can:accounting.manage');
         Route::post('/bank-accounts', [BankAccountController::class, 'store'])->name('bank-accounts.store')->middleware('can:accounting.manage');
         Route::put('/bank-accounts/{bankAccount}', [BankAccountController::class, 'update'])->name('bank-accounts.update')->middleware('can:accounting.manage');
+
+        Route::get('/petty-cash', [PettyCashController::class, 'index'])->name('petty-cash.index')->middleware('can:accounting.view');
+        Route::post('/petty-cash/transactions', [PettyCashController::class, 'storeCash'])->name('petty-cash.store')->middleware('can:accounting.manage');
+        Route::post('/petty-cash/replenish', [PettyCashController::class, 'replenish'])->name('petty-cash.replenish')->middleware('can:accounting.manage');
+
+        Route::get('/transfers', [FundTransferController::class, 'index'])->name('transfers.index')->middleware('can:accounting.view');
+        Route::post('/transfers', [FundTransferController::class, 'store'])->name('transfers.store')->middleware('can:accounting.manage');
 
         Route::get('/bank-reconciliation', [BankReconciliationController::class, 'index'])->name('bank-rec.index')->middleware('can:accounting.manage');
         Route::post('/bank-reconciliation', [BankReconciliationController::class, 'store'])->name('bank-rec.store')->middleware('can:accounting.manage');

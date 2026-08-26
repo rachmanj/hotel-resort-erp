@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\BankAccountType;
 use App\Models\Concerns\BelongsToHotel;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
@@ -13,6 +14,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
     'bank_name',
     'account_no',
     'account_name',
+    'type',
     'chart_of_account_id',
     'currency_code',
     'is_active',
@@ -24,6 +26,7 @@ class BankAccount extends Model
     protected function casts(): array
     {
         return [
+            'type' => BankAccountType::class,
             'is_active' => 'boolean',
         ];
     }
@@ -41,5 +44,10 @@ class BankAccount extends Model
     public function reconciliations(): HasMany
     {
         return $this->hasMany(BankReconciliation::class);
+    }
+
+    public function pettyCashTransactions(): HasMany
+    {
+        return $this->hasMany(PettyCashTransaction::class);
     }
 }

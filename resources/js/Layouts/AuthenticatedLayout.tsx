@@ -231,6 +231,16 @@ export default function AuthenticatedLayout({ children, title }: AuthenticatedLa
                 name: 'AP Invoices',
                 icon: <BankOutlined />,
             },
+            can('accounting.view') && {
+                path: '/accounting/petty-cash',
+                name: 'Petty Cash',
+                icon: <BankOutlined />,
+            },
+            can('accounting.view') && {
+                path: '/accounting/transfers',
+                name: 'Transfers',
+                icon: <BankOutlined />,
+            },
             can('accounting.manage') && {
                 path: '/accounting/bank-reconciliation',
                 name: 'Bank Reconciliation',

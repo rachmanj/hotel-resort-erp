@@ -17,6 +17,7 @@ class ChartOfAccountsSeeder extends Seeder
         Hotel::query()->each(fn (Hotel $hotel) => $this->forHotel($hotel));
 
         Hotel::query()->each(fn (Hotel $hotel) => $this->syncAdditionalRevenueAccounts($hotel));
+        Hotel::query()->each(fn (Hotel $hotel) => $this->syncIntercompanyAccounts($hotel));
     }
 
     public function forHotel(Hotel $hotel): void
@@ -192,6 +193,43 @@ class ChartOfAccountsSeeder extends Seeder
             $this->postable('6-9000', 'Pajak & Perizinan', AccountType::Expense, NormalBalance::Debit, '6-0000'),
             $this->postable('6-9100', 'PBB & Retribusi', AccountType::Expense, NormalBalance::Debit, '6-0000'),
         ];
+    }
+
+    public function syncIntercompanyAccounts(Hotel $hotel): void
+    {
+        $intercompanyAccounts = [
+            $this->postable('1-1450', 'Due from TravyDoor Tour', AccountType::Asset, NormalBalance::Debit, '1-0000'),
+            $this->postable('2-2210', 'Due to TravyDoor Tour', AccountType::Liability, NormalBalance::Credit, '2-0000'),
+        ];
+
+        $codeToId = ChartOfAccount::query()
+            ->withoutGlobalScope('hotel')
+            ->where('hotel_id', $hotel->id)
+            ->pluck('id', 'account_code')
+            ->all();
+
+        foreach ($intercompanyAccounts as $account) {
+            $parentCode = $account['parent_code'] ?? null;
+            unset($account['parent_code']);
+
+            $existing = ChartOfAccount::query()
+                ->withoutGlobalScope('hotel')
+                ->where('hotel_id', $hotel->id)
+                ->where('account_code', $account['account_code'])
+                ->first();
+
+            if ($existing !== null) {
+                continue;
+            }
+
+            $created = ChartOfAccount::query()->create([
+                'hotel_id' => $hotel->id,
+                'parent_id' => $parentCode !== null ? ($codeToId[$parentCode] ?? null) : null,
+                ...$account,
+            ]);
+
+            $codeToId[$account['account_code']] = $created->id;
+        }
     }
 
     private function syncAdditionalRevenueAccounts(Hotel $hotel): void
