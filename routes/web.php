@@ -17,7 +17,10 @@ use App\Http\Controllers\Accounting\TaxReportController;
 use App\Http\Controllers\Admin\ActivityLogController;
 use App\Http\Controllers\Admin\AgentController;
 use App\Http\Controllers\Admin\AgentRateController;
+use App\Http\Controllers\Admin\BoatCharterController;
+use App\Http\Controllers\Admin\BoatUnitController;
 use App\Http\Controllers\Admin\CurrencyController;
+use App\Http\Controllers\Admin\DivePackageController;
 use App\Http\Controllers\Admin\HotelController;
 use App\Http\Controllers\Admin\HotelSettingController;
 use App\Http\Controllers\Admin\PermissionController;
@@ -338,6 +341,22 @@ Route::middleware(['auth', 'hotel.context'])->group(function (): void {
         Route::post('/revenue-categories', [RevenueCategoryController::class, 'store'])->name('revenue-categories.store')->middleware('can:revenue-categories.manage');
         Route::put('/revenue-categories/{revenueCategory}', [RevenueCategoryController::class, 'update'])->name('revenue-categories.update')->middleware('can:revenue-categories.manage');
         Route::delete('/revenue-categories/{revenueCategory}', [RevenueCategoryController::class, 'destroy'])->name('revenue-categories.destroy')->middleware('can:revenue-categories.manage');
+
+        Route::get('/dive-packages', [DivePackageController::class, 'index'])->name('dive-packages.index')->middleware('can:dive-center.view');
+        Route::post('/dive-packages', [DivePackageController::class, 'store'])->name('dive-packages.store')->middleware('can:dive-center.manage');
+        Route::put('/dive-packages/{divePackage}', [DivePackageController::class, 'update'])->name('dive-packages.update')->middleware('can:dive-center.manage');
+        Route::delete('/dive-packages/{divePackage}', [DivePackageController::class, 'destroy'])->name('dive-packages.destroy')->middleware('can:dive-center.manage');
+
+        Route::get('/boat-units', [BoatUnitController::class, 'index'])->name('boat-units.index')->middleware('can:dive-center.view');
+        Route::post('/boat-units', [BoatUnitController::class, 'store'])->name('boat-units.store')->middleware('can:dive-center.manage');
+        Route::put('/boat-units/{boatUnit}', [BoatUnitController::class, 'update'])->name('boat-units.update')->middleware('can:dive-center.manage');
+        Route::delete('/boat-units/{boatUnit}', [BoatUnitController::class, 'destroy'])->name('boat-units.destroy')->middleware('can:dive-center.manage');
+
+        Route::get('/boat-charters', [BoatCharterController::class, 'index'])->name('boat-charters.index')->middleware('can:dive-center.view');
+        Route::post('/boat-charters', [BoatCharterController::class, 'store'])->name('boat-charters.store')->middleware('can:dive-center.manage');
+        Route::post('/boat-charters/{boatCharter}/bill', [BoatCharterController::class, 'bill'])->name('boat-charters.bill')->middleware('can:dive-center.manage');
+        Route::put('/boat-charters/{boatCharter}', [BoatCharterController::class, 'update'])->name('boat-charters.update')->middleware('can:dive-center.manage');
+        Route::delete('/boat-charters/{boatCharter}', [BoatCharterController::class, 'destroy'])->name('boat-charters.destroy')->middleware('can:dive-center.manage');
     });
 
     Route::prefix('agent-portal')->name('agent.')->middleware('agent.portal')->group(function (): void {

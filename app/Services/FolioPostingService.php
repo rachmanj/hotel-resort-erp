@@ -31,6 +31,7 @@ class FolioPostingService
         ?int $referenceId = null,
         ?User $postedBy = null,
         bool $applyTax = true,
+        ?int $revenueCategoryId = null,
     ): FolioItem {
         if ($folio->status !== FolioStatus::Open) {
             throw new InvalidArgumentException('Cannot post charges to a closed or voided folio.');
@@ -50,6 +51,7 @@ class FolioPostingService
 
         $folioItem = FolioItem::query()->create([
             'folio_id' => $folio->id,
+            'revenue_category_id' => $revenueCategoryId,
             'item_type' => $itemType,
             'description' => $description,
             'reference_type' => $referenceType,

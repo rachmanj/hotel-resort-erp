@@ -13,6 +13,7 @@ class DemoDataSeeder extends Seeder
             HotelCurrencySeeder::class,
             ChartOfAccountsSeeder::class,
             RevenueCategorySeeder::class,
+            DiveCenterSeeder::class,
             PratasabaRoomTypeSeeder::class,
             AccountingDemoSeeder::class,
             AccountingExtensionSeeder::class,

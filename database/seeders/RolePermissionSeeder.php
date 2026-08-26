@@ -33,6 +33,7 @@ class RolePermissionSeeder extends Seeder
             'admin.manage', 'hotels.manage', 'currencies.manage', 'floors.manage',
             'rates.manage', 'seasons.manage',
             'revenue-categories.view', 'revenue-categories.manage',
+            'dive-center.view', 'dive-center.manage',
             'promotions.view', 'promotions.manage',
             'spa.view', 'spa.manage',
         ],

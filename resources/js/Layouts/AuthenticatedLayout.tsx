@@ -8,6 +8,7 @@ import {
     CalendarOutlined,
     ClearOutlined,
     CoffeeOutlined,
+    CompassOutlined,
     DashboardOutlined,
     DollarOutlined,
     HeartOutlined,
@@ -141,6 +142,23 @@ export default function AuthenticatedLayout({ children, title }: AuthenticatedLa
                 path: '/spa/therapists/schedules',
                 name: 'Therapist Schedules',
                 icon: <HeartOutlined />,
+            },
+        ]),
+        menuGroup('/dive-center-group', 'Dive Center', <CompassOutlined />, [
+            can('dive-center.view') && {
+                path: '/admin/dive-packages',
+                name: 'Dive Packages',
+                icon: <CompassOutlined />,
+            },
+            can('dive-center.view') && {
+                path: '/admin/boat-units',
+                name: 'Boat Units',
+                icon: <CompassOutlined />,
+            },
+            can('dive-center.view') && {
+                path: '/admin/boat-charters',
+                name: 'Boat Charters',
+                icon: <CompassOutlined />,
             },
         ]),
         menuGroup('/inventory-group', 'Inventory & Purchasing', <InboxOutlined />, [
