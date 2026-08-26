@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 #[Fillable([
     'hotel_id',
     'chart_of_account_id',
+    'department_id',
     'accounting_period_id',
     'transaction_date',
     'debit',
@@ -43,6 +44,11 @@ class GeneralLedger extends Model
     public function chartOfAccount(): BelongsTo
     {
         return $this->belongsTo(ChartOfAccount::class);
+    }
+
+    public function department(): BelongsTo
+    {
+        return $this->belongsTo(Department::class);
     }
 
     public function accountingPeriod(): BelongsTo

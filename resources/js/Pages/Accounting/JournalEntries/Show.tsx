@@ -6,6 +6,7 @@ interface JournalLine {
     id: number;
     account_code: string | null;
     account_name: string | null;
+    department_name: string | null;
     description: string | null;
     debit: number;
     credit: number;
@@ -48,6 +49,7 @@ export default function JournalEntryShow({ entry }: JournalEntryShowProps) {
                 columns={[
                     { title: 'Code', dataIndex: 'account_code' },
                     { title: 'Account', dataIndex: 'account_name' },
+                    { title: 'Department', dataIndex: 'department_name' },
                     { title: 'Description', dataIndex: 'description' },
                     { title: 'Debit', dataIndex: 'debit', render: (v: number) => v.toLocaleString('id-ID') },
                     { title: 'Credit', dataIndex: 'credit', render: (v: number) => v.toLocaleString('id-ID') },

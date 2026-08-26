@@ -7,6 +7,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 interface LineRow {
     key: string;
     chart_of_account_id: number | null;
+    department_id: number | null;
     description: string;
     quantity: number;
     unit_cost: number;
@@ -16,11 +17,12 @@ interface PayablesCreateProps {
     suppliers: Array<{ id: number; name: string }>;
     purchaseOrders: Array<{ id: number; po_no: string; supplier_id: number }>;
     accounts: Array<{ id: number; account_code: string; name: string }>;
+    departments: Array<{ id: number; code: string; name: string }>;
 }
 
-export default function PayablesCreate({ suppliers, purchaseOrders, accounts }: PayablesCreateProps) {
+export default function PayablesCreate({ suppliers, purchaseOrders, accounts, departments }: PayablesCreateProps) {
     const [lines, setLines] = useState<LineRow[]>([
-        { key: '1', chart_of_account_id: null, description: '', quantity: 1, unit_cost: 0 },
+        { key: '1', chart_of_account_id: null, department_id: null, description: '', quantity: 1, unit_cost: 0 },
     ]);
 
     const { data, setData, post, processing, errors } = useForm({
@@ -33,6 +35,7 @@ export default function PayablesCreate({ suppliers, purchaseOrders, accounts }: 
         withholding_tax_amount: 0,
         lines: [] as Array<{
             chart_of_account_id: number;
+            department_id: number | null;
             description: string;
             quantity: number;
             unit_cost: number;
@@ -48,6 +51,7 @@ export default function PayablesCreate({ suppliers, purchaseOrders, accounts }: 
                 .filter((l) => l.chart_of_account_id && l.description)
                 .map((l) => ({
                     chart_of_account_id: l.chart_of_account_id!,
+                    department_id: l.department_id,
                     description: l.description,
                     quantity: l.quantity,
                     unit_cost: l.unit_cost,
@@ -141,6 +145,25 @@ export default function PayablesCreate({ suppliers, purchaseOrders, accounts }: 
                             ),
                         },
                         {
+                            title: 'Department',
+                            width: 180,
+                            render: (_, r, i) => (
+                                <Select
+                                    allowClear
+                                    showSearch
+                                    style={{ width: 170 }}
+                                    placeholder="Optional"
+                                    value={r.department_id}
+                                    options={departments.map((d) => ({ value: d.id, label: d.name }))}
+                                    onChange={(v) => {
+                                        const next = [...lines];
+                                        next[i].department_id = v ?? null;
+                                        setLines(next);
+                                    }}
+                                />
+                            ),
+                        },
+                        {
                             title: 'Description',
                             render: (_, r, i) => (
                                 <Input
@@ -193,6 +216,7 @@ export default function PayablesCreate({ suppliers, purchaseOrders, accounts }: 
                                     {
                                         key: String(Date.now()),
                                         chart_of_account_id: null,
+                                        department_id: null,
                                         description: '',
                                         quantity: 1,
                                         unit_cost: 0,

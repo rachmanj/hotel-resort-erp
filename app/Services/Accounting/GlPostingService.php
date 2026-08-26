@@ -30,6 +30,7 @@ class GlPostingService
      *     credit: float|int|string,
      *     description: string,
      *     reference_number?: string|null,
+     *     department_id?: int|null,
      *     source_type: string,
      *     source_id: int
      * }>  $lines
@@ -88,6 +89,7 @@ class GlPostingService
                 $posted->push(GeneralLedger::query()->create([
                     'hotel_id' => $line['hotel_id'],
                     'chart_of_account_id' => $line['chart_of_account_id'],
+                    'department_id' => $line['department_id'] ?? null,
                     'accounting_period_id' => $period->id,
                     'transaction_date' => $transactionDate->toDateString(),
                     'debit' => round((float) $line['debit'], 2),

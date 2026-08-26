@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Accounting;
 use App\Enums\JournalEntryStatus;
 use App\Http\Controllers\Controller;
 use App\Models\ChartOfAccount;
+use App\Models\Department;
 use App\Models\JournalEntry;
 use App\Models\JournalEntryLine;
 use App\Services\Accounting\GlPostingService;
@@ -62,6 +63,7 @@ class JournalEntryController extends Controller
 
         return Inertia::render('Accounting/JournalEntries/Create', [
             'accounts' => $accounts,
+            'departments' => $this->departmentOptions(),
         ]);
     }
 
@@ -75,6 +77,7 @@ class JournalEntryController extends Controller
             'lines.*.description' => ['nullable', 'string', 'max:255'],
             'lines.*.debit' => ['required', 'numeric', 'min:0'],
             'lines.*.credit' => ['required', 'numeric', 'min:0'],
+            'lines.*.department_id' => ['nullable', 'exists:departments,id'],
         ]);
 
         DB::transaction(function () use ($validated, $request): void {
@@ -90,6 +93,7 @@ class JournalEntryController extends Controller
                 JournalEntryLine::query()->create([
                     'journal_entry_id' => $entry->id,
                     'chart_of_account_id' => $line['chart_of_account_id'],
+                    'department_id' => $line['department_id'] ?? null,
                     'description' => $line['description'] ?? null,
                     'debit' => $line['debit'],
                     'credit' => $line['credit'],
@@ -102,7 +106,7 @@ class JournalEntryController extends Controller
 
     public function show(JournalEntry $journalEntry): Response
     {
-        $journalEntry->load(['lines.chartOfAccount', 'createdBy:id,name', 'approvedBy:id,name']);
+        $journalEntry->load(['lines.chartOfAccount', 'lines.department', 'createdBy:id,name', 'approvedBy:id,name']);
 
         return Inertia::render('Accounting/JournalEntries/Show', [
             'entry' => [
@@ -119,6 +123,7 @@ class JournalEntryController extends Controller
                     'id' => $line->id,
                     'account_code' => $line->chartOfAccount?->account_code,
                     'account_name' => $line->chartOfAccount?->name,
+                    'department_name' => $line->department?->name,
                     'description' => $line->description,
                     'debit' => (float) $line->debit,
                     'credit' => (float) $line->credit,
@@ -150,6 +155,7 @@ class JournalEntryController extends Controller
             $glLines = $journalEntry->lines->map(fn (JournalEntryLine $line) => [
                 'hotel_id' => (int) $journalEntry->hotel_id,
                 'chart_of_account_id' => $line->chart_of_account_id,
+                'department_id' => $line->department_id,
                 'transaction_date' => $journalEntry->entry_date->toDateString(),
                 'debit' => (float) $line->debit,
                 'credit' => (float) $line->credit,
@@ -190,5 +196,22 @@ class JournalEntryController extends Controller
 
             return $prefix.str_pad((string) $sequence, 4, '0', STR_PAD_LEFT);
         });
+    }
+
+    /**
+     * @return array<int, array{id: int, code: string, name: string}>
+     */
+    private function departmentOptions(): array
+    {
+        return Department::query()
+            ->where('is_active', true)
+            ->orderBy('name')
+            ->get(['id', 'code', 'name'])
+            ->map(fn (Department $department) => [
+                'id' => $department->id,
+                'code' => $department->code,
+                'name' => $department->name,
+            ])
+            ->all();
     }
 }

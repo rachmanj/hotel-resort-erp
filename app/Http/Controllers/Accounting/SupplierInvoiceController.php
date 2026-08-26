@@ -8,6 +8,7 @@ use App\Enums\TaxType;
 use App\Events\SupplierInvoiceCreated;
 use App\Http\Controllers\Controller;
 use App\Models\ChartOfAccount;
+use App\Models\Department;
 use App\Models\PurchaseOrder;
 use App\Models\Supplier;
 use App\Models\SupplierInvoice;
@@ -60,6 +61,10 @@ class SupplierInvoiceController extends Controller
                 ->where('is_active', true)
                 ->orderBy('account_code')
                 ->get(['id', 'account_code', 'name']),
+            'departments' => Department::query()
+                ->where('is_active', true)
+                ->orderBy('name')
+                ->get(['id', 'code', 'name']),
         ]);
     }
 
@@ -78,6 +83,7 @@ class SupplierInvoiceController extends Controller
             'lines.*.description' => ['required', 'string', 'max:255'],
             'lines.*.quantity' => ['required', 'numeric', 'min:0.01'],
             'lines.*.unit_cost' => ['required', 'numeric', 'min:0'],
+            'lines.*.department_id' => ['nullable', 'exists:departments,id'],
         ]);
 
         $invoice = DB::transaction(function () use ($validated): SupplierInvoice {
@@ -102,6 +108,7 @@ class SupplierInvoiceController extends Controller
                 SupplierInvoiceLine::query()->create([
                     'supplier_invoice_id' => $invoice->id,
                     'chart_of_account_id' => $line['chart_of_account_id'],
+                    'department_id' => $line['department_id'] ?? null,
                     'description' => $line['description'],
                     'quantity' => $line['quantity'],
                     'unit_cost' => $line['unit_cost'],
@@ -131,7 +138,7 @@ class SupplierInvoiceController extends Controller
 
     public function show(SupplierInvoice $supplierInvoice): Response
     {
-        $supplierInvoice->load(['supplier', 'purchaseOrder', 'lines.chartOfAccount']);
+        $supplierInvoice->load(['supplier', 'purchaseOrder', 'lines.chartOfAccount', 'lines.department']);
 
         return Inertia::render('Accounting/Payables/Show', [
             'invoice' => [
@@ -151,6 +158,7 @@ class SupplierInvoiceController extends Controller
                     'description' => $line->description,
                     'account_code' => $line->chartOfAccount?->account_code,
                     'account_name' => $line->chartOfAccount?->name,
+                    'department_name' => $line->department?->name,
                     'quantity' => (float) $line->quantity,
                     'unit_cost' => (float) $line->unit_cost,
                     'amount' => (float) $line->amount,

@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
     'purchase_order_item_id',
     'inventory_item_id',
     'chart_of_account_id',
+    'department_id',
     'description',
     'quantity',
     'unit_cost',
@@ -45,5 +46,10 @@ class SupplierInvoiceLine extends Model
     public function chartOfAccount(): BelongsTo
     {
         return $this->belongsTo(ChartOfAccount::class);
+    }
+
+    public function department(): BelongsTo
+    {
+        return $this->belongsTo(Department::class);
     }
 }

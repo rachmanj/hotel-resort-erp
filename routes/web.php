@@ -5,6 +5,7 @@ use App\Http\Controllers\Accounting\BankAccountController;
 use App\Http\Controllers\Accounting\BankReconciliationController;
 use App\Http\Controllers\Accounting\BudgetController;
 use App\Http\Controllers\Accounting\ChartOfAccountController;
+use App\Http\Controllers\Accounting\DepartmentController;
 use App\Http\Controllers\Accounting\FixedAssetController;
 use App\Http\Controllers\Accounting\GeneralLedgerController;
 use App\Http\Controllers\Accounting\JournalEntryController;
@@ -227,6 +228,10 @@ Route::middleware(['auth', 'hotel.context'])->group(function (): void {
         Route::post('/journal-entries/{journalEntry}/approve', [JournalEntryController::class, 'approve'])->name('journal-entries.approve')->middleware('can:accounting.approve');
 
         Route::get('/general-ledger', [GeneralLedgerController::class, 'index'])->name('gl.index')->middleware('can:accounting.view');
+
+        Route::get('/departments', [DepartmentController::class, 'index'])->name('departments.index')->middleware('can:accounting.view');
+        Route::post('/departments', [DepartmentController::class, 'store'])->name('departments.store')->middleware('can:accounting.manage');
+        Route::put('/departments/{department}', [DepartmentController::class, 'update'])->name('departments.update')->middleware('can:accounting.manage');
 
         Route::get('/reports/trial-balance', [TrialBalanceController::class, 'index'])->name('reports.trial-balance')->middleware('can:accounting.view');
         Route::get('/reports/balance-sheet', [BalanceSheetController::class, 'index'])->name('reports.balance-sheet')->middleware('can:accounting.view');

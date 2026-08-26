@@ -30,6 +30,7 @@ class PostSupplierInvoiceToGl
             $glLines[] = [
                 'hotel_id' => $hotelId,
                 'chart_of_account_id' => $line->chart_of_account_id,
+                'department_id' => $line->department_id,
                 'transaction_date' => $invoice->invoice_date->toDateString(),
                 'debit' => (float) $line->amount,
                 'credit' => 0,

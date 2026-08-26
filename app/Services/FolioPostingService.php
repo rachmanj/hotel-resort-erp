@@ -7,6 +7,7 @@ use App\Enums\FolioStatus;
 use App\Enums\FolioType;
 use App\Events\FolioItemPosted;
 use App\Events\PaymentReceived;
+use App\Models\Department;
 use App\Models\Folio;
 use App\Models\FolioItem;
 use App\Models\Payment;
@@ -32,6 +33,7 @@ class FolioPostingService
         ?User $postedBy = null,
         bool $applyTax = true,
         ?int $revenueCategoryId = null,
+        ?int $departmentId = null,
     ): FolioItem {
         if ($folio->status !== FolioStatus::Open) {
             throw new InvalidArgumentException('Cannot post charges to a closed or voided folio.');
@@ -49,9 +51,12 @@ class FolioPostingService
             $serviceChargeAmount = $taxes['service_charge'];
         }
 
+        $resolvedDepartmentId = $departmentId ?? $this->defaultDepartmentForItemType($itemType);
+
         $folioItem = FolioItem::query()->create([
             'folio_id' => $folio->id,
             'revenue_category_id' => $revenueCategoryId,
+            'department_id' => $resolvedDepartmentId,
             'item_type' => $itemType,
             'description' => $description,
             'reference_type' => $referenceType,
@@ -217,5 +222,30 @@ class FolioPostingService
             FolioItemType::Spa->value, 'spa' => 'spa',
             default => 'all',
         };
+    }
+
+    /**
+     * Maps folio item types to global department codes (hotel_id null).
+     * Room → front_office, F&B → kitchen, Spa → spa.
+     */
+    private function defaultDepartmentForItemType(string $itemType): ?int
+    {
+        $code = match ($itemType) {
+            FolioItemType::Room->value, 'room' => 'front_office',
+            FolioItemType::Fb->value, 'fb' => 'kitchen',
+            FolioItemType::Spa->value, 'spa' => 'spa',
+            default => null,
+        };
+
+        if ($code === null) {
+            return null;
+        }
+
+        return Department::query()
+            ->withoutGlobalScope('hotel')
+            ->whereNull('hotel_id')
+            ->where('code', $code)
+            ->where('is_active', true)
+            ->value('id');
     }
 }

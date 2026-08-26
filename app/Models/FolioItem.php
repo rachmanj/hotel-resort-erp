@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 #[Fillable([
     'folio_id',
     'revenue_category_id',
+    'department_id',
     'item_type',
     'description',
     'reference_type',
@@ -49,6 +50,11 @@ class FolioItem extends Model
     public function revenueCategory(): BelongsTo
     {
         return $this->belongsTo(RevenueCategory::class);
+    }
+
+    public function department(): BelongsTo
+    {
+        return $this->belongsTo(Department::class);
     }
 
     public function postedBy(): BelongsTo

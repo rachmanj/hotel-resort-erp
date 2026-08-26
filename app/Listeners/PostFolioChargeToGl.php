@@ -43,8 +43,8 @@ class PostFolioChargeToGl
 
         if (in_array($itemType, [FolioItemType::Discount->value, 'discount'], true)) {
             $revenueAccount = $this->resolveRevenueAccount($hotelId, $itemType);
-            $lines[] = $this->line($hotelId, $revenueAccount->id, $transactionDate, $total, 0, "Discount: {$item->description}", $reference, $sourceType, $sourceId);
-            $lines[] = $this->line($hotelId, $guestLedger->id, $transactionDate, 0, $total, "Discount: {$item->description}", $reference, $sourceType, $sourceId);
+            $lines[] = $this->line($hotelId, $revenueAccount->id, $transactionDate, $total, 0, "Discount: {$item->description}", $reference, $sourceType, $sourceId, $item->department_id);
+            $lines[] = $this->line($hotelId, $guestLedger->id, $transactionDate, 0, $total, "Discount: {$item->description}", $reference, $sourceType, $sourceId, $item->department_id);
 
             $this->glPostingService->post($lines);
 
@@ -60,18 +60,18 @@ class PostFolioChargeToGl
         $taxAmount = round((float) $item->tax_amount, 2);
         $serviceChargeAmount = round((float) $item->service_charge_amount, 2);
 
-        $lines[] = $this->line($hotelId, $guestLedger->id, $transactionDate, $total, 0, $item->description, $reference, $sourceType, $sourceId);
+        $lines[] = $this->line($hotelId, $guestLedger->id, $transactionDate, $total, 0, $item->description, $reference, $sourceType, $sourceId, $item->department_id);
 
         if ($revenueAmount > 0) {
-            $lines[] = $this->line($hotelId, $revenueAccount->id, $transactionDate, 0, $revenueAmount, $item->description, $reference, $sourceType, $sourceId);
+            $lines[] = $this->line($hotelId, $revenueAccount->id, $transactionDate, 0, $revenueAmount, $item->description, $reference, $sourceType, $sourceId, $item->department_id);
         }
 
         if ($serviceChargeAmount > 0) {
-            $lines[] = $this->line($hotelId, $serviceChargeRevenue->id, $transactionDate, 0, $serviceChargeAmount, "Service charge: {$item->description}", $reference, $sourceType, $sourceId);
+            $lines[] = $this->line($hotelId, $serviceChargeRevenue->id, $transactionDate, 0, $serviceChargeAmount, "Service charge: {$item->description}", $reference, $sourceType, $sourceId, $item->department_id);
         }
 
         if ($taxAmount > 0) {
-            $lines[] = $this->line($hotelId, $ppnPayable->id, $transactionDate, 0, $taxAmount, "PPN: {$item->description}", $reference, $sourceType, $sourceId);
+            $lines[] = $this->line($hotelId, $ppnPayable->id, $transactionDate, 0, $taxAmount, "PPN: {$item->description}", $reference, $sourceType, $sourceId, $item->department_id);
         }
 
         $this->glPostingService->post($lines);
@@ -103,10 +103,12 @@ class PostFolioChargeToGl
         string $reference,
         string $sourceType,
         int $sourceId,
+        ?int $departmentId = null,
     ): array {
         return [
             'hotel_id' => $hotelId,
             'chart_of_account_id' => $accountId,
+            'department_id' => $departmentId,
             'transaction_date' => $transactionDate,
             'debit' => $debit,
             'credit' => $credit,

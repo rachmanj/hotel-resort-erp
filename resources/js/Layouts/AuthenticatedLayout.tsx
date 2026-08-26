@@ -197,6 +197,11 @@ export default function AuthenticatedLayout({ children, title }: AuthenticatedLa
                 icon: <BankOutlined />,
             },
             can('accounting.view') && {
+                path: '/accounting/departments',
+                name: 'Departments',
+                icon: <BankOutlined />,
+            },
+            can('accounting.view') && {
                 path: '/accounting/reports/trial-balance',
                 name: 'Trial Balance',
                 icon: <DollarOutlined />,

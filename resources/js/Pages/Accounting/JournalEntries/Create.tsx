@@ -10,9 +10,16 @@ interface AccountOption {
     name: string;
 }
 
+interface DepartmentOption {
+    id: number;
+    code: string;
+    name: string;
+}
+
 interface LineRow {
     key: number;
     chart_of_account_id: number | null;
+    department_id: number | null;
     description: string;
     debit: number;
     credit: number;
@@ -20,23 +27,35 @@ interface LineRow {
 
 interface JournalEntryCreateProps {
     accounts: AccountOption[];
+    departments: DepartmentOption[];
 }
 
-export default function JournalEntryCreate({ accounts }: JournalEntryCreateProps) {
+export default function JournalEntryCreate({ accounts, departments }: JournalEntryCreateProps) {
     const [lines, setLines] = useState<LineRow[]>([
-        { key: 1, chart_of_account_id: null, description: '', debit: 0, credit: 0 },
-        { key: 2, chart_of_account_id: null, description: '', debit: 0, credit: 0 },
+        { key: 1, chart_of_account_id: null, department_id: null, description: '', debit: 0, credit: 0 },
+        { key: 2, chart_of_account_id: null, department_id: null, description: '', debit: 0, credit: 0 },
     ]);
 
     const form = useForm({
         entry_date: dayjs().format('YYYY-MM-DD'),
         description: '',
-        lines: [] as Array<{ chart_of_account_id: number; description: string; debit: number; credit: number }>,
+        lines: [] as Array<{
+            chart_of_account_id: number;
+            department_id: number | null;
+            description: string;
+            debit: number;
+            credit: number;
+        }>,
     });
 
     const accountOptions = accounts.map((a) => ({
         value: a.id,
         label: `${a.account_code} · ${a.name}`,
+    }));
+
+    const departmentOptions = departments.map((d) => ({
+        value: d.id,
+        label: d.name,
     }));
 
     const totalDebit = lines.reduce((sum, l) => sum + (l.debit || 0), 0);
@@ -47,6 +66,7 @@ export default function JournalEntryCreate({ accounts }: JournalEntryCreateProps
             .filter((l) => l.chart_of_account_id !== null)
             .map((l) => ({
                 chart_of_account_id: l.chart_of_account_id as number,
+                department_id: l.department_id,
                 description: l.description,
                 debit: l.debit,
                 credit: l.credit,
@@ -57,7 +77,7 @@ export default function JournalEntryCreate({ accounts }: JournalEntryCreateProps
     return (
         <AuthenticatedLayout title="New Journal Entry">
             <Head title="New Journal Entry" />
-            <Form layout="vertical" style={{ maxWidth: 900 }}>
+            <Form layout="vertical" style={{ maxWidth: 1000 }}>
                 <Form.Item label="Entry Date" required>
                     <DatePicker
                         style={{ width: '100%' }}
@@ -84,6 +104,21 @@ export default function JournalEntryCreate({ accounts }: JournalEntryCreateProps
                                     options={accountOptions}
                                     value={row.chart_of_account_id}
                                     onChange={(v) => setLines(lines.map((l) => (l.key === row.key ? { ...l, chart_of_account_id: v } : l)))}
+                                />
+                            ),
+                        },
+                        {
+                            title: 'Department',
+                            width: 180,
+                            render: (_, row) => (
+                                <Select
+                                    allowClear
+                                    showSearch
+                                    style={{ width: '100%' }}
+                                    placeholder="Optional"
+                                    options={departmentOptions}
+                                    value={row.department_id}
+                                    onChange={(v) => setLines(lines.map((l) => (l.key === row.key ? { ...l, department_id: v ?? null } : l)))}
                                 />
                             ),
                         },
@@ -125,7 +160,7 @@ export default function JournalEntryCreate({ accounts }: JournalEntryCreateProps
                         <Space>
                             <span>Total Debit: {totalDebit.toLocaleString('id-ID')}</span>
                             <span>Total Credit: {totalCredit.toLocaleString('id-ID')}</span>
-                            <Button onClick={() => setLines([...lines, { key: Date.now(), chart_of_account_id: null, description: '', debit: 0, credit: 0 }])}>
+                            <Button onClick={() => setLines([...lines, { key: Date.now(), chart_of_account_id: null, department_id: null, description: '', debit: 0, credit: 0 }])}>
                                 Add Line
                             </Button>
                         </Space>

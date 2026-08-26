@@ -12,6 +12,7 @@ class DemoDataSeeder extends Seeder
             RolePermissionSeeder::class,
             HotelCurrencySeeder::class,
             ChartOfAccountsSeeder::class,
+            DepartmentSeeder::class,
             RevenueCategorySeeder::class,
             OtaFeeSeeder::class,
             DiveCenterSeeder::class,

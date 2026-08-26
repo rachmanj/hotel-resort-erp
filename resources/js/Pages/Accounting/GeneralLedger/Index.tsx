@@ -10,6 +10,7 @@ interface GlRow {
     transaction_date: string;
     account_code: string;
     account_name: string;
+    department_name: string | null;
     description: string;
     debit: number;
     credit: number;
@@ -21,15 +22,17 @@ interface GlRow {
 interface GeneralLedgerIndexProps {
     entries: { data: GlRow[] };
     accounts: Array<{ id: number; account_code: string; name: string }>;
+    departments: Array<{ id: number; code: string; name: string }>;
     filters: Record<string, string>;
     accountBalance: number | null;
 }
 
-export default function GeneralLedgerIndex({ entries, accounts, filters, accountBalance }: GeneralLedgerIndexProps) {
+export default function GeneralLedgerIndex({ entries, accounts, departments, filters, accountBalance }: GeneralLedgerIndexProps) {
     const columns: ProColumns<GlRow>[] = [
         { title: 'Date', dataIndex: 'transaction_date', width: 110 },
         { title: 'Code', dataIndex: 'account_code', width: 90 },
         { title: 'Account', dataIndex: 'account_name' },
+        { title: 'Department', dataIndex: 'department_name', width: 160 },
         { title: 'Description', dataIndex: 'description' },
         { title: 'Debit', dataIndex: 'debit', render: (v) => Number(v).toLocaleString('id-ID'), width: 120 },
         { title: 'Credit', dataIndex: 'credit', render: (v) => Number(v).toLocaleString('id-ID'), width: 120 },
@@ -37,11 +40,12 @@ export default function GeneralLedgerIndex({ entries, accounts, filters, account
     ];
 
     const accountOptions = accounts.map((a) => ({ value: a.id, label: `${a.account_code} · ${a.name}` }));
+    const departmentOptions = departments.map((d) => ({ value: d.id, label: d.name }));
 
     return (
         <AuthenticatedLayout title="General Ledger">
             <Head title="General Ledger" />
-            <div style={{ marginBottom: 16, display: 'flex', gap: 8, alignItems: 'center' }}>
+            <div style={{ marginBottom: 16, display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
                 <Select
                     allowClear
                     showSearch
@@ -50,6 +54,15 @@ export default function GeneralLedgerIndex({ entries, accounts, filters, account
                     value={filters.account_id ? Number(filters.account_id) : undefined}
                     options={accountOptions}
                     onChange={(v) => router.get('/accounting/general-ledger', { ...filters, account_id: v }, { preserveState: true })}
+                />
+                <Select
+                    allowClear
+                    showSearch
+                    placeholder="Filter by department"
+                    style={{ width: 220 }}
+                    value={filters.department_id ? Number(filters.department_id) : undefined}
+                    options={departmentOptions}
+                    onChange={(v) => router.get('/accounting/general-ledger', { ...filters, department_id: v }, { preserveState: true })}
                 />
                 <DatePicker.RangePicker
                     value={filters.from && filters.to ? [dayjs(filters.from), dayjs(filters.to)] : undefined}
@@ -63,7 +76,15 @@ export default function GeneralLedgerIndex({ entries, accounts, filters, account
                     <Statistic title="Account Balance" value={accountBalance} precision={0} prefix="Rp" />
                 )}
             </div>
-            <ProTable rowKey="id" search={false} options={false} pagination={{ showTotal: (total, range) => `${range[0]}-${range[1]} of ${total}` }} dataSource={entries.data} columns={columns} scroll={{ x: 'max-content' }} />
+            <ProTable
+                rowKey="id"
+                search={false}
+                options={false}
+                pagination={{ showTotal: (total, range) => `${range[0]}-${range[1]} of ${total}` }}
+                dataSource={entries.data}
+                columns={columns}
+                scroll={{ x: 'max-content' }}
+            />
         </AuthenticatedLayout>
     );
 }

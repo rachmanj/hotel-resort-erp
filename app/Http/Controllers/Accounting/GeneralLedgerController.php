@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Accounting;
 
 use App\Http\Controllers\Controller;
 use App\Models\ChartOfAccount;
+use App\Models\Department;
 use App\Models\GeneralLedger;
 use App\Services\Accounting\GlPostingService;
 use Carbon\Carbon;
@@ -23,8 +24,9 @@ class GeneralLedgerController extends Controller
         $asOfDate = $request->filled('as_of') ? Carbon::parse($request->string('as_of')) : now();
 
         $entries = GeneralLedger::query()
-            ->with('chartOfAccount:id,account_code,name')
+            ->with(['chartOfAccount:id,account_code,name', 'department:id,name'])
             ->when($request->filled('account_id'), fn ($q) => $q->where('chart_of_account_id', $request->integer('account_id')))
+            ->when($request->filled('department_id'), fn ($q) => $q->where('department_id', $request->integer('department_id')))
             ->when($request->filled('from'), fn ($q) => $q->where('transaction_date', '>=', $request->string('from')))
             ->when($request->filled('to'), fn ($q) => $q->where('transaction_date', '<=', $request->string('to')))
             ->when(! $request->filled('from') && ! $request->filled('to'), fn ($q) => $q->where('transaction_date', '<=', $asOfDate->toDateString()))
@@ -37,6 +39,7 @@ class GeneralLedgerController extends Controller
                 'transaction_date' => $entry->transaction_date->toDateString(),
                 'account_code' => $entry->chartOfAccount?->account_code,
                 'account_name' => $entry->chartOfAccount?->name,
+                'department_name' => $entry->department?->name,
                 'description' => $entry->description,
                 'debit' => (float) $entry->debit,
                 'credit' => (float) $entry->credit,
@@ -55,10 +58,16 @@ class GeneralLedgerController extends Controller
             ? ChartOfAccount::query()->find($request->integer('account_id'))
             : null;
 
+        $departments = Department::query()
+            ->where('is_active', true)
+            ->orderBy('name')
+            ->get(['id', 'code', 'name']);
+
         return Inertia::render('Accounting/GeneralLedger/Index', [
             'entries' => $entries,
             'accounts' => $accounts,
-            'filters' => $request->only(['account_id', 'from', 'to', 'as_of']),
+            'departments' => $departments,
+            'filters' => $request->only(['account_id', 'department_id', 'from', 'to', 'as_of']),
             'accountBalance' => $selectedAccount !== null
                 ? $this->glPostingService->getBalance($selectedAccount, $asOfDate, $hotelId)
                 : null,

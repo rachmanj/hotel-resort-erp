@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 #[Fillable([
     'journal_entry_id',
     'chart_of_account_id',
+    'department_id',
     'description',
     'debit',
     'credit',
@@ -31,5 +32,10 @@ class JournalEntryLine extends Model
     public function chartOfAccount(): BelongsTo
     {
         return $this->belongsTo(ChartOfAccount::class);
+    }
+
+    public function department(): BelongsTo
+    {
+        return $this->belongsTo(Department::class);
     }
 }
