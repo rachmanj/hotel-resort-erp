@@ -21,6 +21,7 @@ Ini pengganti laporan PAA-26 manual. Fitur:
 **Lokasi:** **Administration → Revenue Categories** (`/admin/revenue-categories`)
 
 16 kategori pendapatan (sesuai kolom laporan):
+
 | Kode | Nama | Akun COA |
 |---|---|---|
 | room_seroja | Seroja (Suite) | 4-1300 |
@@ -82,6 +83,7 @@ Ini pengganti laporan PAA-26 manual. Fitur:
 **Lokasi:** menu **Rooms → Room Types** (`/room-types`)
 
 4 tipe villa (nama brand = nama kamar):
+
 | Nama | Tipe | Jumlah |
 |---|---|---|
 | Seroja | Suite | 6 |
