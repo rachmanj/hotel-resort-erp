@@ -1,100 +1,118 @@
-# Spec: Revenue Integration — Pratasaba ERP
+# Spec: Revenue Integration — Pratasaba ERP (v2)
 
-> **Status:** Draft (hasil grill-me + analisa PAA-26, menunggu konfirmasi open questions)
-> **Date:** 2026-08-23
-> **Author:** Dea (PM) — dari arahan Iwan
+> **Status:** CONFIRMED — semua open questions sudah dijawab tim Pratasaba (email 26 Aug 2026).
+> **Author:** Dea (PM) — arahan Iwan.
 
 ---
 
 ## 1. Goal
 
-Pratasaba ERP jadi **single source of truth** pendapatan resort: mampu **generate laporan pendapatan bulanan format PAA-26 secara native** (folio → kategori → report), plus **import data historis** (Mei 2026 dst) sebagai backfill. Tim finance berhenti maintain Excel/Accurate paralel; Accurate cukup buat pajak/final.
+Pratasaba ERP jadi **single source of truth** pendapatan resort: generate **laporan pendapatan bulanan format PAA-26 secara native** + import data historis. **End goal (Q25): Accurate tidak lagi dipakai** — ERP mengcover seluruh kebutuhan data keuangan.
 
-## 2. Scope
+## 2. Model Bisnis Terkonfirmasi (dari tim)
 
-### IN
-1. **Revenue Categories** — model + CRUD: 16 kategori pendapatan dari laporan dipetakan ke COA account & FolioItem.
-2. **COA re-alignment** — tambah revenue accounts yang hilang (diving, boat, F&B outlets Pratasaba, extras), ubah rooms ke villa-based.
-3. **Dive Center module** — DivePackage, BoatCharter, guide assignment, BBM. (Diving = ~58% revenue, saat ini nol representasi.)
-4. **Revenue Report generator** — halaman + export (XLSX/CSV) format PAA-26 per bulan.
-5. **Import history** — artisan command untuk import laporan bulanan lama (Mei 2026 + bulan sebelumnya).
+### 2.1 Room Types (nama kamar = brand, tipe = kelas)
+| Nama | Tipe | Jumlah kamar |
+|---|---|---|
+| Seroja | Suite | 6 |
+| Kasilasa | Grand Deluxe | 5 |
+| Seheku | Deluxe | 21 |
+| Janti | Standard | 5 |
+
+- **Bed type**: King Size / Twin Bed
+- **View**: Gardenview / Seaview (Seheku Deluxe punya 2 pilihan view)
+- **Harga**: per kamar per tipe (bukan villa). Rate types: **Publish, Corporate, Agent (beberapa kategori), OTA, Marketing non-Agent Resmi**
+- **Unit lain**: Meeting room 2 (Kakaban Small Meeting, Pratasaba Meeting Hall), Mess Karyawan 2 (Mess, Mess Dasimin), **20 kamar baru** (buka akhir Sep/awal Okt, belum nama & harga).
+
+### 2.2 Revenue Categories (12 utama + Lain-lain)
+1. Room · 2. Meeting Packages · 3. Saba Resto · 4. Prata Coffee · 5. Pratasaba Dive Center · 6. Rental Mobil · 7. Rental Motor · 8. Rental Speedboat · 9. Showcase · 10. Merchandise · 11. Tiket Pantai · 12. Laundry
+- **Lain-lain** = mayoritas vendor pihak ke-3: fee massage, additional guide, tari Dalling, charge listrik, rental underwater camera, charge barang pecah, dll.
+- **Showcase** = minuman kemasan (stok barang dagangan) + titipan snack UMKM (dicatat hanya yang terjual).
+- **Tiket Pantai** = visitor tidak menginap.
+- **Boat (kolom laporan)** = Rental Speedboat Prata untuk trip. **Dive Center** = kegiatan diving (termasuk speedboat untuk diving).
+- **Rental boat via vendor ke-3** → pendapatan dicatat sebagai "Travydoor" (bukan Boat Prata).
+
+### 2.3 Biaya / Diskon (kritis — sudah jelas)
+| Item | Arti |
+|---|---|
+| **Sheet "Penjualan Resort" Total = 935jt** | Pendapatan − Discount |
+| **Sheet "Biaya" Total = 891jt** | Pendapatan − Discount − Vendor |
+| **Deduction** (per kategori) | diskon / fee / compliment + biaya vendor |
+| **Discount accurate** | nilai akun "Discount" di Accurate (crosscheck) |
+| **Fee Reservation Online** | OTA: Traveloka **19%**, Tiket.com **17%** (+10% variabel program) |
+| **Fee Reservation Offline** | marketing non-agent resmi, Rp 100.000/room/malam (Mei = 0) |
+| **Bayar Vendor/Guide** | total biaya vendor (guide, rental vendor, snack diving, dll) |
+| **BBM** | beli masuk akun "Fuel"; pakai dicatat buku stok BBM (CME); BBM boat diving/rental → COGS manual di Excel |
+
+### 2.4 Dive Center
+- **1 karyawan Dive Guide**; sisanya freelance by order.
+- **Price list** (lampiran): Dive Package Solo 2jt/hari (3x dive), Group (min 2) 1.5jt; Night Dive 600rb; Discover Scuba (Guest Stay) 800rb solo / 1.2jt group; Discover Scuba (Visitor) 1jt/1.5jt; Rental equipment per hari (wetsuit/BCD/regulator/mask/booties 100rb, full 500rb); Boat dive rent per destinasi 2.5jt–3.5jt.
+- **Daily trip** (boat non-diving): Small boat 40Pk 2jt–3.2jt, Medium 200Pk 2.5jt–10.5jt per destinasi (Kakaban, Sangalaki, Derawan, Talisayan whaleshark, dll); Additional guide 600rb.
+
+### 2.5 Invoice & Workflow
+- **No invoice `26900309`** = Sales Invoice Accurate: `26`(tahun) `9`(kode Pratasaba Resort) `00309`(urut/00001 per tahun).
+- **Workflow sekarang**: Receptionist/Kasir isi form (Captain Order CO Umum & CO Prata Coffee, Rent Receipt, Laundry Form) → input Excel "PENCATATAN" & "PETTY CASH" → scan + upload G-drive tiap akhir hari → HO input Accurate H+1 → laporan tgl 2 ke Director.
+- **Accurate diganti ERP** bila ERP cover semua kebutuhan.
+
+## 3. Scope
+
+### IN (fase berurutan)
+1. Revenue Categories + COA re-alignment + FolioItem mapping.
+2. Room Types (Seroja/Kasilasa/Seheku/Janti + bed/view dimensi) + rate types.
+3. Dive Center module (packages, boat units, charter, guide, BBM COGS).
+4. OTA fee & commission engine (Traveloka 19%, Tiket.com 17%+variabel, offline fee).
+5. Revenue Report generator (PAA-26) + export + breakdown per kategori.
+6. Import history (Accurate → ERP).
 
 ### OUT (deferred)
-- Migrasi full accounting dari Accurate (hanya sisi *revenue* saat ini).
-- OTA channel manager integration baru (yang ada dipertahankan).
-- Tax filing / e-Faktur.
+- Modul pengganti full Accurate non-revenue (PO, payroll, pajak, dll) — proyek terpisah.
+- Integrasi channel manager OTA otomatis.
 
-## 3. Tech Decisions
+## 4. Tech Decisions
+| Decision | Choice |
+|---|---|
+| Revenue category | Table `revenue_categories` + `coa_account_code` + sort |
+| FolioItem mapping | `folio_items.revenue_category_id` nullable FK |
+| Room type | `RoomType` (Seroja/Kasilasa/Seheku/Janti) + `bed_type` & `view` kolom |
+| Dive | `dive_packages`, `boat_units`, `boat_charters` + folio charge |
+| OTA fee | `ota_fees` table (OTA, base %, variable %, program) dihitung saat posting |
+| Report | query folio_items grouped category + period, render PAA-26 |
+| Import | artisan `import:revenue` (PhpSpreadsheet — butuh approval dep) |
 
-| Decision | Choice | Rationale |
-|---|---|---|
-| Revenue category modeling | Table `revenue_categories` (bukan enum) + `coa_account_code` FK | 16 kategori, bisa berubah, perlu mapping ke COA & report order |
-| FolioItem → category | Tambah kolom `revenue_category_id` nullable FK di `folio_items` | Retain existing `item_type`; category = dimensi report |
-| Dive module | Tabel terpisah (`dive_packages`, `boat_charters`, `boat_units`) + charge ke folio sebagai `FolioItem` | Dive punya struktur sendiri (QTY×harga, guide, BBM), tapi tetap settle via folio |
-| Room/villa | Tambah Seroja/Kasilasa/Seheku/Janti House sebagai `RoomType` **atau** dimensi `building`/`villa` — **OPEN** (Q1) | Lihat Open Questions |
-| Report engine | Query `folio_items` grouped by `revenue_category_id` + period; render PAA-26 layout | Satu source of truth |
-| Import | Artisan command `import:revenue` + XLSX reader (PhpSpreadsheet/maatwebsite) — **OPEN** (Q6, butuh approval dep) | Backfill history |
-| COA seeding | Extend `ChartOfAccountsSeeder` (idempotent) | Jangan edit DB live manual |
+## 5. DB Changes
+- `revenue_categories` — id, hotel_id, code, name, coa_account_code, sort_order, is_active
+- `room_types` add `bed_type`, `view` (nullable); seed 4 tipe + bed/view
+- `dive_packages` — id, hotel_id, name, type, price_per_dive/pax, min_pax, is_active
+- `boat_units` — id, hotel_id, name, capacity, engine_hp, is_own (Prata vs vendor)
+- `boat_charters` — id, folio_id?, reservation_id?, boat_unit_id, trip_date, destination, price, bbm_liters, bbm_cost, guide_fee, guide_type (employee/freelance), status
+- `ota_fees` — id, ota_name, base_fee_pct, variable_fee_pct, is_active
+- `revenue_imports` — id, period, file, gross_total, net_total, status
+- COA seeder: tambah akun revenue diving/boat/coffee/extras; rooms → 4 tipe
 
-## 4. DB Changes
+## 6. UI/UX
+- Admin → Revenue Categories (CRUD + COA map + sort)
+- Admin → Room Types (Seroja/Kasilasa/Seheku/Janti + bed/view)
+- Dive Center → Packages, Boat Units, Charters (guide + BBM)
+- Admin → OTA Fees
+- Reports → Revenue (PAA-26) + Diving + breakdown; export XLSX/CSV
 
-**New tables:**
-- `revenue_categories` — id, hotel_id, code, name, coa_account_code (FK→chart_of_accounts.account_code), sort_order, is_active
-- `dive_packages` — id, hotel_id, name, type (DivePackage/DiscoveryScubaDiving), price_per_dive, is_active
-- `boat_units` — id, hotel_id, name, capacity, bbm_cost_per_liter
-- `boat_charters` — id, hotel_id, folio_id (nullable), reservation_id (nullable), boat_unit_id, trip_date, destination, price, bbm_liters, bbm_cost, guide_fee, status
-- `revenue_imports` — id, hotel_id, period (YYYY-MM), file_name, gross_total, net_total, status, imported_by, imported_at
+## 7. API Endpoints
+- `GET /reports/revenue?month=` · `GET /reports/revenue/export` · `GET /reports/diving`
+- CRUD: `/admin/revenue-categories`, `/admin/ota-fees`, `/dive/packages`, `/dive/boat-units`, `/dive/boat-charters`
+- `POST /imports/revenue` (atau artisan `import:revenue`)
 
-**Altered:**
-- `folio_items` — add `revenue_category_id` (nullable FK)
-- `chart_of_accounts` — (via seeder) tambah revenue accounts baru
-- `room_types` / `rooms` — villa mapping (sesuai Q1)
+## 8. Risks
+1. **20 kamar baru** belum nama/harga — sisipkan saat dibuka (jangan block sekarang).
+2. **Travydoor** (boat vendor ke-3) — revenue pass-through, perlu dipahami alurnya.
+3. **BBM COGS** masih manual — perlu buku stok BBM di ERP atau biarkan manual dulu.
+4. **OTA fee variabel** Tiket.com (program cross-selling/gold member) — model harus fleksibel.
+5. **Scope**: jangan melebar ke full Accurate replacement (proyek terpisah).
 
-**COA revenue accounts baru (proposed):**
-- `4-4000` Departemen Lain → `4-4300 Diving Revenue`, `4-4310 Boat Charter Revenue`, `4-4320 Dive Guide Service`
-- `4-2000` F&B → `4-2500 Prata Coffee Revenue` (atau rename `4-2100` → Resto)
-- `4-4000` → `4-4400 Merchandise Revenue`, `4-4500 Showcase Revenue`, `4-4600 Tiket Pantai Revenue`, `4-4700 Transport Revenue (Car/Shuttle/Motor)`, `4-4800 Meeting Package Revenue`
-- Room revenue: `4-1100/4-1200/4-1300` (Standard/Deluxe/Suite) → rename/remap ke villa (Seroja/Kasilasa/Seheku/Janti) **OPEN** (Q1)
-
-## 5. UI/UX
-
-- **Admin → Revenue Categories** — CRUD kategori + mapping COA + sort (urutan kolom report).
-- **Dive Center** — menu baru: Packages, Boat Units, Boat Charters (booking + guide + BBM), posting ke folio.
-- **Reports → Revenue (PAA-26)** — filter bulan, tabel 16 kolom kategori, kolom Total, blok biaya (deduction/discount/fee/vendor), export XLSX/CSV.
-- **Reports → Diving** — detail dive per invoice (paket, QTY, harga, discount, guide, BBM).
-- Anti-slop: finance-professional theme (teal/emerald), compact numbers (juta/ribu), 38 rules.
-
-## 6. API Endpoints
-
-- `GET /reports/revenue?month=2026-05` — report data (JSON via Inertia props)
-- `GET /reports/revenue/export?month=2026-05&format=xlsx|csv`
-- `GET /reports/diving?month=2026-05`
-- `POST /admin/revenue-categories`, `PUT/PATCH /admin/revenue-categories/{id}`, `DELETE`
-- `GET/POST/PUT/PATCH/DELETE /dive/packages`, `/dive/boat-units`, `/dive/boat-charters`
-- `POST /imports/revenue` (file upload) atau artisan `php artisan import:revenue --file=...`
-
-## 7. Risks
-
-1. **Taxonomy mismatch** — rooms di COA/ERP = view-based (Standard/Deluxe/Suite), laporan = villa-based (Seroja/Kasilasa/Seheku/Janti). Salah mapping → report tidak reconcile.
-2. **Semantik biaya belum jelas** — "deduction" (183jt) vs "discount accurate" (129jt) vs "fee reservation online/offline" (9.8jt) vs "bayar vendor/guide" (44jt) — perlu definisi finance untuk map ke GL/komisi/vendor.
-3. **Reconciliation** — kolom kategori (sum ~1.35M) ≠ kolom Total (935jt); selisih ≈ blok biaya. Perlu aturan rekonsiliasi eksplisit.
-4. **Scope creep** — godaan menggeser full accounting. Batasi ke revenue.
-5. **Dependency** — XLSX parsing butuh library baru (butuh approval AGENTS.md).
-6. **Data historis kotor** — nama tamu/OTA tidak konsisten (Traveloka Guest / Tiket.com / Walk-in / UMUM), perlu cleaning saat import.
-
-## 8. Open Questions (butuh Iwan)
-
-- **Q1** — `Seroja/Kasilasa/Seheku/Janti House` itu **villa/bangunan** (1 unit bookable masing-masing) atau **room type** (punya beberapa kamar tiap villa)? Nentuin model RoomType vs dimensi building.
-- **Q2** — Definisi tepat `deduction` vs `discount accurate` vs `fee reservation online/offline` vs `bayar vendor/guide`. Map ke apa di GL (discount/komisi/fee OTA/vendor payable)?
-- **Q3** — Nomor invoice `26900309...` itu nomor folio ERP atau nomor invoice eksternal (Accurate)? (join key saat import)
-- **Q4** — Sumber laporan: Accurate atau manual Excel? (nentuin stabilitas format import)
-- **Q5** — Scope import history: cuma Mei 2026, atau Jan–Mei 2026 (dan berapa bulan ke belakang)?
-
-## 9. Phased Plan (proposed)
-
-1. **Phase 0 — Confirm** open questions Q1–Q5 (blocking).
-2. **Phase 1 — Revenue Categories + COA** re-alignment (seeder) + FolioItem mapping.
-3. **Phase 2 — Dive Center module** (packages, boat units, charters, folio posting).
-4. **Phase 3 — Revenue Report generator** (PAA-26 native) + export.
-5. **Phase 4 — Import history** (artisan command + reconciliation).
-6. **Phase 5 — QA + anti-slop audit + deploy + training finance.**
+## 9. Phased Plan
+1. **Phase 0** — Revenue Categories + COA re-alignment (seeder).
+2. **Phase 1** — Room Types (4 tipe + bed/view) + rate types.
+3. **Phase 2** — Dive Center module.
+4. **Phase 3** — OTA fee & commission engine.
+5. **Phase 4** — Revenue Report generator (PAA-26) + export.
+6. **Phase 5** — Import history (Mei 2026 dst).
+7. **Phase 6** — QA + anti-slop + deploy + training Finance.
