@@ -362,6 +362,11 @@ export default function AuthenticatedLayout({ children, title }: AuthenticatedLa
                 name: 'Revenue Categories',
                 icon: <TagsOutlined />,
             },
+            can('ota-fees.view') && {
+                path: '/admin/ota-fees',
+                name: 'OTA Fees',
+                icon: <TagsOutlined />,
+            },
             can('admin.manage') && {
                 path: '/admin/hotel-settings',
                 name: 'Hotel Settings',

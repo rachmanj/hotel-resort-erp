@@ -23,6 +23,7 @@ use App\Http\Controllers\Admin\CurrencyController;
 use App\Http\Controllers\Admin\DivePackageController;
 use App\Http\Controllers\Admin\HotelController;
 use App\Http\Controllers\Admin\HotelSettingController;
+use App\Http\Controllers\Admin\OtaFeeController;
 use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\PromotionCodeController;
 use App\Http\Controllers\Admin\PromotionController;
@@ -341,6 +342,11 @@ Route::middleware(['auth', 'hotel.context'])->group(function (): void {
         Route::post('/revenue-categories', [RevenueCategoryController::class, 'store'])->name('revenue-categories.store')->middleware('can:revenue-categories.manage');
         Route::put('/revenue-categories/{revenueCategory}', [RevenueCategoryController::class, 'update'])->name('revenue-categories.update')->middleware('can:revenue-categories.manage');
         Route::delete('/revenue-categories/{revenueCategory}', [RevenueCategoryController::class, 'destroy'])->name('revenue-categories.destroy')->middleware('can:revenue-categories.manage');
+
+        Route::get('/ota-fees', [OtaFeeController::class, 'index'])->name('ota-fees.index')->middleware('can:ota-fees.view');
+        Route::post('/ota-fees', [OtaFeeController::class, 'store'])->name('ota-fees.store')->middleware('can:ota-fees.manage');
+        Route::put('/ota-fees/{otaFee}', [OtaFeeController::class, 'update'])->name('ota-fees.update')->middleware('can:ota-fees.manage');
+        Route::delete('/ota-fees/{otaFee}', [OtaFeeController::class, 'destroy'])->name('ota-fees.destroy')->middleware('can:ota-fees.manage');
 
         Route::get('/dive-packages', [DivePackageController::class, 'index'])->name('dive-packages.index')->middleware('can:dive-center.view');
         Route::post('/dive-packages', [DivePackageController::class, 'store'])->name('dive-packages.store')->middleware('can:dive-center.manage');

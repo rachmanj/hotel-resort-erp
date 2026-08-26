@@ -95,6 +95,7 @@ class ChartOfAccountsSeeder extends Seeder
             $this->header('2-0000', 'KEWAJIBAN', AccountType::Liability, NormalBalance::Credit),
             $this->postable('2-1100', 'Hutang Usaha', AccountType::Liability, NormalBalance::Credit, '2-0000'),
             $this->postable('2-1400', 'Utang Komisi Agen', AccountType::Liability, NormalBalance::Credit, '2-0000'),
+            $this->postable('2-1410', 'Utang Fee OTA', AccountType::Liability, NormalBalance::Credit, '2-0000'),
             $this->postable('2-1500', 'Hutang Pajak Lainnya', AccountType::Liability, NormalBalance::Credit, '2-0000'),
             $this->postable('2-1600', 'Beban Terutang', AccountType::Liability, NormalBalance::Credit, '2-0000'),
             $this->postable('2-2100', 'PPN Keluaran', AccountType::Liability, NormalBalance::Credit, '2-0000'),
@@ -164,6 +165,7 @@ class ChartOfAccountsSeeder extends Seeder
             $this->postable('6-3100', 'Advertising', AccountType::Expense, NormalBalance::Debit, '6-3000'),
             $this->postable('6-3200', 'Sales Commission', AccountType::Expense, NormalBalance::Debit, '6-3000'),
             $this->postable('6-3300', 'Travel Agent Commission', AccountType::Expense, NormalBalance::Debit, '6-3000'),
+            $this->postable('6-3400', 'OTA Booking Fee', AccountType::Expense, NormalBalance::Debit, '6-3000'),
 
             $this->postable('6-4000', 'Housekeeping Expense', AccountType::Expense, NormalBalance::Debit, '6-0000'),
             $this->postable('6-4100', 'Guest Supplies', AccountType::Expense, NormalBalance::Debit, '6-0000'),
@@ -195,6 +197,8 @@ class ChartOfAccountsSeeder extends Seeder
     private function syncAdditionalRevenueAccounts(Hotel $hotel): void
     {
         $additionalAccounts = [
+            $this->postable('2-1410', 'Utang Fee OTA', AccountType::Liability, NormalBalance::Credit, '2-0000'),
+            $this->postable('6-3400', 'OTA Booking Fee', AccountType::Expense, NormalBalance::Debit, '6-3000'),
             $this->postable('4-1400', 'Room Revenue - Grand Deluxe', AccountType::Revenue, NormalBalance::Credit, '4-1000'),
             $this->postable('4-2500', 'Prata Coffee Revenue', AccountType::Revenue, NormalBalance::Credit, '4-2000'),
             $this->postable('4-4300', 'Dive Center Revenue', AccountType::Revenue, NormalBalance::Credit, '4-4000'),

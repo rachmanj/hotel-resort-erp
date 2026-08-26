@@ -37,6 +37,7 @@ class UpdateReservationRequest extends FormRequest
             'special_requests' => ['nullable', 'string'],
             'source' => ['sometimes', Rule::enum(ReservationSource::class)],
             'agent_id' => ['nullable', 'integer', 'exists:agents,id', 'required_if:source,agent'],
+            'ota_fee_id' => ['nullable', 'integer', 'exists:ota_fees,id', 'required_if:source,ota'],
         ];
     }
 }

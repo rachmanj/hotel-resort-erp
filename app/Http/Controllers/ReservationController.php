@@ -12,6 +12,7 @@ use App\Http\Requests\CancelReservationRequest;
 use App\Http\Requests\StoreReservationRequest;
 use App\Http\Requests\UpdateReservationRequest;
 use App\Models\Agent;
+use App\Models\OtaFee;
 use App\Models\RatePlan;
 use App\Models\Reservation;
 use App\Models\Room;
@@ -125,6 +126,7 @@ class ReservationController extends Controller
                 'label' => $s->label(),
             ]),
             'agents' => $this->activeAgentOptions($hotelId),
+            'otaFees' => $this->activeOtaFeeOptions($hotelId),
         ]);
     }
 
@@ -177,6 +179,7 @@ class ReservationController extends Controller
                 'special_requests' => $reservation->special_requests,
                 'source' => $reservation->source->value,
                 'agent_id' => $reservation->agent_id,
+                'ota_fee_id' => $reservation->ota_fee_id,
                 'guest_id' => $reservation->guest_id,
                 'guest' => $reservation->guest ? [
                     'full_name' => $reservation->guest->full_name,
@@ -212,6 +215,7 @@ class ReservationController extends Controller
                 'label' => $s->label(),
             ]),
             'agents' => $this->activeAgentOptions($reservation->hotel_id),
+            'otaFees' => $this->activeOtaFeeOptions($reservation->hotel_id),
         ]);
     }
 
@@ -253,6 +257,7 @@ class ReservationController extends Controller
                     'special_requests' => $validated['special_requests'] ?? null,
                     'source' => $validated['source'] ?? $reservation->source->value,
                     'agent_id' => $validated['agent_id'] ?? null,
+                    'ota_fee_id' => $validated['ota_fee_id'] ?? null,
                 ]);
 
                 $reservationRoom = $reservation->reservationRooms()->first();
@@ -412,6 +417,20 @@ class ReservationController extends Controller
             ->orderBy('name')
             ->get(['id', 'name', 'code'])
             ->map(fn (Agent $a) => ['value' => $a->id, 'label' => $a->name, 'code' => $a->code])
+            ->values();
+    }
+
+    /**
+     * @return Collection<int, array{value: int, label: string, code: string}>
+     */
+    private function activeOtaFeeOptions(?int $hotelId): Collection
+    {
+        return OtaFee::query()
+            ->when($hotelId !== null, fn ($q) => $q->where('hotel_id', $hotelId))
+            ->where('is_active', true)
+            ->orderBy('name')
+            ->get(['id', 'name', 'code'])
+            ->map(fn (OtaFee $f) => ['value' => $f->id, 'label' => $f->name, 'code' => $f->code])
             ->values();
     }
 }

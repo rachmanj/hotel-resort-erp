@@ -14,6 +14,7 @@ use App\Observers\ActivityLogObserver;
 use App\Services\AgentCommissionService;
 use App\Services\FolioPostingService;
 use App\Services\GroupBookingService;
+use App\Services\OtaFeeService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
@@ -23,6 +24,7 @@ class CheckOutGuestAction
     public function __construct(
         private FolioPostingService $folioPostingService,
         private AgentCommissionService $agentCommissionService,
+        private OtaFeeService $otaFeeService,
     ) {}
 
     public function __invoke(ReservationRoom $reservationRoom, ?User $performedBy = null): array
@@ -116,6 +118,18 @@ class CheckOutGuestAction
                         $this->agentCommissionService->accrue($reservation, $agent, $performedBy);
                     } catch (InvalidArgumentException) {
                         // Zero commission — skip accrual
+                    }
+                }
+            }
+
+            if ($allCheckedOut && $reservation->ota_fee_id !== null) {
+                $otaFee = $reservation->otaFee ?? $reservation->load('otaFee')->otaFee;
+
+                if ($otaFee !== null) {
+                    try {
+                        $this->otaFeeService->accrue($reservation, $otaFee, $performedBy);
+                    } catch (InvalidArgumentException) {
+                        // Zero fee — skip accrual
                     }
                 }
             }

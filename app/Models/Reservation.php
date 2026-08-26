@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
     'external_booking_id',
     'guest_id',
     'agent_id',
+    'ota_fee_id',
     'reservation_group_id',
     'promotion_id',
     'source',
@@ -74,6 +75,11 @@ class Reservation extends Model
     public function agent(): BelongsTo
     {
         return $this->belongsTo(Agent::class);
+    }
+
+    public function otaFee(): BelongsTo
+    {
+        return $this->belongsTo(OtaFee::class);
     }
 
     public function reservationRooms(): HasMany

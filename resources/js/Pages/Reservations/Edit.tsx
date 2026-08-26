@@ -42,6 +42,7 @@ interface ReservationData {
     special_requests?: string | null;
     source: string;
     agent_id: number | null;
+    ota_fee_id: number | null;
     guest_id: number | null;
     guest?: {
         full_name: string;
@@ -62,6 +63,7 @@ interface EditProps {
     availability: AvailabilityRow[];
     sources: Array<{ value: string; label: string }>;
     agents: Array<{ value: number; label: string; code: string }>;
+    otaFees: Array<{ value: number; label: string; code: string }>;
 }
 
 export default function ReservationEdit({
@@ -71,6 +73,7 @@ export default function ReservationEdit({
     availability,
     sources,
     agents,
+    otaFees,
 }: EditProps) {
     const [step, setStep] = useState(0);
 
@@ -85,6 +88,7 @@ export default function ReservationEdit({
         special_requests: reservation.special_requests ?? '',
         source: reservation.source,
         agent_id: reservation.agent_id,
+        ota_fee_id: reservation.ota_fee_id,
         guest_id: reservation.guest_id,
         guest: {
             full_name: reservation.guest?.full_name ?? '',
@@ -155,6 +159,15 @@ export default function ReservationEdit({
                             value={form.data.agent_id}
                             onChange={(v) => form.setData('agent_id', v)}
                             options={agents}
+                        />
+                    </Form.Item>
+                    <Form.Item label="OTA" required={form.data.source === 'ota'}>
+                        <Select
+                            allowClear
+                            placeholder="Select OTA"
+                            value={form.data.ota_fee_id}
+                            onChange={(v) => form.setData('ota_fee_id', v)}
+                            options={otaFees}
                         />
                     </Form.Item>
                 </Form>

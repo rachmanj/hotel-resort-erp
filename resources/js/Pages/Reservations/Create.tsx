@@ -39,6 +39,7 @@ interface CreateProps {
     defaults: { arrival_date: string; departure_date: string };
     sources: Array<{ value: string; label: string }>;
     agents: Array<{ value: number; label: string; code: string }>;
+    otaFees: Array<{ value: number; label: string; code: string }>;
 }
 
 export default function ReservationCreate({
@@ -48,6 +49,7 @@ export default function ReservationCreate({
     defaults,
     sources,
     agents,
+    otaFees,
 }: CreateProps) {
     const [step, setStep] = useState(0);
 
@@ -62,6 +64,7 @@ export default function ReservationCreate({
         special_requests: '',
         source: 'walkin',
         agent_id: null as number | null,
+        ota_fee_id: null as number | null,
         guest_id: null as number | null,
         guest: {
             full_name: '',
@@ -132,6 +135,15 @@ export default function ReservationCreate({
                             value={form.data.agent_id}
                             onChange={(v) => form.setData('agent_id', v)}
                             options={agents}
+                        />
+                    </Form.Item>
+                    <Form.Item label="OTA" required={form.data.source === 'ota'}>
+                        <Select
+                            allowClear
+                            placeholder="Select OTA"
+                            value={form.data.ota_fee_id}
+                            onChange={(v) => form.setData('ota_fee_id', v)}
+                            options={otaFees}
                         />
                     </Form.Item>
                 </Form>
