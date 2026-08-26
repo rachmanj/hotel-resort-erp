@@ -314,7 +314,7 @@ export default function BoatChartersIndex({
                             value={form.data.boat_unit_id ?? undefined}
                             options={boatUnits.map((unit) => ({
                                 value: unit.id,
-                                label: `${unit.code} — ${unit.name}`,
+                                label: `${unit.code} · ${unit.name}`,
                             }))}
                             onChange={(value) => form.setData('boat_unit_id', value)}
                         />
@@ -328,7 +328,7 @@ export default function BoatChartersIndex({
                             value={form.data.dive_package_id ?? undefined}
                             options={divePackages.map((pkg) => ({
                                 value: pkg.id,
-                                label: `${pkg.code} — ${pkg.name}`,
+                                label: `${pkg.code} · ${pkg.name}`,
                             }))}
                             onChange={(value) => form.setData('dive_package_id', value ?? null)}
                         />
@@ -342,7 +342,7 @@ export default function BoatChartersIndex({
                             value={form.data.reservation_id ?? undefined}
                             options={reservations.map((reservation) => ({
                                 value: reservation.id,
-                                label: `${reservation.reservation_code} — ${reservation.guest_name ?? 'Guest'}`,
+                                label: `${reservation.reservation_code} · ${reservation.guest_name ?? 'Guest'}`,
                             }))}
                             onChange={(value) => form.setData('reservation_id', value ?? null)}
                         />
@@ -356,7 +356,7 @@ export default function BoatChartersIndex({
                             value={form.data.folio_id ?? undefined}
                             options={folios.map((folio) => ({
                                 value: folio.id,
-                                label: `${folio.folio_no} — ${folio.guest_name ?? 'Guest'}`,
+                                label: `${folio.folio_no} · ${folio.guest_name ?? 'Guest'}`,
                             }))}
                             onChange={(value) => form.setData('folio_id', value ?? null)}
                         />
