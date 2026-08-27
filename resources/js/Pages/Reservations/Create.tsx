@@ -1,7 +1,7 @@
 import { Head, router, useForm } from '@inertiajs/react';
-import { Button, DatePicker, Form, Input, InputNumber, Select, Steps } from 'antd';
+import { Alert, Button, DatePicker, Form, Input, InputNumber, Select, Steps } from 'antd';
 import dayjs from 'dayjs';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { newIdempotencyKey } from '@/lib/idempotency';
 import AvailabilityGrid from './components/AvailabilityGrid';
@@ -53,6 +53,22 @@ export default function ReservationCreate({
     otaFees,
 }: CreateProps) {
     const [step, setStep] = useState(0);
+    const [isOnline, setIsOnline] = useState(
+        typeof navigator !== 'undefined' ? navigator.onLine : true,
+    );
+
+    useEffect(() => {
+        const handleOnline = () => setIsOnline(true);
+        const handleOffline = () => setIsOnline(false);
+
+        window.addEventListener('online', handleOnline);
+        window.addEventListener('offline', handleOffline);
+
+        return () => {
+            window.removeEventListener('online', handleOnline);
+            window.removeEventListener('offline', handleOffline);
+        };
+    }, []);
 
     const form = useForm({
         arrival_date: defaults.arrival_date,
@@ -279,6 +295,14 @@ export default function ReservationCreate({
             <Steps current={step} items={steps.map((s) => ({ title: s.title }))} style={{ marginBottom: 24 }} />
             <div style={{ maxWidth: 560 }}>{steps[step].content}</div>
             <div style={{ marginTop: 24 }}>
+                {!isOnline && (
+                    <Alert
+                        type="warning"
+                        showIcon
+                        style={{ marginBottom: 16 }}
+                        message="You are offline — this reservation will be queued and confirmed once the connection returns."
+                    />
+                )}
                 {step > 0 && (
                     <Button onClick={() => setStep(step - 1)} style={{ marginRight: 8 }}>
                         Back

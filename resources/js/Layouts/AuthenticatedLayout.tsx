@@ -29,6 +29,7 @@ import { Button, Dropdown, message } from 'antd';
 import { useEffect, type ReactNode } from 'react';
 import PropertySwitcher from '@/Components/PropertySwitcher';
 import NotificationBell from '@/Components/NotificationBell';
+import OfflineStatusBadge from '@/Components/OfflineStatusBadge';
 import { useAuth } from '@/hooks/useAuth';
 import { useTheme } from '@/hooks/useTheme';
 import type { PageProps } from '@/types';
@@ -426,6 +427,7 @@ export default function AuthenticatedLayout({ children, title }: AuthenticatedLa
                     currentHotel={currentHotel}
                     availableHotels={availableHotels}
                 />,
+                <OfflineStatusBadge key="offline-status" />,
                 <NotificationBell key="notifications" />,
                 <Button
                     key="theme-toggle"
