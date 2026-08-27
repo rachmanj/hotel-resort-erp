@@ -1,5 +1,6 @@
 import { router } from '@inertiajs/react';
 import { Alert, Button, Descriptions, Modal, Tag, theme } from 'antd';
+import { newIdempotencyKey } from '@/lib/idempotency';
 
 interface CheckOutModalProps {
     open: boolean;
@@ -37,7 +38,10 @@ export default function CheckOutModal({
         router.post(
             `/reservation-rooms/${reservationRoom.id}/checkout`,
             {},
-            { onSuccess: () => onClose() },
+            {
+                headers: { 'X-Idempotency-Key': newIdempotencyKey() },
+                onSuccess: () => onClose(),
+            },
         );
     };
 

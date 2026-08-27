@@ -1,10 +1,11 @@
 import '../css/app.css';
 import { createInertiaApp } from '@inertiajs/react';
 import { createRoot } from 'react-dom/client';
-import { ConfigProvider, theme as antTheme, Empty } from 'antd';
+import { ConfigProvider, message, theme as antTheme, Empty } from 'antd';
 import enUS from 'antd/locale/en_US';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { ThemeProvider, useTheme } from './hooks/useTheme';
+import { useEffect } from 'react';
 import dayjs from 'dayjs';
 import 'dayjs/locale/en';
 
@@ -16,6 +17,24 @@ export { useTheme };
 
 function AppWrapper({ children }) {
     const { isDark } = useTheme();
+
+    useEffect(() => {
+        const handleOffline = () => {
+            message.warning('Offline — changes will sync when connection returns.');
+        };
+
+        const handleOnline = () => {
+            message.success('Back online — syncing…');
+        };
+
+        window.addEventListener('offline', handleOffline);
+        window.addEventListener('online', handleOnline);
+
+        return () => {
+            window.removeEventListener('offline', handleOffline);
+            window.removeEventListener('online', handleOnline);
+        };
+    }, []);
 
     return (
         <ConfigProvider

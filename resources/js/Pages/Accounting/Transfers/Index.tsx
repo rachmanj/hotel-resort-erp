@@ -5,6 +5,7 @@ import { Button, Col, DatePicker, Form, Input, InputNumber, Modal, Row, Select }
 import dayjs from 'dayjs';
 import { useState } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import { newIdempotencyKey } from '@/lib/idempotency';
 
 dayjs.locale('en');
 
@@ -93,6 +94,7 @@ export default function TransfersIndex({ transfers, cashAccounts, allAccounts }:
                 onCancel={() => setCreateOpen(false)}
                 onOk={() =>
                     form.post('/accounting/transfers', {
+                        headers: { 'X-Idempotency-Key': newIdempotencyKey() },
                         onSuccess: () => {
                             setCreateOpen(false);
                             form.reset();

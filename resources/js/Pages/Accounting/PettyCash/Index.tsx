@@ -5,6 +5,7 @@ import { Button, Card, Col, DatePicker, Form, Input, InputNumber, Modal, Row, Se
 import dayjs from 'dayjs';
 import { useState } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import { newIdempotencyKey } from '@/lib/idempotency';
 
 dayjs.locale('en');
 
@@ -152,6 +153,7 @@ export default function PettyCashIndex({
                 onCancel={() => setCashOpen(false)}
                 onOk={() =>
                     cashForm.post('/accounting/petty-cash/transactions', {
+                        headers: { 'X-Idempotency-Key': newIdempotencyKey() },
                         onSuccess: () => {
                             setCashOpen(false);
                             cashForm.reset();
@@ -249,6 +251,7 @@ export default function PettyCashIndex({
                 onCancel={() => setReplenishOpen(false)}
                 onOk={() =>
                     replenishForm.post('/accounting/petty-cash/replenish', {
+                        headers: { 'X-Idempotency-Key': newIdempotencyKey() },
                         onSuccess: () => {
                             setReplenishOpen(false);
                             replenishForm.reset();

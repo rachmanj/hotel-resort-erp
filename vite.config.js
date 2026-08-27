@@ -148,6 +148,16 @@ export default defineConfig({
                             ],
                         },
                     },
+                    {
+                        urlPattern: ({ request }) => ['POST', 'PUT', 'PATCH'].includes(request.method),
+                        handler: 'NetworkOnly',
+                        options: {
+                            backgroundSync: {
+                                name: 'offline-writes',
+                                options: { maxRetentionTime: 24 * 60 },
+                            },
+                        },
+                    },
                 ],
             },
         }),

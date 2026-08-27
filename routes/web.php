@@ -105,14 +105,14 @@ Route::middleware(['auth', 'hotel.context'])->group(function (): void {
     Route::get('/reservations', [ReservationController::class, 'index'])->name('reservations.index')->middleware('can:reservations.view');
     Route::get('/reservations/calendar', [ReservationCalendarController::class, 'index'])->name('reservations.calendar')->middleware('can:reservations.view');
     Route::get('/reservations/create', [ReservationController::class, 'create'])->name('reservations.create')->middleware('can:reservations.create');
-    Route::post('/reservations', [ReservationController::class, 'store'])->name('reservations.store')->middleware('can:reservations.create');
+    Route::post('/reservations', [ReservationController::class, 'store'])->name('reservations.store')->middleware(['can:reservations.create', 'idempotency']);
     Route::post('/reservations/quote', [PromotionQuoteController::class, 'store'])->name('reservations.quote')->middleware('can:reservations.create');
     Route::get('/reservations/{reservation}', [ReservationController::class, 'show'])->name('reservations.show')->middleware('can:reservations.view');
     Route::get('/reservations/{reservation}/edit', [ReservationController::class, 'edit'])->name('reservations.edit')->middleware('can:reservations.edit');
     Route::put('/reservations/{reservation}', [ReservationController::class, 'update'])->name('reservations.update')->middleware('can:reservations.edit');
     Route::post('/reservations/{reservation}/cancel', [ReservationController::class, 'cancel'])->name('reservations.cancel')->middleware('can:reservations.cancel');
-    Route::post('/reservations/{reservation}/checkin', [CheckInController::class, 'store'])->name('reservations.checkin')->middleware('can:reservations.checkin');
-    Route::post('/reservation-rooms/{reservationRoom}/checkout', [CheckOutController::class, 'store'])->name('reservations.checkout')->middleware('can:reservations.checkout');
+    Route::post('/reservations/{reservation}/checkin', [CheckInController::class, 'store'])->name('reservations.checkin')->middleware(['can:reservations.checkin', 'idempotency']);
+    Route::post('/reservation-rooms/{reservationRoom}/checkout', [CheckOutController::class, 'store'])->name('reservations.checkout')->middleware(['can:reservations.checkout', 'idempotency']);
 
     Route::get('/groups', [GroupController::class, 'index'])->name('groups.index')->middleware('can:groups.view');
     Route::get('/groups/create', [GroupController::class, 'create'])->name('groups.create')->middleware('can:groups.manage');
@@ -126,7 +126,7 @@ Route::middleware(['auth', 'hotel.context'])->group(function (): void {
     Route::post('/groups/{group}/invoice/generate', [GroupController::class, 'generateInvoice'])->name('groups.invoice.generate')->middleware('can:billing.invoice');
 
     Route::get('/folios/{folio}', [FolioController::class, 'show'])->name('folios.show')->middleware('can:folios.view');
-    Route::post('/folios/{folio}/payments', [FolioController::class, 'postPayment'])->name('folios.payments.store')->middleware('can:billing.payment');
+    Route::post('/folios/{folio}/payments', [FolioController::class, 'postPayment'])->name('folios.payments.store')->middleware(['can:billing.payment', 'idempotency']);
     Route::get('/folios/{folio}/invoice', [InvoiceController::class, 'show'])->name('folios.invoice')->middleware('can:billing.invoice');
     Route::get('/folios/{folio}/invoice/download', [InvoiceController::class, 'download'])->name('folios.invoice.download')->middleware('can:billing.invoice');
 
@@ -143,7 +143,7 @@ Route::middleware(['auth', 'hotel.context'])->group(function (): void {
     Route::post('/fb/menu/{menuItem}/toggle', [MenuController::class, 'toggleAvailability'])->name('fb.menu.toggle')->middleware('can:fb.manage');
     Route::get('/fb/orders', [OrderController::class, 'index'])->name('fb.orders.index')->middleware('can:fb.view');
     Route::get('/fb/orders/create', [OrderController::class, 'create'])->name('fb.orders.create')->middleware('can:fb.orders.create');
-    Route::post('/fb/orders', [OrderController::class, 'store'])->name('fb.orders.store')->middleware('can:fb.orders.create');
+    Route::post('/fb/orders', [OrderController::class, 'store'])->name('fb.orders.store')->middleware(['can:fb.orders.create', 'idempotency']);
     Route::get('/fb/orders/{order}', [OrderController::class, 'show'])->name('fb.orders.show')->middleware('can:fb.view');
     Route::post('/fb/orders/{order}/cancel', [OrderController::class, 'cancel'])->name('fb.orders.cancel')->middleware('can:fb.manage');
     Route::put('/fb/orders/{order}/status', [OrderController::class, 'updateStatus'])->name('fb.orders.status')->middleware('can:fb.manage');
@@ -254,11 +254,11 @@ Route::middleware(['auth', 'hotel.context'])->group(function (): void {
         Route::put('/bank-accounts/{bankAccount}', [BankAccountController::class, 'update'])->name('bank-accounts.update')->middleware('can:accounting.manage');
 
         Route::get('/petty-cash', [PettyCashController::class, 'index'])->name('petty-cash.index')->middleware('can:accounting.view');
-        Route::post('/petty-cash/transactions', [PettyCashController::class, 'storeCash'])->name('petty-cash.store')->middleware('can:accounting.manage');
-        Route::post('/petty-cash/replenish', [PettyCashController::class, 'replenish'])->name('petty-cash.replenish')->middleware('can:accounting.manage');
+        Route::post('/petty-cash/transactions', [PettyCashController::class, 'storeCash'])->name('petty-cash.store')->middleware(['can:accounting.manage', 'idempotency']);
+        Route::post('/petty-cash/replenish', [PettyCashController::class, 'replenish'])->name('petty-cash.replenish')->middleware(['can:accounting.manage', 'idempotency']);
 
         Route::get('/transfers', [FundTransferController::class, 'index'])->name('transfers.index')->middleware('can:accounting.view');
-        Route::post('/transfers', [FundTransferController::class, 'store'])->name('transfers.store')->middleware('can:accounting.manage');
+        Route::post('/transfers', [FundTransferController::class, 'store'])->name('transfers.store')->middleware(['can:accounting.manage', 'idempotency']);
 
         Route::get('/bank-reconciliation', [BankReconciliationController::class, 'index'])->name('bank-rec.index')->middleware('can:accounting.manage');
         Route::post('/bank-reconciliation', [BankReconciliationController::class, 'store'])->name('bank-rec.store')->middleware('can:accounting.manage');

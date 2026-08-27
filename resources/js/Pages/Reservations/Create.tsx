@@ -3,6 +3,7 @@ import { Button, DatePicker, Form, Input, InputNumber, Select, Steps } from 'ant
 import dayjs from 'dayjs';
 import { useState } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import { newIdempotencyKey } from '@/lib/idempotency';
 import AvailabilityGrid from './components/AvailabilityGrid';
 import GuestSearchSelect from './components/GuestSearchSelect';
 import RateSelector from './components/RateSelector';
@@ -93,7 +94,9 @@ export default function ReservationCreate({
     };
 
     const submit = () => {
-        form.post('/reservations');
+        form.post('/reservations', {
+            headers: { 'X-Idempotency-Key': newIdempotencyKey() },
+        });
     };
 
     const steps = [

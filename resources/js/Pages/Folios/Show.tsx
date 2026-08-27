@@ -1,6 +1,7 @@
 import { Head, Link, useForm } from '@inertiajs/react';
 import { Button, Descriptions, Form, Input, InputNumber, Select, Space, Table, Tag } from 'antd';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import { newIdempotencyKey } from '@/lib/idempotency';
 
 interface FolioShowProps {
     folio: {
@@ -73,6 +74,7 @@ export default function FolioShow({
 
     const submitPayment = () => {
         paymentForm.post(`/folios/${folio.id}/payments`, {
+            headers: { 'X-Idempotency-Key': newIdempotencyKey() },
             preserveScroll: true,
             onSuccess: () => paymentForm.reset('reference_no'),
         });

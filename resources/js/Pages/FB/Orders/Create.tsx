@@ -2,6 +2,7 @@ import { Head, useForm } from '@inertiajs/react';
 import { Button, Card, Checkbox, Col, Form, InputNumber, Row, Select, Table, Typography } from 'antd';
 import { useMemo, useState } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import { newIdempotencyKey } from '@/lib/idempotency';
 
 interface MenuItem {
     id: number;
@@ -75,7 +76,9 @@ export default function OrdersCreate({
             quantity: c.quantity,
             notes: c.notes || undefined,
         })));
-        form.post('/fb/orders');
+        form.post('/fb/orders', {
+            headers: { 'X-Idempotency-Key': newIdempotencyKey() },
+        });
     };
 
     const isRoomService = form.data.order_type === 'room_service';

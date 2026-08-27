@@ -1,5 +1,6 @@
 import { router } from '@inertiajs/react';
 import { Descriptions, Modal, message, theme } from 'antd';
+import { newIdempotencyKey } from '@/lib/idempotency';
 
 interface CheckInModalProps {
     open: boolean;
@@ -23,6 +24,7 @@ export default function CheckInModal({ open, reservation, onClose }: CheckInModa
             `/reservations/${reservation.id}/checkin`,
             {},
             {
+                headers: { 'X-Idempotency-Key': newIdempotencyKey() },
                 onSuccess: () => onClose(),
                 onError: (errors) => {
                     const firstError = Object.values(errors)[0];
