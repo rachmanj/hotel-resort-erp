@@ -1,7 +1,9 @@
 import { Head, Link, useForm } from '@inertiajs/react';
-import { Button, Descriptions, Form, Input, Modal, Space, Table, Tag } from 'antd';
+import { WhatsAppOutlined } from '@ant-design/icons';
+import { Button, Descriptions, Form, Input, message, Modal, Space, Table, Tag, Tooltip } from 'antd';
 import { useState } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import { newIdempotencyKey } from '@/lib/idempotency';
 import CheckInModal from './components/CheckInModal';
 import CheckOutModal from './components/CheckOutModal';
 
@@ -65,6 +67,7 @@ interface ReservationShowProps {
     canCheckIn: boolean;
     canCheckOut: boolean;
     canViewFolio: boolean;
+    canSendWhatsApp: boolean;
 }
 
 export default function ReservationShow({
@@ -74,17 +77,39 @@ export default function ReservationShow({
     canCheckIn,
     canCheckOut,
     canViewFolio,
+    canSendWhatsApp,
 }: ReservationShowProps) {
     const [cancelOpen, setCancelOpen] = useState(false);
     const [checkInOpen, setCheckInOpen] = useState(false);
     const [checkOutRoom, setCheckOutRoom] = useState<ReservationShowProps['reservation']['reservation_rooms'][0] | null>(null);
     const cancelForm = useForm({ cancelled_reason: '' });
+    const sendWhatsAppForm = useForm({});
 
     const submitCancel = () => {
         cancelForm.post(`/reservations/${reservation.id}/cancel`, {
             onSuccess: () => setCancelOpen(false),
         });
     };
+
+    const submitSendWhatsApp = () => {
+        sendWhatsAppForm.post(`/reservations/${reservation.id}/send-whatsapp`, {
+            headers: { 'X-Idempotency-Key': newIdempotencyKey() },
+            onError: (errors) => {
+                const firstError = Object.values(errors)[0];
+                if (firstError) {
+                    message.error(String(firstError));
+                }
+            },
+        });
+    };
+
+    const whatsAppDisabledReason = !canSendWhatsApp
+        ? 'You do not have permission to send WhatsApp.'
+        : !reservation.guest?.phone
+            ? 'Guest tidak memiliki nomor WA'
+            : reservation.status !== 'confirmed' && reservation.status !== 'cancelled'
+                ? 'Reservation must be confirmed or cancelled to send WhatsApp.'
+                : null;
 
     return (
         <AuthenticatedLayout title={reservation.reservation_code}>
@@ -108,6 +133,18 @@ export default function ReservationShow({
                         Cancel reservation
                     </Button>
                 )}
+                <Tooltip title={whatsAppDisabledReason}>
+                    <span>
+                        <Button
+                            icon={<WhatsAppOutlined />}
+                            loading={sendWhatsAppForm.processing}
+                            disabled={whatsAppDisabledReason !== null}
+                            onClick={submitSendWhatsApp}
+                        >
+                            Kirim WA
+                        </Button>
+                    </span>
+                </Tooltip>
             </Space>
 
             <Descriptions bordered column={2} size="small" style={{ marginBottom: 24 }}>

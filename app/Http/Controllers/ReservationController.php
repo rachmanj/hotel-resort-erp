@@ -17,13 +17,18 @@ use App\Models\RatePlan;
 use App\Models\Reservation;
 use App\Models\Room;
 use App\Models\RoomType;
+use App\Notifications\ReservationCancelledNotification;
+use App\Notifications\ReservationConfirmedNotification;
+use App\Observers\ActivityLogObserver;
 use App\Services\AvailabilityService;
 use App\Services\FolioPostingService;
+use App\WhatsApp\WhatsAppResponder;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -389,6 +394,7 @@ class ReservationController extends Controller
             'canCheckIn' => request()->user()?->can('reservations.checkin') ?? false,
             'canCheckOut' => request()->user()?->can('reservations.checkout') ?? false,
             'canViewFolio' => request()->user()?->can('folios.view') ?? false,
+            'canSendWhatsApp' => request()->user()?->can('reservations.send-whatsapp') ?? false,
         ]);
     }
 
@@ -404,6 +410,61 @@ class ReservationController extends Controller
         $cancelReservation($reservation, $request->validated(), $request->user());
 
         return back()->with('success', 'Reservation cancelled successfully.');
+    }
+
+    public function sendWhatsApp(
+        Request $request,
+        Reservation $reservation,
+        WhatsAppResponder $responder,
+    ): RedirectResponse {
+        $reservation->loadMissing('guest');
+
+        if ($reservation->guest === null || blank($reservation->guest->phone)) {
+            throw ValidationException::withMessages([
+                'phone' => 'Guest tidak memiliki nomor WhatsApp.',
+            ]);
+        }
+
+        $status = $reservation->status;
+
+        $notification = match ($status) {
+            ReservationStatus::Confirmed => new ReservationConfirmedNotification($reservation),
+            ReservationStatus::Cancelled => new ReservationCancelledNotification($reservation),
+            default => throw ValidationException::withMessages([
+                'status' => 'Reservasi belum berstatus confirmed/cancelled.',
+            ]),
+        };
+
+        $text = $notification->toWhatsApp($reservation->guest);
+
+        $phone = WhatsAppResponder::normalizePhone($reservation->guest->phone);
+
+        if ($phone === null) {
+            throw ValidationException::withMessages([
+                'phone' => 'Nomor WhatsApp guest tidak valid.',
+            ]);
+        }
+
+        try {
+            $responder->sendText($phone, $text);
+        } catch (\Throwable $e) {
+            report($e);
+
+            return back()->with('error', 'Gagal mengirim WhatsApp. Silakan coba lagi.');
+        }
+
+        ActivityLogObserver::logCustom(
+            $reservation,
+            'whatsapp_sent',
+            $status === ReservationStatus::Confirmed
+                ? "WhatsApp confirmation sent to {$reservation->guest->full_name} ({$phone})"
+                : "WhatsApp cancellation sent to {$reservation->guest->full_name} ({$phone})",
+            $request->user()?->id,
+        );
+
+        return back()->with('success', $status === ReservationStatus::Confirmed
+            ? 'WhatsApp confirmation sent successfully.'
+            : 'WhatsApp cancellation sent successfully.');
     }
 
     /**

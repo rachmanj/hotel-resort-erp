@@ -15,7 +15,6 @@ use App\Models\ReservationRoom;
 use App\Models\Room;
 use App\Models\RoomType;
 use App\Models\User;
-use App\Notifications\ReservationConfirmedNotification;
 use App\Observers\ActivityLogObserver;
 use App\Services\AgentRateService;
 use App\Services\AvailabilityService;
@@ -127,11 +126,6 @@ class CreateReservationAction
 
             return $reservation;
         });
-
-        // Kirim konfirmasi WhatsApp ke guest (setelah transaksi commit).
-        if ($reservation->guest?->phone !== null) {
-            $reservation->guest->notify(new ReservationConfirmedNotification($reservation));
-        }
 
         return $reservation;
     }

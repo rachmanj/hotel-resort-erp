@@ -111,6 +111,7 @@ Route::middleware(['auth', 'hotel.context'])->group(function (): void {
     Route::get('/reservations/{reservation}/edit', [ReservationController::class, 'edit'])->name('reservations.edit')->middleware('can:reservations.edit');
     Route::put('/reservations/{reservation}', [ReservationController::class, 'update'])->name('reservations.update')->middleware('can:reservations.edit');
     Route::post('/reservations/{reservation}/cancel', [ReservationController::class, 'cancel'])->name('reservations.cancel')->middleware('can:reservations.cancel');
+    Route::post('/reservations/{reservation}/send-whatsapp', [ReservationController::class, 'sendWhatsApp'])->name('reservations.send-whatsapp')->middleware(['can:reservations.send-whatsapp', 'idempotency']);
     Route::post('/reservations/{reservation}/checkin', [CheckInController::class, 'store'])->name('reservations.checkin')->middleware(['can:reservations.checkin', 'idempotency']);
     Route::post('/reservation-rooms/{reservationRoom}/checkout', [CheckOutController::class, 'store'])->name('reservations.checkout')->middleware(['can:reservations.checkout', 'idempotency']);
 

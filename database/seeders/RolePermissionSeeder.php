@@ -16,7 +16,7 @@ class RolePermissionSeeder extends Seeder
         'admin' => [
             'telegram.link', 'profile.telegram.view',
             'rooms.view', 'rooms.manage',
-            'reservations.view', 'reservations.create', 'reservations.edit', 'reservations.cancel', 'reservations.checkin', 'reservations.checkout',
+            'reservations.view', 'reservations.create', 'reservations.edit', 'reservations.cancel', 'reservations.checkin', 'reservations.checkout', 'reservations.send-whatsapp',
             'groups.view', 'groups.manage', 'groups.checkin', 'groups.checkout',
             'housekeeping.view', 'housekeeping.manage', 'housekeeping.update_status',
             'maintenance.view', 'maintenance.manage', 'maintenance.create', 'maintenance.escalate',
@@ -58,7 +58,7 @@ class RolePermissionSeeder extends Seeder
         'front_office' => [
             'telegram.link', 'profile.telegram.view',
             'rooms.view',
-            'reservations.view', 'reservations.create', 'reservations.edit', 'reservations.cancel', 'reservations.checkin', 'reservations.checkout',
+            'reservations.view', 'reservations.create', 'reservations.edit', 'reservations.cancel', 'reservations.checkin', 'reservations.checkout', 'reservations.send-whatsapp',
             'groups.view', 'groups.manage', 'groups.checkin', 'groups.checkout',
             'housekeeping.view', 'housekeeping.update_status',
             'maintenance.create',
