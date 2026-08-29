@@ -8,6 +8,7 @@ use App\Enums\RoomStatus;
 use App\Models\Reservation;
 use App\Models\Room;
 use App\Models\User;
+use App\Notifications\ReservationCancelledNotification;
 use App\Observers\ActivityLogObserver;
 use Illuminate\Support\Facades\DB;
 
@@ -18,7 +19,7 @@ class CancelReservationAction
      */
     public function __invoke(Reservation $reservation, array $data = [], ?User $performedBy = null): Reservation
     {
-        return DB::transaction(function () use ($reservation, $data, $performedBy): Reservation {
+        $reservation = DB::transaction(function () use ($reservation, $data, $performedBy): Reservation {
             $reason = $data['cancelled_reason'] ?? null;
 
             $reservation->update([
@@ -59,5 +60,12 @@ class CancelReservationAction
 
             return $reservation;
         });
+
+        // Kirim notifikasi pembatalan WhatsApp ke guest (setelah transaksi commit).
+        if ($reservation->guest?->phone !== null) {
+            $reservation->guest->notify(new ReservationCancelledNotification($reservation));
+        }
+
+        return $reservation;
     }
 }
