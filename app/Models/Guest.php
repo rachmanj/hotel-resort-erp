@@ -8,6 +8,7 @@ use App\Models\Concerns\LogsActivity;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Notifications\Notifiable;
 
 #[Fillable([
     'full_name',
@@ -24,7 +25,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 ])]
 class Guest extends Model
 {
-    use LogsActivity;
+    use LogsActivity, Notifiable;
 
     protected function casts(): array
     {
@@ -38,6 +39,18 @@ class Guest extends Model
     public function reservations(): HasMany
     {
         return $this->hasMany(Reservation::class);
+    }
+
+    /**
+     * Nomor WhatsApp untuk notifikasi (format internasional 62...).
+     */
+    public function routeNotificationForWhatsApp(): ?string
+    {
+        if (blank($this->phone)) {
+            return null;
+        }
+
+        return \App\WhatsApp\WhatsAppResponder::normalizePhone($this->phone);
     }
 
     public function preferences(): HasMany

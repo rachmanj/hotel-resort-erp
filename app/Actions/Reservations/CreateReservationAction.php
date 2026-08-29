@@ -15,6 +15,7 @@ use App\Models\ReservationRoom;
 use App\Models\Room;
 use App\Models\RoomType;
 use App\Models\User;
+use App\Notifications\ReservationConfirmedNotification;
 use App\Observers\ActivityLogObserver;
 use App\Services\AgentRateService;
 use App\Services\AvailabilityService;
@@ -54,7 +55,7 @@ class CreateReservationAction
      */
     public function __invoke(array $data, ?User $performedBy = null): Reservation
     {
-        return DB::transaction(function () use ($data, $performedBy): Reservation {
+        $reservation = DB::transaction(function () use ($data, $performedBy): Reservation {
             $checkin = Carbon::parse($data['arrival_date'])->startOfDay();
             $checkout = Carbon::parse($data['departure_date'])->startOfDay();
 
@@ -126,6 +127,13 @@ class CreateReservationAction
 
             return $reservation;
         });
+
+        // Kirim konfirmasi WhatsApp ke guest (setelah transaksi commit).
+        if ($reservation->guest?->phone !== null) {
+            $reservation->guest->notify(new ReservationConfirmedNotification($reservation));
+        }
+
+        return $reservation;
     }
 
     /**
