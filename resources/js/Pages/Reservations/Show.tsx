@@ -103,13 +103,27 @@ export default function ReservationShow({
         });
     };
 
-    const whatsAppDisabledReason = !canSendWhatsApp
-        ? 'You do not have permission to send WhatsApp.'
+    const STATUS_LABELS: Record<string, string> = {
+        tentative: 'Tentative',
+        confirmed: 'Confirmed',
+        checked_in: 'Checked-in',
+        checked_out: 'Checked-out',
+        cancelled: 'Cancelled',
+        no_show: 'No-show',
+    };
+
+    const whatsAppDisabled =
+        !canSendWhatsApp ||
+        !reservation.guest?.phone ||
+        (reservation.status !== 'confirmed' && reservation.status !== 'cancelled');
+
+    const whatsAppTooltip = !canSendWhatsApp
+        ? 'No permission — only Front Desk and Admin roles can send WhatsApp.'
         : !reservation.guest?.phone
-            ? 'Guest tidak memiliki nomor WA'
+            ? 'Guest has no phone number — add one in the Guest profile to enable WhatsApp.'
             : reservation.status !== 'confirmed' && reservation.status !== 'cancelled'
-                ? 'Reservation must be confirmed or cancelled to send WhatsApp.'
-                : null;
+                ? `WhatsApp can only be sent when the reservation is Confirmed or Cancelled (current status: ${STATUS_LABELS[reservation.status] ?? reservation.status}).`
+                : `Send ${reservation.status === 'cancelled' ? 'cancellation notice' : 'confirmation'} to ${reservation.guest?.full_name} via WhatsApp.`;
 
     return (
         <AuthenticatedLayout title={reservation.reservation_code}>
@@ -133,12 +147,12 @@ export default function ReservationShow({
                         Cancel reservation
                     </Button>
                 )}
-                <Tooltip title={whatsAppDisabledReason}>
+                <Tooltip title={whatsAppTooltip}>
                     <span>
                         <Button
                             icon={<WhatsAppOutlined />}
                             loading={sendWhatsAppForm.processing}
-                            disabled={whatsAppDisabledReason !== null}
+                            disabled={whatsAppDisabled}
                             onClick={submitSendWhatsApp}
                         >
                             Kirim WA
