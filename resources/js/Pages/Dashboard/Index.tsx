@@ -650,7 +650,14 @@ export default function DashboardIndex({
                             justifyContent: 'flex-end',
                         }}
                     >
-                        <Link href="/housekeeping" style={{ fontSize: 12, color: token.colorLink }}>
+                        <Link
+                            href="/housekeeping"
+                            style={{
+                                fontSize: 12,
+                                color: token.colorTextSecondary,
+                                textDecoration: 'underline',
+                            }}
+                        >
                             View board
                         </Link>
                     </div>

@@ -25,7 +25,7 @@ import {
     UserOutlined,
 } from '@ant-design/icons';
 import { ProLayout } from '@ant-design/pro-layout';
-import { Button, Dropdown, message } from 'antd';
+import { Button, Dropdown, message, theme } from 'antd';
 import { useEffect, type ReactNode } from 'react';
 import PropertySwitcher from '@/Components/PropertySwitcher';
 import NotificationBell from '@/Components/NotificationBell';
@@ -61,6 +61,7 @@ export default function AuthenticatedLayout({ children, title }: AuthenticatedLa
     const { auth, currentHotel, availableHotels, flash } = usePage<PageProps>().props;
     const { can } = useAuth();
     const { isDark, toggleTheme } = useTheme();
+    const { token: antdToken } = theme.useToken();
 
     useEffect(() => {
         if (flash.success) {
@@ -411,6 +412,9 @@ export default function AuthenticatedLayout({ children, title }: AuthenticatedLa
                     colorBgMenuItemSelected: '#16302d',
                     colorBgMenuItemHover: '#182a28',
                     colorTextMenuSecondary: '#7f918f',
+                },
+                header: {
+                    colorTextMenuSecondary: antdToken.colorTextSecondary,
                 },
             }}
             location={{ pathname: window.location.pathname }}
