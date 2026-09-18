@@ -11,7 +11,7 @@ import 'dayjs/locale/en';
 
 dayjs.locale('en');
 
-const appName = import.meta.env.VITE_APP_NAME || 'Pratasaba ERP';
+const appName = 'Pratasaba ERP';
 
 export { useTheme };
 
