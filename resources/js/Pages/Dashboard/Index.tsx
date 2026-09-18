@@ -388,8 +388,9 @@ export default function DashboardIndex({
 
                 .dashboard-filter-tab.is-active {
                     background: ${token.colorPrimaryBg};
-                    border-color: ${token.colorPrimaryBorder};
-                    color: ${token.colorPrimary};
+                    border-color: ${token.colorBorderSecondary};
+                    box-shadow: inset 0 -2px 0 ${token.colorPrimary};
+                    color: ${token.colorText};
                 }
 
                 .dashboard-room-grid {
@@ -649,7 +650,7 @@ export default function DashboardIndex({
                             justifyContent: 'flex-end',
                         }}
                     >
-                        <Link href="/housekeeping" style={{ fontSize: 12, color: token.colorPrimary }}>
+                        <Link href="/housekeeping" style={{ fontSize: 12, color: token.colorLink }}>
                             View board
                         </Link>
                     </div>
