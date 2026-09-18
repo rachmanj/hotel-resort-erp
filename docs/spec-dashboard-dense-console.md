@@ -13,7 +13,7 @@ Dipilih Iwan 18 Sep 2026 dari 3 varian di `~/sketches/pratasaba-dashboard/`. Imp
 
 | Bagian | Nilai |
 | --- | --- |
-| Aksen (colorPrimary) | `#0d9488` |
+| Aksen (colorPrimary) | `#0f766e` |
 | Rail sidebar | latar `#12211f`, teks `#c9d6d4`, item aktif `#16302d` dengan garis aksen 2px di kiri, caption `#7f918f` |
 | Lebar rail | 212px |
 | Panel | `token.colorBgContainer`, border `token.colorBorderSecondary`, radius 6px, tanpa shadow |
