@@ -14,24 +14,48 @@ interface GuestLayoutProps {
 export default function GuestLayout({ children, slides = [] }: GuestLayoutProps) {
     const { token } = theme.useToken();
     const screens = Grid.useBreakpoint();
-    const showHero = slides.length > 0 && screens.lg;
+    const hasSlides = slides.length > 0;
+    const captionInset = screens.md ? 48 : 16;
+
+    const cardSurface = `color-mix(in srgb, ${token.colorBgContainer} 82%, transparent)`;
 
     return (
         <>
             <style>{`
                 .guest-layout {
-                    display: flex;
+                    position: relative;
                     min-height: 100vh;
                     width: 100%;
+                    overflow-x: hidden;
                 }
                 .guest-layout__hero {
-                    flex: 1 1 60%;
-                    position: relative;
+                    position: fixed;
+                    inset: 0;
+                    z-index: 0;
                     overflow: hidden;
                 }
+                .guest-layout__gradient {
+                    position: fixed;
+                    inset: 0;
+                    z-index: 1;
+                    pointer-events: none;
+                    background: linear-gradient(
+                        to top,
+                        rgba(0, 0, 0, 0.65) 0%,
+                        rgba(0, 0, 0, 0.15) 50%,
+                        rgba(0, 0, 0, 0.35) 100%
+                    );
+                }
+                .guest-layout__caption {
+                    position: fixed;
+                    z-index: 2;
+                    pointer-events: none;
+                    max-width: min(420px, calc(100vw - 32px));
+                }
                 .guest-layout__form {
-                    flex: 1 1 40%;
-                    min-width: 0;
+                    position: relative;
+                    z-index: 3;
+                    min-height: 100vh;
                     width: 100%;
                     display: flex;
                     align-items: center;
@@ -41,10 +65,25 @@ export default function GuestLayout({ children, slides = [] }: GuestLayoutProps)
                 }
                 @media (min-width: 992px) {
                     .guest-layout__form {
-                        min-width: 420px;
-                        flex: 0 0 40%;
-                        padding: 24px;
+                        justify-content: flex-end;
+                        padding: 48px 64px;
                     }
+                }
+                .guest-layout__card {
+                    width: 100%;
+                    max-width: 420px;
+                    min-width: 0;
+                    box-sizing: border-box;
+                    border-radius: ${token.borderRadiusLG}px;
+                    border: 1px solid ${token.colorBorderSecondary};
+                    box-shadow: ${token.boxShadowSecondary};
+                    backdrop-filter: blur(16px);
+                    -webkit-backdrop-filter: blur(16px);
+                }
+                .guest-layout__card .ant-card {
+                    background: transparent !important;
+                    border: none !important;
+                    box-shadow: none !important;
                 }
                 .guest-carousel,
                 .guest-carousel .slick-slider,
@@ -64,8 +103,11 @@ export default function GuestLayout({ children, slides = [] }: GuestLayoutProps)
                     display: block;
                 }
             `}</style>
-            <div className="guest-layout" style={{ background: token.colorBgLayout }}>
-                {showHero && (
+            <div
+                className="guest-layout"
+                style={{ background: hasSlides ? undefined : token.colorBgLayout }}
+            >
+                {hasSlides && (
                     <div className="guest-layout__hero">
                         <Carousel
                             className="guest-carousel"
@@ -86,44 +128,39 @@ export default function GuestLayout({ children, slides = [] }: GuestLayoutProps)
                                 </div>
                             ))}
                         </Carousel>
-                        <div
+                    </div>
+                )}
+                {hasSlides && <div className="guest-layout__gradient" />}
+                {hasSlides && (
+                    <div
+                        className="guest-layout__caption"
+                        style={{
+                            bottom: captionInset,
+                            left: captionInset,
+                        }}
+                    >
+                        <Typography.Title
+                            level={screens.md ? 2 : 3}
+                            style={{ color: '#fff', margin: 0, marginBottom: 8 }}
+                        >
+                            Pratasaba Resort
+                        </Typography.Title>
+                        <Typography.Paragraph
                             style={{
-                                position: 'absolute',
-                                inset: 0,
-                                background:
-                                    'linear-gradient(to top, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.15) 50%, rgba(0,0,0,0.35) 100%)',
-                                pointerEvents: 'none',
-                            }}
-                        />
-                        <div
-                            style={{
-                                position: 'absolute',
-                                bottom: 48,
-                                left: 48,
-                                right: 48,
-                                pointerEvents: 'none',
+                                color: 'rgba(255,255,255,0.85)',
+                                margin: 0,
+                                fontSize: screens.md ? 16 : 14,
                             }}
                         >
-                            <Typography.Title
-                                level={2}
-                                style={{ color: '#fff', margin: 0, marginBottom: 8 }}
-                            >
-                                Pratasaba Resort
-                            </Typography.Title>
-                            <Typography.Paragraph
-                                style={{
-                                    color: 'rgba(255,255,255,0.85)',
-                                    margin: 0,
-                                    fontSize: 16,
-                                }}
-                            >
-                                Dive Resort and Spa, Maratua
-                            </Typography.Paragraph>
-                        </div>
+                            Dive Resort and Spa, Maratua
+                        </Typography.Paragraph>
                     </div>
                 )}
                 <div className="guest-layout__form">
-                    <div style={{ width: '100%', maxWidth: 420, boxSizing: 'border-box' }}>
+                    <div
+                        className="guest-layout__card"
+                        style={{ background: cardSurface }}
+                    >
                         {children}
                     </div>
                 </div>
