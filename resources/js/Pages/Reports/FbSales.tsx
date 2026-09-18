@@ -115,6 +115,7 @@ export default function FbSales({ report, filters }: FbSalesProps) {
                     options={false}
                     dataSource={report.by_item}
                     columns={itemColumns}
+                    pagination={{ showTotal: (total, range) => `${range[0]}-${range[1]} of ${total}` }}
                     scroll={{ x: 'max-content' }}
                 />
             </Card>

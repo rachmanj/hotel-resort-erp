@@ -118,6 +118,7 @@ export default function RolesIndex({ roles, permissionGroups }: RolesIndexProps)
                 columns={columns}
                 dataSource={roles}
                 search={false}
+                options={false}
                 pagination={false}
                 toolBarRender={() => [
                     <Button key="create" type="primary" onClick={openCreate}>

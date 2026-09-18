@@ -243,12 +243,14 @@ export default function AgentTierRatesIndex({ rates, roomTypes, tiers }: AgentTi
                 columns={columns}
                 dataSource={rates.data}
                 search={false}
+                options={false}
                 toolBarRender={() => [
                     <Button key="create" type="primary" onClick={openCreate}>
                         New Tier Rate
                     </Button>,
                 ]}
                 pagination={{
+                    showTotal: (total, range) => `${range[0]}-${range[1]} of ${total}`,
                     current: rates.current_page,
                     pageSize: rates.per_page,
                     total: rates.total,

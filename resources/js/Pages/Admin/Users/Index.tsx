@@ -125,6 +125,7 @@ export default function UsersIndex({ users, hotels, roles, filters }: UsersIndex
                 rowKey="id"
                 columns={columns}
                 dataSource={users.data}
+                options={false}
                 search={{
                     searchText: 'Search',
                     resetText: 'Reset',

@@ -60,6 +60,7 @@ export default function BookingsIndex({ bookings, agent, filters }: BookingsInde
                 columns={columns}
                 dataSource={bookings.data}
                 search={false}
+                options={false}
                 toolBarRender={() => [
                     <Select
                         key="status"
@@ -78,6 +79,7 @@ export default function BookingsIndex({ bookings, agent, filters }: BookingsInde
                     />,
                 ]}
                 pagination={{
+                    showTotal: (total, range) => `${range[0]}-${range[1]} of ${total}`,
                     current: bookings.current_page,
                     pageSize: bookings.per_page,
                     total: bookings.total,

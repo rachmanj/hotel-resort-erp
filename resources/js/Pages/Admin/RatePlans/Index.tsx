@@ -119,6 +119,7 @@ export default function RatePlansIndex({
                 columns={columns}
                 dataSource={ratePlans.data}
                 search={false}
+                options={false}
                 toolBarRender={() => [
                     <Button key="create" type="primary" onClick={openCreate}>
                         New Rate Plan

@@ -93,7 +93,15 @@ export default function TaxIndex({ transactions, summary, filters, taxTypeOption
                     { title: 'Total Tax', render: (_, r) => formatIdr(r.total_tax) },
                 ]}
             />
-            <ProTable rowKey="id" search={false} options={false} dataSource={transactions} columns={columns} scroll={{ x: 'max-content' }} />
+            <ProTable
+                rowKey="id"
+                search={false}
+                options={false}
+                dataSource={transactions}
+                columns={columns}
+                pagination={{ showTotal: (total, range) => `${range[0]}-${range[1]} of ${total}` }}
+                scroll={{ x: 'max-content' }}
+            />
         </AuthenticatedLayout>
     );
 }

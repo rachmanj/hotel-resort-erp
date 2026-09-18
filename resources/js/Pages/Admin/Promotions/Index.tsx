@@ -239,6 +239,7 @@ export default function PromotionsIndex({
                 columns={columns}
                 dataSource={promotions.data}
                 search={false}
+                options={false}
                 toolBarRender={() => [
                     <Button key="create" type="primary" onClick={openCreate}>
                         New Promotion

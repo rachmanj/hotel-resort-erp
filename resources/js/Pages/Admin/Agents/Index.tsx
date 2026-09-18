@@ -185,6 +185,7 @@ export default function AgentsIndex({
                 columns={columns}
                 dataSource={agents.data}
                 search={false}
+                options={false}
                 toolBarRender={() => [
                     <Link key="tier-rates" href="/admin/agent-tier-rates">
                         Tier Rates
