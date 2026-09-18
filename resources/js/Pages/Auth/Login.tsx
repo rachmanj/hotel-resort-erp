@@ -3,11 +3,15 @@ import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { Button, Card, Checkbox, Form, Input, Typography } from 'antd';
 import resortOne from '@/assets/login/resort-1.jpg';
 import resortTwo from '@/assets/login/resort-2.jpg';
+import resortThree from '@/assets/login/resort-3.jpg';
+import resortFour from '@/assets/login/resort-4.jpg';
 import GuestLayout from '@/Layouts/GuestLayout';
 
 const resortSlides = [
     { src: resortOne, alt: 'Pratasaba Resort over the water' },
     { src: resortTwo, alt: 'Pratasaba Resort room interior' },
+    { src: resortThree, alt: 'Pratasaba Resort beach' },
+    { src: resortFour, alt: 'Pratasaba Resort over-water jetty' },
 ];
 
 export default function Login() {
