@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Enums\AgentRateDiscountType;
 use App\Models\Agent;
 use App\Models\AgentRate;
+use App\Models\AgentTierRate;
 use App\Models\RatePlan;
 use App\Models\RoomType;
 use Carbon\CarbonInterface;
@@ -12,6 +13,22 @@ use Carbon\CarbonInterface;
 class AgentRateService
 {
     public function resolveNightlyRate(
+        Agent $agent,
+        int $roomTypeId,
+        CarbonInterface $checkin,
+        CarbonInterface $checkout,
+        ?int $ratePlanId = null,
+    ): ?string {
+        $individualRate = $this->resolveIndividualRate($agent, $roomTypeId, $checkin, $checkout, $ratePlanId);
+
+        if ($individualRate !== null) {
+            return $individualRate;
+        }
+
+        return $this->resolveTierRate($agent, $roomTypeId, $checkin, $checkout);
+    }
+
+    private function resolveIndividualRate(
         Agent $agent,
         int $roomTypeId,
         CarbonInterface $checkin,
@@ -57,5 +74,31 @@ class AgentRateService
         }
 
         return null;
+    }
+
+    private function resolveTierRate(
+        Agent $agent,
+        int $roomTypeId,
+        CarbonInterface $checkin,
+        CarbonInterface $checkout,
+    ): ?string {
+        if ($agent->rate_category === null) {
+            return null;
+        }
+
+        $rate = AgentTierRate::query()
+            ->where('rate_category', $agent->rate_category)
+            ->where('room_type_id', $roomTypeId)
+            ->where('is_active', true)
+            ->where('valid_from', '<=', $checkin->toDateString())
+            ->where('valid_to', '>=', $checkout->copy()->subDay()->toDateString())
+            ->orderByDesc('valid_from')
+            ->first();
+
+        if ($rate === null) {
+            return null;
+        }
+
+        return (string) $rate->nightly_rate;
     }
 }

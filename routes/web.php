@@ -20,6 +20,7 @@ use App\Http\Controllers\Accounting\TaxReportController;
 use App\Http\Controllers\Admin\ActivityLogController;
 use App\Http\Controllers\Admin\AgentController;
 use App\Http\Controllers\Admin\AgentRateController;
+use App\Http\Controllers\Admin\AgentTierRateController;
 use App\Http\Controllers\Admin\BoatCharterController;
 use App\Http\Controllers\Admin\BoatUnitController;
 use App\Http\Controllers\Admin\CurrencyController;
@@ -354,6 +355,10 @@ Route::middleware(['auth', 'hotel.context'])->group(function (): void {
         Route::post('/agents/{agent}/rates', [AgentRateController::class, 'store'])->name('agents.rates.store')->middleware('can:agents.manage');
         Route::put('/agents/rates/{rate}', [AgentRateController::class, 'update'])->name('agents.rates.update')->middleware('can:agents.manage');
         Route::delete('/agents/rates/{rate}', [AgentRateController::class, 'destroy'])->name('agents.rates.destroy')->middleware('can:agents.manage');
+        Route::get('/agent-tier-rates', [AgentTierRateController::class, 'index'])->name('agent-tier-rates.index')->middleware('can:agents.manage');
+        Route::post('/agent-tier-rates', [AgentTierRateController::class, 'store'])->name('agent-tier-rates.store')->middleware('can:agents.manage');
+        Route::put('/agent-tier-rates/{agentTierRate}', [AgentTierRateController::class, 'update'])->name('agent-tier-rates.update')->middleware('can:agents.manage');
+        Route::delete('/agent-tier-rates/{agentTierRate}', [AgentTierRateController::class, 'destroy'])->name('agent-tier-rates.destroy')->middleware('can:agents.manage');
 
         Route::get('/revenue-categories', [RevenueCategoryController::class, 'index'])->name('revenue-categories.index')->middleware('can:revenue-categories.view');
         Route::post('/revenue-categories', [RevenueCategoryController::class, 'store'])->name('revenue-categories.store')->middleware('can:revenue-categories.manage');

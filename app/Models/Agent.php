@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\AgentRateCategory;
 use App\Enums\AgentType;
 use App\Enums\CommissionBasis;
 use App\Enums\CommissionType;
@@ -15,6 +16,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 #[Fillable([
     'hotel_id',
     'agent_type',
+    'rate_category',
     'name',
     'code',
     'channel_code',
@@ -43,6 +45,7 @@ class Agent extends Model
     {
         return [
             'agent_type' => AgentType::class,
+            'rate_category' => AgentRateCategory::class,
             'commission_basis' => CommissionBasis::class,
             'commission_type' => CommissionType::class,
             'commission_percent' => 'decimal:2',
@@ -65,6 +68,11 @@ class Agent extends Model
     public function rates(): HasMany
     {
         return $this->hasMany(AgentRate::class);
+    }
+
+    public function agentTierRates(): HasMany
+    {
+        return $this->hasMany(AgentTierRate::class, 'rate_category', 'rate_category');
     }
 
     public function commissions(): HasMany
