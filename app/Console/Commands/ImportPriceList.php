@@ -23,10 +23,16 @@ class ImportPriceList extends Command
 
     private const DATA_DIR = 'database/data/price-list-2026';
 
+    private const IMPORT_SORT_OFFSET = 100;
+
     /** @var array<string, int> */
     private array $chartAccountIds = [];
 
-    private int $categorySortOrder = 0;
+    private int $importSortBase = 0;
+
+    private int $importCategoryIndex = 0;
+
+    private int $lastCategorySortOrder = 0;
 
     /** @var array{categories_created: int, categories_updated: int, items_created: int, items_updated: int, assets_created: int, assets_updated: int} */
     private array $stats = [
@@ -58,6 +64,10 @@ class ImportPriceList extends Command
             ->withoutGlobalScope('hotel')
             ->pluck('id', 'account_code')
             ->all();
+
+        $this->importCategoryIndex = 0;
+        $this->lastCategorySortOrder = 0;
+        $this->importSortBase = $this->maxPreImportSortOrder() + self::IMPORT_SORT_OFFSET;
 
         $import = function () use ($hotel, $dryRun): void {
             $this->importSabaResto($dryRun);
@@ -295,7 +305,7 @@ class ImportPriceList extends Command
 
     private function upsertCategory(string $name, bool $dryRun): void
     {
-        $this->categorySortOrder++;
+        $sortOrder = $this->nextCategorySortOrder();
 
         if ($dryRun) {
             $category = MenuCategory::query()->where('name', $name)->first();
@@ -312,7 +322,7 @@ class ImportPriceList extends Command
 
         $category = MenuCategory::query()->updateOrCreate(
             ['name' => $name],
-            ['sort_order' => $this->categorySortOrder],
+            ['sort_order' => $sortOrder],
         );
 
         if ($category->wasRecentlyCreated) {
@@ -354,7 +364,9 @@ class ImportPriceList extends Command
 
         $category = MenuCategory::query()->firstOrCreate(
             ['name' => $categoryName],
-            ['sort_order' => $this->categorySortOrder],
+            ['sort_order' => $this->lastCategorySortOrder > 0
+                ? $this->lastCategorySortOrder
+                : $this->nextCategorySortOrder()],
         );
 
         $item = MenuItem::query()->updateOrCreate(
@@ -550,6 +562,23 @@ class ImportPriceList extends Command
         }
 
         return DepreciationMethod::DoubleDeclining;
+    }
+
+    private function maxPreImportSortOrder(): int
+    {
+        return (int) MenuCategory::query()
+            ->whereNotLike('name', 'Saba Resto · %')
+            ->whereNotLike('name', 'Prata Coffee · %')
+            ->where('name', '!=', 'Laundry')
+            ->max('sort_order');
+    }
+
+    private function nextCategorySortOrder(): int
+    {
+        $this->importCategoryIndex++;
+        $this->lastCategorySortOrder = $this->importSortBase + $this->importCategoryIndex;
+
+        return $this->lastCategorySortOrder;
     }
 
     private function resolveChartOfAccountId(string $assetAccount): ?int

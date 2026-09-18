@@ -9,6 +9,7 @@ use App\Models\ChartOfAccount;
 use App\Models\Hotel;
 use App\Models\MenuCategory;
 use App\Models\MenuItem;
+use Database\Seeders\MenuCategorySeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -63,7 +64,7 @@ class PriceListImportTest extends TestCase
             ->first();
 
         $this->assertNotNull($mealsCategory);
-        $this->assertSame(1, $mealsCategory->sort_order);
+        $this->assertSame(101, $mealsCategory->sort_order);
 
         $lunchPackage = MenuItem::query()
             ->where('menu_category_id', $mealsCategory->id)
@@ -103,6 +104,62 @@ class PriceListImportTest extends TestCase
         $this->assertNotNull($jacket);
         $this->assertSame('50000.00', $jacket->price);
         $this->assertSame('JAKET', $jacket->description);
+    }
+
+    public function test_imported_categories_sort_after_seeded_categories(): void
+    {
+        $this->seed(MenuCategorySeeder::class);
+
+        $this->artisan('pratasaba:import-price-list')->assertSuccessful();
+
+        $orderedNames = MenuCategory::query()
+            ->orderBy('sort_order')
+            ->pluck('name')
+            ->all();
+
+        $seededNames = ['Appetizers', 'Main Courses', 'Soups', 'Beverages', 'Desserts'];
+        $importedNames = array_values(array_filter(
+            $orderedNames,
+            static fn (string $name): bool => ! in_array($name, $seededNames, true),
+        ));
+
+        $this->assertNotEmpty($importedNames);
+
+        $lastSeededIndex = max(array_map(
+            static fn (string $name): int|false => array_search($name, $orderedNames, true),
+            $seededNames,
+        ));
+
+        $firstImportedIndex = array_search($importedNames[0], $orderedNames, true);
+
+        $this->assertGreaterThan($lastSeededIndex, $firstImportedIndex);
+
+        $mealsCategory = MenuCategory::query()
+            ->where('name', 'Saba Resto · Meals Packages')
+            ->first();
+
+        $this->assertNotNull($mealsCategory);
+        $this->assertSame(106, $mealsCategory->sort_order);
+    }
+
+    public function test_running_import_twice_repairs_category_sort_order(): void
+    {
+        $this->seed(MenuCategorySeeder::class);
+
+        $this->artisan('pratasaba:import-price-list')->assertSuccessful();
+
+        MenuCategory::query()
+            ->where('name', 'Saba Resto · Meals Packages')
+            ->update(['sort_order' => 2]);
+
+        $this->artisan('pratasaba:import-price-list')->assertSuccessful();
+
+        $mealsCategory = MenuCategory::query()
+            ->where('name', 'Saba Resto · Meals Packages')
+            ->first();
+
+        $this->assertNotNull($mealsCategory);
+        $this->assertSame(106, $mealsCategory->sort_order);
     }
 
     public function test_running_import_twice_does_not_duplicate_rows(): void
