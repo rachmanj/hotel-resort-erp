@@ -548,9 +548,17 @@ class ImportPriceList extends Command
     private function mapAssetType(string $value): AssetType
     {
         return match (strtolower(trim($value))) {
-            'machinery' => AssetType::Machinery,
+            'other inventory' => AssetType::OtherInventory,
             'equipment' => AssetType::Equipment,
+            'office equipment' => AssetType::OfficeEquipment,
+            'house keeping' => AssetType::Housekeeping,
+            'kitchen set' => AssetType::KitchenSet,
+            'office machinery' => AssetType::OfficeMachinery,
             'furniture' => AssetType::Furniture,
+            'building' => AssetType::Building,
+            'machinery' => AssetType::Machinery,
+            'ship' => AssetType::Ship,
+            'vehicle' => AssetType::Vehicle,
             default => AssetType::Other,
         };
     }

@@ -228,4 +228,64 @@ class PriceListImportTest extends TestCase
         $this->assertSame($this->hotel->id, $asset->hotel_id);
         $this->assertNotNull($asset->chart_of_account_id);
     }
+
+    public function test_assets_map_client_type_names_to_asset_type_enum(): void
+    {
+        $this->artisan('pratasaba:import-price-list')->assertSuccessful();
+
+        $expectedTypes = [
+            'PAA-0047' => AssetType::OtherInventory,
+            'PAA-0004' => AssetType::Equipment,
+            'PAA-0270' => AssetType::OfficeEquipment,
+            'PRATA-0001' => AssetType::Housekeeping,
+            'PAA-0363' => AssetType::KitchenSet,
+            'PAA-0277' => AssetType::OfficeMachinery,
+            'PAA-0007' => AssetType::Furniture,
+            'PAA-0028' => AssetType::Building,
+            'PAA-0001' => AssetType::Machinery,
+            'PAA-0073' => AssetType::Ship,
+            'PRATA-0064' => AssetType::Vehicle,
+        ];
+
+        foreach ($expectedTypes as $assetCode => $expectedType) {
+            $asset = Asset::query()
+                ->withoutGlobalScope('hotel')
+                ->where('asset_code', $assetCode)
+                ->first();
+
+            $this->assertNotNull($asset, "Asset {$assetCode} was not imported.");
+            $this->assertSame($expectedType, $asset->asset_type, "Unexpected type for {$assetCode}.");
+        }
+    }
+
+    public function test_running_import_twice_updates_existing_asset_type(): void
+    {
+        $this->artisan('pratasaba:import-price-list')->assertSuccessful();
+
+        $asset = Asset::query()
+            ->withoutGlobalScope('hotel')
+            ->where('asset_code', 'PAA-0047')
+            ->firstOrFail();
+
+        $this->assertSame(AssetType::OtherInventory, $asset->asset_type);
+
+        Asset::query()
+            ->withoutGlobalScope('hotel')
+            ->whereKey($asset->id)
+            ->update([
+                'asset_type' => AssetType::Other->value,
+                'name' => 'Stale asset name',
+            ]);
+
+        $this->artisan('pratasaba:import-price-list')->assertSuccessful();
+
+        $asset->refresh();
+
+        $this->assertSame(AssetType::OtherInventory, $asset->asset_type);
+        $this->assertSame('Kabel Extension 30m - Pantai (GOL.23043-CME)', $asset->name);
+        $this->assertSame(1, Asset::query()
+            ->withoutGlobalScope('hotel')
+            ->where('asset_code', 'PAA-0047')
+            ->count());
+    }
 }
