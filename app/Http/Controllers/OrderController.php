@@ -54,9 +54,12 @@ class OrderController extends Controller
     {
         return Inertia::render('FB/Orders/Create', [
             'menuCategories' => MenuCategory::query()
+                ->where('is_active', true)
                 ->with(['items' => fn ($q) => $q->where('is_available', true)->orderBy('name')])
                 ->orderBy('sort_order')
                 ->get()
+                ->filter(fn (MenuCategory $cat) => $cat->items->isNotEmpty())
+                ->values()
                 ->map(fn (MenuCategory $cat) => [
                     'id' => $cat->id,
                     'name' => $cat->name,

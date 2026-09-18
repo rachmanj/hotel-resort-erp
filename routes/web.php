@@ -143,6 +143,7 @@ Route::middleware(['auth', 'hotel.context'])->group(function (): void {
     Route::put('/fb/menu/{menuItem}', [MenuController::class, 'update'])->name('fb.menu.update')->middleware('can:fb.manage');
     Route::delete('/fb/menu/{menuItem}', [MenuController::class, 'destroy'])->name('fb.menu.destroy')->middleware('can:fb.manage');
     Route::post('/fb/menu/{menuItem}/toggle', [MenuController::class, 'toggleAvailability'])->name('fb.menu.toggle')->middleware('can:fb.manage');
+    Route::post('/fb/menu/categories/{menuCategory}/toggle', [MenuController::class, 'toggleCategoryActive'])->name('fb.menu.categories.toggle')->middleware('can:fb.manage');
     Route::get('/fb/orders', [OrderController::class, 'index'])->name('fb.orders.index')->middleware('can:fb.view');
     Route::get('/fb/orders/create', [OrderController::class, 'create'])->name('fb.orders.create')->middleware('can:fb.orders.create');
     Route::post('/fb/orders', [OrderController::class, 'store'])->name('fb.orders.store')->middleware(['can:fb.orders.create', 'idempotency']);

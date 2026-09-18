@@ -1,7 +1,7 @@
 import { Head, router, useForm } from '@inertiajs/react';
 import type { ProColumns } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
-import { Button, Form, Input, InputNumber, Modal, Select, Switch, Tag } from 'antd';
+import { Button, Form, Input, InputNumber, Modal, Select, Switch, Tag, theme, Typography } from 'antd';
 import { useMemo, useState } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { useAuth } from '@/hooks/useAuth';
@@ -19,6 +19,7 @@ interface CategoryGroup {
     id: number;
     name: string;
     sort_order: number;
+    is_active: boolean;
     items: MenuItemRow[];
 }
 
@@ -29,6 +30,7 @@ interface MenuIndexProps {
 
 export default function MenuIndex({ categories, categoryOptions }: MenuIndexProps) {
     const { can } = useAuth();
+    const { token } = theme.useToken();
     const [creating, setCreating] = useState(false);
     const [editing, setEditing] = useState<MenuItemRow | null>(null);
 
@@ -64,6 +66,33 @@ export default function MenuIndex({ categories, categoryOptions }: MenuIndexProp
         });
     };
 
+    const categoryColumns: ProColumns<CategoryGroup>[] = [
+        { title: 'Name', dataIndex: 'name' },
+        { title: 'Sort Order', dataIndex: 'sort_order' },
+        {
+            title: 'Active',
+            dataIndex: 'is_active',
+            render: (v, record) => (
+                can('fb.manage') ? (
+                    <Switch
+                        checked={!!v}
+                        onChange={() => router.post(`/fb/menu/categories/${record.id}/toggle`)}
+                    />
+                ) : (
+                    <Tag
+                        style={{
+                            color: v ? token.colorSuccess : token.colorError,
+                            background: v ? token.colorSuccessBg : token.colorErrorBg,
+                            borderColor: v ? token.colorSuccessBorder : token.colorErrorBorder,
+                        }}
+                    >
+                        {v ? 'Yes' : 'No'}
+                    </Tag>
+                )
+            ),
+        },
+    ];
+
     const columns: ProColumns<MenuItemRow & { category_name: string }>[] = [
         { title: 'Category', dataIndex: 'category_name' },
         { title: 'Name', dataIndex: 'name' },
@@ -83,7 +112,15 @@ export default function MenuIndex({ categories, categoryOptions }: MenuIndexProp
                         onChange={() => router.post(`/fb/menu/${record.id}/toggle`)}
                     />
                 ) : (
-                    <Tag color={v ? 'green' : 'red'}>{v ? 'Yes' : 'No'}</Tag>
+                    <Tag
+                        style={{
+                            color: v ? token.colorSuccess : token.colorError,
+                            background: v ? token.colorSuccessBg : token.colorErrorBg,
+                            borderColor: v ? token.colorSuccessBorder : token.colorErrorBorder,
+                        }}
+                    >
+                        {v ? 'Yes' : 'No'}
+                    </Tag>
                 )
             ),
         },
@@ -98,11 +135,23 @@ export default function MenuIndex({ categories, categoryOptions }: MenuIndexProp
     return (
         <AuthenticatedLayout title="F&B Menu">
             <Head title="Menu" />
+            <Typography.Title level={5} style={{ marginTop: 0 }}>Categories</Typography.Title>
+            <ProTable
+                rowKey="id"
+                search={false}
+                options={false}
+                pagination={false}
+                dataSource={categories}
+                columns={categoryColumns}
+                style={{ marginBottom: 24 }}
+            />
+
             {can('fb.manage') && (
                 <div style={{ marginBottom: 16 }}>
                     <Button type="primary" onClick={() => setCreating(true)}>Add Menu Item</Button>
                 </div>
             )}
+            <Typography.Title level={5}>Menu Items</Typography.Title>
             <ProTable
                 rowKey="id"
                 search={false}

@@ -23,6 +23,7 @@ class MenuController extends Controller
                 'id' => $category->id,
                 'name' => $category->name,
                 'sort_order' => $category->sort_order,
+                'is_active' => $category->is_active,
                 'items' => $category->items->map(fn (MenuItem $item) => [
                     'id' => $item->id,
                     'menu_category_id' => $item->menu_category_id,
@@ -66,5 +67,12 @@ class MenuController extends Controller
         $menuItem->update(['is_available' => ! $menuItem->is_available]);
 
         return back()->with('success', 'Availability updated.');
+    }
+
+    public function toggleCategoryActive(MenuCategory $menuCategory): RedirectResponse
+    {
+        $menuCategory->update(['is_active' => ! $menuCategory->is_active]);
+
+        return back()->with('success', 'Category status updated.');
     }
 }
