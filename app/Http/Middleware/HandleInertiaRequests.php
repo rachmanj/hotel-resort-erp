@@ -34,7 +34,10 @@ class HandleInertiaRequests extends Middleware
             'currencies' => fn () => Cache::rememberForever('currencies.active', fn () => Currency::query()
                 ->where('is_active', true)
                 ->orderBy('code')
-                ->get(['code', 'symbol', 'name'])),
+                ->get(['code', 'symbol', 'name'])
+                ->map(fn (Currency $currency) => $currency->only(['code', 'symbol', 'name']))
+                ->values()
+                ->all()),
             'flash' => [
                 'success' => fn () => $request->session()->get('success'),
                 'error' => fn () => $request->session()->get('error'),
