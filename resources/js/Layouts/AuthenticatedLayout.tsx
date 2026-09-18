@@ -402,6 +402,17 @@ export default function AuthenticatedLayout({ children, title }: AuthenticatedLa
             logo={false}
             layout="mix"
             fixSiderbar
+            siderWidth={212}
+            token={{
+                sider: {
+                    colorMenuBackground: '#12211f',
+                    colorTextMenu: '#c9d6d4',
+                    colorTextMenuSelected: '#ffffff',
+                    colorBgMenuItemSelected: '#16302d',
+                    colorBgMenuItemHover: '#182a28',
+                    colorTextMenuSecondary: '#7f918f',
+                },
+            }}
             location={{ pathname: window.location.pathname }}
             route={{
                 path: '/',
