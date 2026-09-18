@@ -471,7 +471,7 @@ export default function AuthenticatedLayout({ children, title }: AuthenticatedLa
                         ].filter(Boolean),
                     }}
                 >
-                    <span style={{ cursor: 'pointer', padding: '0 12px' }}>{auth.user?.name}</span>
+                    <span style={{ cursor: 'pointer', padding: '0 12px', color: antdToken.colorText }}>{auth.user?.name}</span>
                 </Dropdown>,
             ]}
         >
