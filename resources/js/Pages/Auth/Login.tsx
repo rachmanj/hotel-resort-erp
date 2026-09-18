@@ -1,7 +1,14 @@
 import { Head, useForm } from '@inertiajs/react';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { Button, Card, Checkbox, Form, Input, Typography } from 'antd';
+import resortOne from '@/assets/login/resort-1.jpg';
+import resortTwo from '@/assets/login/resort-2.jpg';
 import GuestLayout from '@/Layouts/GuestLayout';
+
+const resortSlides = [
+    { src: resortOne, alt: 'Pratasaba Resort coastline' },
+    { src: resortTwo, alt: 'Pratasaba Resort diving experience' },
+];
 
 export default function Login() {
     const { data, setData, post, processing, errors } = useForm({
@@ -15,7 +22,7 @@ export default function Login() {
     };
 
     return (
-        <GuestLayout>
+        <GuestLayout slides={resortSlides}>
             <Head title="Login" />
             <Card>
                 <Typography.Title level={3} style={{ textAlign: 'center', marginBottom: 24 }}>
