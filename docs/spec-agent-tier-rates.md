@@ -37,3 +37,15 @@ Sumber data: `26.Master Contract Rate.xlsx` (dikirim Iwan, 18 Sep 2026). Data ag
 - **Fase 1 (backend)**: migrasi `agents.rate_category` + tabel `agent_tier_rates`, enum `AgentRateCategory`, model `AgentTierRate`, `AgentRateService` (override agen → tier), CRUD admin + validasi, test.
 - **Fase 2 (frontend)**: field tier di halaman Agen, halaman matriks "Contract Rate per Kategori" (baris = kategori kamar, kolom = tier A–D), menu admin.
 - **Fase 3 (data)**: perintah import 44 agen dari CSV (dedupe + tier + komisi 0) dan seed harga kontrak 2026 untuk room type kategori Suite / Grand Deluxe / Deluxe.
+
+## Status implementasi (18 Sep 2026 — sudah live)
+
+- **Fase 1 & 2 (kode)**: `agents.rate_category` (A–D) + tabel `agent_tier_rates`, enum `AgentRateCategory`, `AgentRateService` dengan urutan override agen → harga tier → harga normal, CRUD `/admin/agent-tier-rates` + endpoint bulk `agent-tier-rates/bulk`, kolom & pilihan Tier di halaman Agen, halaman matriks Contract Rate. Commit `8d7fa34`, `7d2a930`, `1a819f4`.
+- **Fase 3 (data)**: perintah `php artisan agents:import-contract` (ada `--dry-run`, idempotent). Sudah dijalankan di produksi: **43 agen** masuk (44 baris CSV dikurangi 1 duplikat "Trans Borneo"; total agen di DB 45 termasuk 2 agen test lama), **36 baris harga tier** (4 tier × 9 room type kategori Suite / Grand Deluxe / Deluxe), periode 2026-01-01 s.d. 2026-12-31.
+- **Verifikasi live di produksi**: agen tier A + kamar STKS (Suite) = 2.100.000; agen tier C + DLTS (Deluxe) = 1.500.000; tanggal di luar 2026 = null (jatuh ke harga normal); agen tanpa tier = null. Suite test 94 test hijau.
+- **Belum diinput**: kamar villa (SRJ/KSL/SHK/JNT) — menunggu jawaban tim apakah villa ikut harga tier (lihat daftar pertanyaan).
+
+### Catatan operasional
+
+- Semua agen hasil import **komisi = 0%**. Setelah tim memastikan nett/komisi, isi per agen lewat halaman Agen (kalau nett, biarkan 0 supaya tidak potong dobel).
+- Kalau harga kontrak berubah: buka `/admin/agent-tier-rates`, isi matriks (tanggal berlaku + harga per tier), simpan sekali — langsung berlaku untuk semua agen di tier tersebut.
