@@ -1,5 +1,5 @@
 import { router } from '@inertiajs/react';
-import { Select, Spin } from 'antd';
+import { Select, Spin, theme } from 'antd';
 import { useCallback, useEffect, useState } from 'react';
 
 interface GuestOption {
@@ -25,6 +25,7 @@ export default function GuestSearchSelect({
     newGuestName = '',
     newGuestPhone = '',
 }: GuestSearchSelectProps) {
+    const { token } = theme.useToken();
     const [options, setOptions] = useState<GuestOption[]>([]);
     const [loading, setLoading] = useState(false);
     const [search, setSearch] = useState('');
@@ -96,7 +97,7 @@ export default function GuestSearchSelect({
                                 style={{
                                     background: 'none',
                                     border: 'none',
-                                    color: '#1677ff',
+                                    color: token.colorPrimary,
                                     cursor: 'pointer',
                                     padding: 0,
                                 }}

@@ -37,12 +37,15 @@ const COLUMN_HEADER_COLORS: Record<string, string> = {
     dirty: '#ff4d4f',
     cleaning: '#fa8c16',
     clean: '#a0d911',
-    inspected: '#1677ff',
     ready: '#52c41a',
 };
 
 export default function HousekeepingIndex({ columns, outOfOrderRooms, filters, summary }: HousekeepingIndexProps) {
     const { token } = theme.useToken();
+    const headerColors: Record<string, string> = {
+        ...COLUMN_HEADER_COLORS,
+        inspected: token.colorPrimary,
+    };
     const activeFilter = filters.filter || 'all';
 
     return (
@@ -89,7 +92,7 @@ export default function HousekeepingIndex({ columns, outOfOrderRooms, filters, s
                                 </span>
                             }
                             styles={{
-                                header: { borderTop: `3px solid ${COLUMN_HEADER_COLORS[column.key] ?? '#d9d9d9'}` },
+                                header: { borderTop: `3px solid ${headerColors[column.key] ?? token.colorBorderSecondary}` },
                                 body: { minHeight: 200, maxHeight: 500, overflowY: 'auto' },
                             }}
                         >

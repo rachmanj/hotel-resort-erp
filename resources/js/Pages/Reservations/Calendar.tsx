@@ -121,7 +121,7 @@ export default function ReservationCalendar({
             return '#52c41a';
         }
         if (color === 'blue') {
-            return '#1677ff';
+            return token.colorPrimary;
         }
         return '#722ed1';
     };

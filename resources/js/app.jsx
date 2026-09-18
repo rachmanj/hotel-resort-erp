@@ -42,7 +42,7 @@ function AppWrapper({ children }) {
             theme={{
                 algorithm: isDark ? antTheme.darkAlgorithm : antTheme.defaultAlgorithm,
                 token: {
-                    colorPrimary: '#1677ff',
+                    colorPrimary: '#0d9488',
                     borderRadius: 6,
                     controlHeight: 44,
                 },
@@ -70,6 +70,6 @@ createInertiaApp({
         );
     },
     progress: {
-        color: '#1677ff',
+        color: '#0d9488',
     },
 });
