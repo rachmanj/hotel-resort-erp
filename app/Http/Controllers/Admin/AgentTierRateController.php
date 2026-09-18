@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Enums\AgentRateCategory;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\BulkStoreAgentTierRateRequest;
 use App\Http\Requests\Admin\StoreAgentTierRateRequest;
 use App\Http\Requests\Admin\UpdateAgentTierRateRequest;
 use App\Models\AgentTierRate;
@@ -49,6 +50,40 @@ class AgentTierRateController extends Controller
         AgentTierRate::query()->create($request->validated());
 
         return back()->with('success', 'Agent tier rate created successfully.');
+    }
+
+    public function bulkStore(BulkStoreAgentTierRateRequest $request): RedirectResponse
+    {
+        $validated = $request->validated();
+        $validFrom = $validated['valid_from'];
+        $validTo = $validated['valid_to'];
+
+        foreach ($validated['rates'] as $row) {
+            $roomTypeId = $row['room_type_id'];
+
+            foreach (AgentRateCategory::cases() as $tier) {
+                $nightlyRate = $row[$tier->value] ?? null;
+
+                if ($nightlyRate === null || $nightlyRate === '') {
+                    continue;
+                }
+
+                AgentTierRate::query()->updateOrCreate(
+                    [
+                        'rate_category' => $tier->value,
+                        'room_type_id' => $roomTypeId,
+                        'valid_from' => $validFrom,
+                        'valid_to' => $validTo,
+                    ],
+                    [
+                        'nightly_rate' => $nightlyRate,
+                        'is_active' => true,
+                    ],
+                );
+            }
+        }
+
+        return back()->with('success', 'Contract rate matrix saved successfully.');
     }
 
     public function update(UpdateAgentTierRateRequest $request, AgentTierRate $agentTierRate): RedirectResponse

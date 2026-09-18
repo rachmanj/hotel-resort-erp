@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\AgentRateCategory;
 use App\Enums\AgentType;
 use App\Enums\CommissionBasis;
 use App\Enums\CommissionType;
@@ -39,6 +40,8 @@ class AgentController extends Controller
                 'code' => $agent->code,
                 'agent_type' => $agent->agent_type->value,
                 'agent_type_label' => $agent->agent_type->label(),
+                'rate_category' => $agent->rate_category?->value,
+                'rate_category_label' => $agent->rate_category?->label(),
                 'channel_code' => $agent->channel_code,
                 'contact_person' => $agent->contact_person,
                 'phone' => $agent->phone,
@@ -69,6 +72,10 @@ class AgentController extends Controller
             'commissionTypes' => collect(CommissionType::cases())->map(fn (CommissionType $c) => [
                 'value' => $c->value,
                 'label' => $c->label(),
+            ]),
+            'tiers' => collect(AgentRateCategory::cases())->map(fn (AgentRateCategory $tier) => [
+                'value' => $tier->value,
+                'label' => $tier->label(),
             ]),
             'filters' => $request->only(['search']),
         ]);

@@ -356,6 +356,7 @@ Route::middleware(['auth', 'hotel.context'])->group(function (): void {
         Route::put('/agents/rates/{rate}', [AgentRateController::class, 'update'])->name('agents.rates.update')->middleware('can:agents.manage');
         Route::delete('/agents/rates/{rate}', [AgentRateController::class, 'destroy'])->name('agents.rates.destroy')->middleware('can:agents.manage');
         Route::get('/agent-tier-rates', [AgentTierRateController::class, 'index'])->name('agent-tier-rates.index')->middleware('can:agents.manage');
+        Route::post('/agent-tier-rates/bulk', [AgentTierRateController::class, 'bulkStore'])->name('agent-tier-rates.bulk-store')->middleware('can:agents.manage');
         Route::post('/agent-tier-rates', [AgentTierRateController::class, 'store'])->name('agent-tier-rates.store')->middleware('can:agents.manage');
         Route::put('/agent-tier-rates/{agentTierRate}', [AgentTierRateController::class, 'update'])->name('agent-tier-rates.update')->middleware('can:agents.manage');
         Route::delete('/agent-tier-rates/{agentTierRate}', [AgentTierRateController::class, 'destroy'])->name('agent-tier-rates.destroy')->middleware('can:agents.manage');

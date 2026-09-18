@@ -12,6 +12,8 @@ interface AgentRow {
     code: string;
     agent_type: string;
     agent_type_label: string;
+    rate_category?: string | null;
+    rate_category_label?: string | null;
     channel_code?: string | null;
     contact_person?: string | null;
     phone?: string | null;
@@ -34,6 +36,7 @@ interface AgentsIndexProps {
     agentTypes: Array<{ value: string; label: string }>;
     commissionBases: Array<{ value: string; label: string }>;
     commissionTypes: Array<{ value: string; label: string }>;
+    tiers: Array<{ value: string; label: string }>;
     filters: { search?: string };
 }
 
@@ -44,6 +47,7 @@ export default function AgentsIndex({
     agentTypes,
     commissionBases,
     commissionTypes,
+    tiers,
     filters,
 }: AgentsIndexProps) {
     const [modalOpen, setModalOpen] = useState(false);
@@ -51,6 +55,7 @@ export default function AgentsIndex({
 
     const form = useForm({
         agent_type: 'travel',
+        rate_category: null as string | null,
         name: '',
         code: '',
         channel_code: '',
@@ -72,6 +77,7 @@ export default function AgentsIndex({
         form.reset();
         form.setData({
             agent_type: 'travel',
+            rate_category: null,
             name: '',
             code: '',
             channel_code: '',
@@ -94,6 +100,7 @@ export default function AgentsIndex({
         setEditing(record);
         form.setData({
             agent_type: record.agent_type,
+            rate_category: record.rate_category ?? null,
             name: record.name,
             code: record.code,
             channel_code: record.channel_code ?? '',
@@ -135,6 +142,11 @@ export default function AgentsIndex({
             render: (_, r) => <Tag>{r.agent_type_label}</Tag>,
         },
         {
+            title: 'Tier',
+            dataIndex: 'rate_category_label',
+            render: (v) => (v ? <Tag>{v}</Tag> : '–'),
+        },
+        {
             title: 'Channel',
             dataIndex: 'channel_code',
             render: (v) => v ?? '–',
@@ -174,6 +186,9 @@ export default function AgentsIndex({
                 dataSource={agents.data}
                 search={false}
                 toolBarRender={() => [
+                    <Link key="tier-rates" href="/admin/agent-tier-rates">
+                        Tier Rates
+                    </Link>,
                     <Button key="create" type="primary" onClick={openCreate}>
                         New Agent
                     </Button>,
@@ -203,6 +218,15 @@ export default function AgentsIndex({
                             value={form.data.agent_type}
                             onChange={(v) => form.setData('agent_type', v)}
                             options={agentTypes.map((t) => ({ value: t.value, label: t.label }))}
+                        />
+                    </Form.Item>
+                    <Form.Item label="Tier">
+                        <Select
+                            allowClear
+                            placeholder="Select tier"
+                            value={form.data.rate_category}
+                            onChange={(v) => form.setData('rate_category', v ?? null)}
+                            options={tiers.map((tier) => ({ value: tier.value, label: tier.label }))}
                         />
                     </Form.Item>
                     <Form.Item label="Name" required>

@@ -1,7 +1,8 @@
 import { Head, Link, router, useForm } from '@inertiajs/react';
 import type { ProColumns } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
-import { Button, DatePicker, Form, InputNumber, Modal, Select, Switch } from 'antd';
+import { Button, Card, DatePicker, Form, InputNumber, Modal, Select, Switch, Table, theme } from 'antd';
+import type { ColumnsType } from 'antd/es/table';
 import dayjs from 'dayjs';
 import { useState } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
@@ -18,13 +19,36 @@ interface AgentTierRateRow {
     is_active: boolean;
 }
 
+interface MatrixRow {
+    room_type_id: number;
+    room_type_name: string;
+    room_type_code: string;
+    A: number | null;
+    B: number | null;
+    C: number | null;
+    D: number | null;
+}
+
 interface AgentTierRatesIndexProps {
     rates: Paginated<AgentTierRateRow>;
     roomTypes: Array<{ id: number; name: string; code: string }>;
     tiers: Array<{ value: string; label: string }>;
 }
 
+function buildMatrixRows(roomTypes: AgentTierRatesIndexProps['roomTypes']): MatrixRow[] {
+    return roomTypes.map((rt) => ({
+        room_type_id: rt.id,
+        room_type_name: rt.name,
+        room_type_code: rt.code,
+        A: null,
+        B: null,
+        C: null,
+        D: null,
+    }));
+}
+
 export default function AgentTierRatesIndex({ rates, roomTypes, tiers }: AgentTierRatesIndexProps) {
+    const { token } = theme.useToken();
     const [modalOpen, setModalOpen] = useState(false);
     const [editing, setEditing] = useState<AgentTierRateRow | null>(null);
 
@@ -35,6 +59,12 @@ export default function AgentTierRatesIndex({ rates, roomTypes, tiers }: AgentTi
         valid_from: dayjs().format('YYYY-MM-DD'),
         valid_to: dayjs().add(1, 'year').format('YYYY-MM-DD'),
         is_active: true,
+    });
+
+    const bulkForm = useForm({
+        valid_from: dayjs().format('YYYY-MM-DD'),
+        valid_to: dayjs().add(1, 'year').format('YYYY-MM-DD'),
+        rates: buildMatrixRows(roomTypes),
     });
 
     const openCreate = () => {
@@ -76,6 +106,47 @@ export default function AgentTierRatesIndex({ rates, roomTypes, tiers }: AgentTi
         }
     };
 
+    const updateMatrixCell = (roomTypeId: number, tier: string, value: number | null) => {
+        bulkForm.setData(
+            'rates',
+            bulkForm.data.rates.map((row) =>
+                row.room_type_id === roomTypeId ? { ...row, [tier]: value } : row,
+            ),
+        );
+    };
+
+    const submitBulk = () => {
+        bulkForm.post('/admin/agent-tier-rates/bulk');
+    };
+
+    const matrixColumns: ColumnsType<MatrixRow> = [
+        {
+            title: 'Room Type',
+            key: 'room_type',
+            fixed: 'left',
+            render: (_, row) => (
+                <span>
+                    {row.room_type_name}{' '}
+                    <span style={{ color: token.colorTextSecondary }}>({row.room_type_code})</span>
+                </span>
+            ),
+        },
+        ...tiers.map((tier) => ({
+            title: `Tier ${tier.label}`,
+            key: tier.value,
+            width: 140,
+            render: (_: unknown, row: MatrixRow) => (
+                <InputNumber
+                    min={0}
+                    placeholder="–"
+                    style={{ width: '100%' }}
+                    value={row[tier.value as 'A' | 'B' | 'C' | 'D']}
+                    onChange={(v) => updateMatrixCell(row.room_type_id, tier.value, v)}
+                />
+            ),
+        })),
+    ];
+
     const columns: ProColumns<AgentTierRateRow>[] = [
         { title: 'Tier', dataIndex: 'rate_category_label' },
         { title: 'Room Type', dataIndex: ['room_type', 'name'] },
@@ -108,8 +179,65 @@ export default function AgentTierRatesIndex({ rates, roomTypes, tiers }: AgentTi
         <AuthenticatedLayout title="Agent Tier Rates">
             <Head title="Agent Tier Rates" />
             <p style={{ marginBottom: 16 }}>
-                <Link href="/admin/agents">← Back to Agents</Link>
+                <Link href="/admin/agents">Back to Agents</Link>
             </p>
+
+            <Card
+                title="Contract Rate Matrix"
+                style={{
+                    marginBottom: 24,
+                    background: token.colorBgContainer,
+                    borderColor: token.colorBorderSecondary,
+                }}
+            >
+                <Form layout="vertical">
+                    <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', marginBottom: 16 }}>
+                        <Form.Item
+                            label="Valid From"
+                            required
+                            validateStatus={bulkForm.errors.valid_from ? 'error' : undefined}
+                            help={bulkForm.errors.valid_from}
+                            style={{ marginBottom: 0, minWidth: 200 }}
+                        >
+                            <DatePicker
+                                style={{ width: '100%' }}
+                                value={dayjs(bulkForm.data.valid_from)}
+                                onChange={(d) =>
+                                    bulkForm.setData('valid_from', d?.format('YYYY-MM-DD') ?? '')
+                                }
+                            />
+                        </Form.Item>
+                        <Form.Item
+                            label="Valid To"
+                            required
+                            validateStatus={bulkForm.errors.valid_to ? 'error' : undefined}
+                            help={bulkForm.errors.valid_to}
+                            style={{ marginBottom: 0, minWidth: 200 }}
+                        >
+                            <DatePicker
+                                style={{ width: '100%' }}
+                                value={dayjs(bulkForm.data.valid_to)}
+                                onChange={(d) =>
+                                    bulkForm.setData('valid_to', d?.format('YYYY-MM-DD') ?? '')
+                                }
+                            />
+                        </Form.Item>
+                    </div>
+                    <Table<MatrixRow>
+                        rowKey="room_type_id"
+                        columns={matrixColumns}
+                        dataSource={bulkForm.data.rates}
+                        pagination={false}
+                        scroll={{ x: 'max-content' }}
+                        size="small"
+                        style={{ marginBottom: 16 }}
+                    />
+                    <Button type="primary" onClick={submitBulk} loading={bulkForm.processing}>
+                        Save Contract Matrix
+                    </Button>
+                </Form>
+            </Card>
+
             <ProTable<AgentTierRateRow>
                 rowKey="id"
                 columns={columns}

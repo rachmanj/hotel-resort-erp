@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Admin;
 
+use App\Enums\AgentRateCategory;
 use App\Enums\AgentType;
 use App\Enums\CommissionBasis;
 use App\Enums\CommissionType;
@@ -22,6 +23,7 @@ class StoreAgentRequest extends FormRequest
     {
         return [
             'agent_type' => ['required', Rule::enum(AgentType::class)],
+            'rate_category' => ['nullable', Rule::enum(AgentRateCategory::class)],
             'name' => ['required', 'string', 'max:150'],
             'code' => [
                 'required',

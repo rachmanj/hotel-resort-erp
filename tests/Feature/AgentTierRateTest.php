@@ -192,4 +192,79 @@ class AgentTierRateTest extends TestCase
 
         $this->assertDatabaseCount('agent_tier_rates', 0);
     }
+
+    public function test_bulk_store_upserts_rates_and_skips_empty_cells(): void
+    {
+        AgentTierRate::query()->create([
+            'rate_category' => AgentRateCategory::A->value,
+            'room_type_id' => $this->roomType->id,
+            'nightly_rate' => 1000000,
+            'valid_from' => '2026-01-01',
+            'valid_to' => '2026-12-31',
+            'is_active' => true,
+        ]);
+
+        $this->actingAs($this->admin)
+            ->withSession(['current_hotel_id' => $this->hotel->id])
+            ->from(route('admin.agent-tier-rates.index'))
+            ->post(route('admin.agent-tier-rates.bulk-store'), [
+                'valid_from' => '2026-01-01',
+                'valid_to' => '2026-12-31',
+                'rates' => [
+                    [
+                        'room_type_id' => $this->roomType->id,
+                        'A' => 1300000,
+                        'B' => 1200000,
+                        'C' => null,
+                        'D' => 1100000,
+                    ],
+                ],
+            ])
+            ->assertRedirect(route('admin.agent-tier-rates.index'))
+            ->assertSessionHasNoErrors();
+
+        $this->assertDatabaseCount('agent_tier_rates', 3);
+        $this->assertDatabaseHas('agent_tier_rates', [
+            'rate_category' => AgentRateCategory::A->value,
+            'room_type_id' => $this->roomType->id,
+            'nightly_rate' => '1300000.00',
+            'valid_from' => '2026-01-01',
+            'valid_to' => '2026-12-31',
+        ]);
+        $this->assertDatabaseHas('agent_tier_rates', [
+            'rate_category' => AgentRateCategory::B->value,
+            'room_type_id' => $this->roomType->id,
+            'nightly_rate' => '1200000.00',
+        ]);
+        $this->assertDatabaseHas('agent_tier_rates', [
+            'rate_category' => AgentRateCategory::D->value,
+            'room_type_id' => $this->roomType->id,
+            'nightly_rate' => '1100000.00',
+        ]);
+        $this->assertDatabaseMissing('agent_tier_rates', [
+            'rate_category' => AgentRateCategory::C->value,
+            'room_type_id' => $this->roomType->id,
+        ]);
+    }
+
+    public function test_bulk_store_validation_failure_returns_errors(): void
+    {
+        $this->actingAs($this->admin)
+            ->withSession(['current_hotel_id' => $this->hotel->id])
+            ->from(route('admin.agent-tier-rates.index'))
+            ->post(route('admin.agent-tier-rates.bulk-store'), [
+                'valid_from' => '2026-12-31',
+                'valid_to' => '2026-01-01',
+                'rates' => [
+                    [
+                        'room_type_id' => $this->roomType->id,
+                        'A' => -100,
+                    ],
+                ],
+            ])
+            ->assertRedirect(route('admin.agent-tier-rates.index'))
+            ->assertSessionHasErrors(['valid_to', 'rates.0.A']);
+
+        $this->assertDatabaseCount('agent_tier_rates', 0);
+    }
 }
