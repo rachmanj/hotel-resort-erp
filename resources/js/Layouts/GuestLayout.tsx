@@ -62,6 +62,7 @@ export default function GuestLayout({ children, slides = [] }: GuestLayoutProps)
                     justify-content: center;
                     padding: 16px;
                     box-sizing: border-box;
+                    pointer-events: none;
                 }
                 @media (min-width: 992px) {
                     .guest-layout__form {
@@ -70,6 +71,7 @@ export default function GuestLayout({ children, slides = [] }: GuestLayoutProps)
                     }
                 }
                 .guest-layout__card {
+                    pointer-events: auto;
                     width: 100%;
                     max-width: 420px;
                     min-width: 0;
