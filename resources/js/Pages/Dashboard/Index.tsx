@@ -123,18 +123,18 @@ function kpiValueStyle(token: GlobalToken): CSSProperties {
     };
 }
 
-function housekeepingTileColor(status: string, token: GlobalToken): string {
+function housekeepingTileBackgroundColor(status: string, token: GlobalToken): string {
     switch (status) {
         case 'dirty':
-            return token.colorError;
+            return token.colorErrorBg;
         case 'cleaning':
-            return token.colorWarning;
+            return token.colorWarningBg;
         case 'clean':
             return token.colorSuccessBg;
         case 'inspected':
-            return token.colorPrimary;
+            return token.colorPrimaryBg;
         case 'ready':
-            return token.colorSuccess;
+            return token.colorSuccessBgHover;
         case 'out_of_order':
             return token.colorFillSecondary;
         default:
@@ -142,16 +142,27 @@ function housekeepingTileColor(status: string, token: GlobalToken): string {
     }
 }
 
-function housekeepingTileTextColor(status: string, token: GlobalToken): string {
-    if (status === 'clean') {
-        return token.colorSuccess;
+function housekeepingTileBorderColor(status: string, token: GlobalToken): string {
+    switch (status) {
+        case 'dirty':
+            return token.colorError;
+        case 'cleaning':
+            return token.colorWarning;
+        case 'clean':
+            return token.colorSuccess;
+        case 'inspected':
+            return token.colorPrimary;
+        case 'ready':
+            return token.colorSuccess;
+        case 'out_of_order':
+            return token.colorTextSecondary;
+        default:
+            return token.colorTextSecondary;
     }
+}
 
-    if (status === 'out_of_order') {
-        return token.colorTextSecondary;
-    }
-
-    return token.colorTextLightSolid;
+function housekeepingTileAriaLabel(roomNumber: string, statusLabel: string): string {
+    return `Room ${roomNumber}, ${statusLabel.toLowerCase()}`;
 }
 
 function statusKindColor(kind: string, token: GlobalToken): string {
@@ -564,19 +575,31 @@ export default function DashboardIndex({
                                     {rooms.map((room) => (
                                         <div
                                             key={room.id}
-                                            title={`${room.number} - ${room.housekeeping_status_label}`}
+                                            role="img"
+                                            aria-label={housekeepingTileAriaLabel(
+                                                room.number,
+                                                room.housekeeping_status_label,
+                                            )}
+                                            title={housekeepingTileAriaLabel(
+                                                room.number,
+                                                room.housekeeping_status_label,
+                                            )}
                                             style={{
                                                 aspectRatio: '1',
                                                 display: 'flex',
                                                 alignItems: 'center',
                                                 justifyContent: 'center',
                                                 borderRadius: 4,
-                                                fontSize: 11,
-                                                fontWeight: 700,
+                                                fontSize: 12,
+                                                fontWeight: 600,
                                                 fontVariantNumeric: 'tabular-nums',
-                                                background: housekeepingTileColor(room.housekeeping_status, token),
-                                                color: housekeepingTileTextColor(room.housekeeping_status, token),
+                                                background: housekeepingTileBackgroundColor(
+                                                    room.housekeeping_status,
+                                                    token,
+                                                ),
+                                                color: token.colorText,
                                                 border: `1px solid ${token.colorBorderSecondary}`,
+                                                borderLeft: `2px solid ${housekeepingTileBorderColor(room.housekeeping_status, token)}`,
                                                 minWidth: 0,
                                             }}
                                         >
@@ -602,8 +625,9 @@ export default function DashboardIndex({
                                                     width: 10,
                                                     height: 10,
                                                     borderRadius: 2,
-                                                    background: housekeepingTileColor(item.status, token),
+                                                    background: housekeepingTileBackgroundColor(item.status, token),
                                                     border: `1px solid ${token.colorBorderSecondary}`,
+                                                    borderLeft: `2px solid ${housekeepingTileBorderColor(item.status, token)}`,
                                                     flexShrink: 0,
                                                 }}
                                             />
