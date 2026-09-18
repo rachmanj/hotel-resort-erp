@@ -8,6 +8,7 @@ use App\Enums\RoomStatus;
 use App\Models\Payment;
 use App\Models\ReservationRoom;
 use App\Models\Room;
+use App\Services\DashboardService;
 use App\Services\HousekeepingService;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -15,6 +16,7 @@ use Inertia\Response;
 class DashboardController extends Controller
 {
     public function __construct(
+        private DashboardService $dashboardService,
         private HousekeepingService $housekeepingService,
     ) {}
 
@@ -59,6 +61,12 @@ class DashboardController extends Controller
             'occupiedRooms' => $occupiedRooms,
             'sellableRooms' => $sellableRooms,
             'revenueToday' => $revenueToday,
+            'arrivalsToday' => $this->dashboardService->getArrivalsToday($hotelId),
+            'departuresToday' => $this->dashboardService->getDeparturesToday($hotelId),
+            'occupancySeries' => $this->dashboardService->getOccupancySeries($hotelId),
+            'occupancyDelta' => $this->dashboardService->getOccupancyDelta($hotelId),
+            'inHouseGuests' => $this->dashboardService->getInHouseGuests($hotelId),
+            'revenueMix' => $this->dashboardService->getRevenueMix($hotelId),
             'roomStatusSummary' => [
                 'total' => $board->count(),
                 'dirty' => $board->where('housekeeping_status', HousekeepingStatus::Dirty->value)->count(),
