@@ -1,0 +1,801 @@
+PRATASABA RESORT,,,,,,,,,
+Fixed Asset List,,,,,,,,,
+Asset Code,Asset Name,Asset Type Name,Asset Account,Asset Cost,Usage Date,Purchase Date,Estimated Life,% Depr Rate,Depreciation Method
+PAA-0001,Deep Fryer Penggorengan Gas GF-20-FS,Machinery,1400500.0,11100000.0,30 Sep 2022,30 Sep 2022,8 Yr 0 Mth,12.5,Straight Line Method
+PAA-0002,Under Counter Chiller Anti Karat UCC-180-3,Machinery,1400500.0,15700000.0,30 Sep 2022,30 Sep 2022,8 Yr 0 Mth,12.5,Straight Line Method
+PAA-0003,Showcase Polytron SCN 230,Machinery,1400500.0,3825000.0,30 Sep 2022,30 Sep 2022,8 Yr 0 Mth,12.5,Straight Line Method
+PAA-0004,Toshiba Canvio Basics 1TB - Harddisk Eksternal USB 3.0,Equipment,1400600.0,650000.0,30 Sep 2022,30 Sep 2022,4 Yr 0 Mth,25.0,Straight Line Method
+PAA-0005,Clamp Meter (Ampere Meter) AC 400A,Equipment,1400600.0,623000.0,30 Sep 2022,30 Sep 2022,4 Yr 0 Mth,25.0,Straight Line Method
+PAA-0006,Huruf PRATASABA RESORT,Equipment,1400600.0,2500000.0,30 Sep 2022,30 Sep 2022,4 Yr 0 Mth,25.0,Straight Line Method
+PAA-0007,Meja dan Kursi Kayu Bulat (3meja + 6kursi),Furniture,1400900.0,2400000.0,30 Sep 2022,30 Sep 2022,4 Yr 0 Mth,25.0,Straight Line Method
+PAA-0008,Kursi Rotan Kaki Hitam (5 set + jok + kaca),Furniture,1400900.0,8750000.0,30 Sep 2022,30 Sep 2022,4 Yr 0 Mth,25.0,Straight Line Method
+PAA-0009,Kursi Miring Putih (2 set + jok + kaca),Furniture,1400900.0,3500000.0,30 Sep 2022,30 Sep 2022,4 Yr 0 Mth,25.0,Straight Line Method
+PAA-0010,Bean Bag Cover Santana uk. 130x110x100,Furniture,1400900.0,1650000.0,30 Sep 2022,30 Sep 2022,4 Yr 0 Mth,25.0,Straight Line Method
+PAA-0011,Electric Kettle Stainless Steel 2L 600W Food Grade EKG EKB,Equipment,1400600.0,914500.0,30 Sep 2022,30 Sep 2022,4 Yr 0 Mth,25.0,Straight Line Method
+PAA-0012,Electric Kettle CTL-618 N Cosmos,Equipment,1400600.0,2700000.0,30 Sep 2022,30 Sep 2022,4 Yr 0 Mth,25.0,Straight Line Method
+PAA-0013,Lumment Electric Kettle,Equipment,1400600.0,780000.0,30 Sep 2022,30 Sep 2022,4 Yr 0 Mth,25.0,Straight Line Method
+PAA-0014,MS Pompa Celup 12C Yamamax,Equipment,1400600.0,570000.0,30 Sep 2022,30 Sep 2022,4 Yr 0 Mth,25.0,Straight Line Method
+PAA-0015,Akari LED TV Digital HD 32inch LE-32V99T2 - Lodge (GOL.22313-HK),Equipment,1400600.0,1700000.0,31 Oct 2022,31 Oct 2022,4 Yr 0 Mth,25.0,Straight Line Method
+PAA-0016,Akari LED TV Digital HD 32inch LE-32V99T2 - C6 (GOL.22325-HO),Equipment,1400600.0,8500000.0,31 Oct 2022,31 Oct 2022,4 Yr 0 Mth,25.0,Straight Line Method
+PAA-0017,Bed Plush Pocket uk. 180x200 - C6,Furniture,1400900.0,2700000.0,31 Oct 2022,31 Oct 2022,4 Yr 0 Mth,25.0,Straight Line Method
+PAA-0018,Furniture Set utk Proyek C6,Furniture,1400900.0,33100000.0,31 Oct 2022,31 Oct 2022,4 Yr 0 Mth,25.0,Straight Line Method
+PAA-0019,Lampu Gantung - Minibar (GOL.22105-Civil),Furniture,1400900.0,3400500.0,31 Oct 2022,31 Oct 2022,4 Yr 0 Mth,25.0,Straight Line Method
+PAA-0020,"AC Daikin 1,5 PK - Saroja C11 (GOL.22353-CME)",Equipment,1400600.0,5787000.0,30 Nov 2022,30 Nov 2022,4 Yr 0 Mth,25.0,Straight Line Method
+PAA-0021,Hair Dryer Krisbow RCY100-23A - C6,Equipment,1400600.0,1874500.0,30 Nov 2022,30 Nov 2022,4 Yr 0 Mth,25.0,Straight Line Method
+PAA-0022,Three Step Trolley Smallgrey84 + Big Gathering Bin Ware - MH,Equipment,1400600.0,1293900.0,30 Nov 2022,30 Nov 2022,4 Yr 0 Mth,25.0,Straight Line Method
+PAA-0023,Safety Box Steel 17Nef White 1/3MM - C6,Equipment,1400600.0,2245000.0,30 Nov 2022,30 Nov 2022,8 Yr 0 Mth,12.5,Straight Line Method
+PAA-0024,Table Lamp Marble - C6,Furniture,1400900.0,2094000.0,30 Nov 2022,30 Nov 2022,4 Yr 0 Mth,25.0,Straight Line Method
+PAA-0025,Baofeng BF-888S HT UHF WT - Security & CME (GOL.22376-FO),Equipment,1400600.0,555000.0,30 Nov 2022,30 Nov 2022,4 Yr 0 Mth,25.0,Straight Line Method
+PAA-0026,Pigura Kayu - C6,Furniture,1400900.0,3750000.0,30 Nov 2022,30 Nov 2022,4 Yr 0 Mth,25.0,Straight Line Method
+PAA-0027,Pompa Sanyo PH-175 - Mess Karyawan (GOL.22398-CME),Machinery,1400500.0,2550000.0,30 Nov 2022,30 Nov 2022,8 Yr 0 Mth,12.5,Straight Line Method
+PAA-0028,Cottage C6,Building,1400200.0,893668772.94,31 Dec 2022,31 Dec 2022,10 Yr 0 Mth,10.0,Straight Line Method
+PAA-0029,Kursi Pantai,Furniture,1400900.0,15000000.0,31 Dec 2022,31 Dec 2022,4 Yr 0 Mth,25.0,Straight Line Method
+PAA-0030,"Mesin Cuci Sharp ES-T1270SJ-BL (GOL.22438-HK, mess karyawan)",Equipment,1400600.0,2600000.0,31 Jan 2023,31 Jan 2023,4 Yr 0 Mth,25.0,Straight Line Method
+PAA-0031,"Dispenser Miyako 190 PH (GOL.22404-HK, mess karyawan)",Equipment,1400600.0,250000.0,31 Jan 2023,31 Jan 2023,4 Yr 0 Mth,25.0,Straight Line Method
+PAA-0032,"Blender Miyako 101 PL (GOL.22404-HK, mess karyawan)",Equipment,1400600.0,275000.0,31 Jan 2023,31 Jan 2023,4 Yr 0 Mth,25.0,Straight Line Method
+PAA-0033,Alat Las Lakoni 450w IGBT Inventer W.Basic 12IX (GOL.23028-CME),Equipment,1400600.0,900000.0,31 Jan 2023,31 Jan 2023,4 Yr 0 Mth,25.0,Straight Line Method
+PAA-0034,Short Boot Zeepro 3mm - Black - Size 4 (34-35) (GOL.23031-DC),Equipment,1400600.0,249000.0,28 Feb 2023,28 Feb 2023,4 Yr 0 Mth,25.0,Straight Line Method
+PAA-0035,Short Boot Zeepro 3mm - Black - Size 5 (36) (GOL.23031-DC),Equipment,1400600.0,498000.0,28 Feb 2023,28 Feb 2023,4 Yr 0 Mth,25.0,Straight Line Method
+PAA-0036,Fin Strap Zeepro Rubber Adult Snorkeling (GOL.23031-DC),Equipment,1400600.0,156000.0,28 Feb 2023,28 Feb 2023,4 Yr 0 Mth,25.0,Straight Line Method
+PAA-0037,Short Mouthpiece Zeepro Regulator Silicone - Black (GOL.23031-DC),Equipment,1400600.0,140000.0,28 Feb 2023,28 Feb 2023,4 Yr 0 Mth,25.0,Straight Line Method
+PAA-0038,Wetsuit OW Full Wave Men 3mm Ankle Zip BK MD (GOL.23031-DC),Equipment,1400600.0,5514750.0,28 Feb 2023,28 Feb 2023,4 Yr 0 Mth,25.0,Straight Line Method
+PAA-0039,Wetsuit OW Full Wave Men 3mm Ankle Zip BK LG (GOL.23031-DC),Equipment,1400600.0,3676500.0,28 Feb 2023,28 Feb 2023,4 Yr 0 Mth,25.0,Straight Line Method
+PAA-0040,"Boot Open Water Wave High Cut, 7 (GOL.23031-DC)",Equipment,1400600.0,1530450.0,28 Feb 2023,28 Feb 2023,4 Yr 0 Mth,25.0,Straight Line Method
+PAA-0041,"Boot Open Water Wave High Cut, 8 (GOL.23031-DC)",Equipment,1400600.0,1530450.0,28 Feb 2023,28 Feb 2023,4 Yr 0 Mth,25.0,Straight Line Method
+PAA-0042,Snorkel Resort Transp BK (GOL.23031-DC),Equipment,1400600.0,1368000.0,28 Feb 2023,28 Feb 2023,4 Yr 0 Mth,25.0,Straight Line Method
+PAA-0043,Mask Resort 2+ BK Sil BK (GOL.23031-DC),Equipment,1400600.0,3308850.0,28 Feb 2023,28 Feb 2023,4 Yr 0 Mth,25.0,Straight Line Method
+PAA-0044,"Strap & Buckle Fin Snorkeller, nla (GOL.23031-DC)",Equipment,1400600.0,288000.0,28 Feb 2023,28 Feb 2023,4 Yr 0 Mth,25.0,Straight Line Method
+PAA-0045,O-Ring (GOL.23031-DC),Equipment,1400600.0,279000.0,28 Feb 2023,28 Feb 2023,4 Yr 0 Mth,25.0,Straight Line Method
+PAA-0046,"Exhaust Valve Round, Grey (GOL.23031-DC)",Equipment,1400600.0,1305000.0,28 Feb 2023,28 Feb 2023,4 Yr 0 Mth,25.0,Straight Line Method
+PAA-0047,Kabel Extension 30m - Pantai (GOL.23043-CME),Other Inventory,1400600.0,648000.0,28 Feb 2023,28 Feb 2023,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0048,Gelas Bening Kaca KIG Pht-07 H.08 (GOL.23056-FO),Other Inventory,1400800.0,465000.0,28 Feb 2023,28 Feb 2023,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0049,Gelas Bir Kaca Arcoroc Granity 27cl (GOL.23056-FO),Other Inventory,1400800.0,240000.0,28 Feb 2023,28 Feb 2023,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0050,Gelas Jus (GOL.23010-KIT),Other Inventory,1400800.0,280000.0,28 Feb 2023,28 Feb 2023,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0051,"Piring Makan Indokramik 10,5"" (GOL.23056-FO)",Other Inventory,1400800.0,500000.0,28 Feb 2023,28 Feb 2023,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0052,Sendok Makan Paris (GOL.23056-FO),Other Inventory,1400800.0,240000.0,28 Feb 2023,28 Feb 2023,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0053,Tea Set Putih Polos (GOL.23058-FO),Other Inventory,1400800.0,1120000.0,28 Feb 2023,28 Feb 2023,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0054,"Piring Ceper BNB Keramindo 8"" (GOL.23056-FO)",Other Inventory,1400800.0,700000.0,28 Feb 2023,28 Feb 2023,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0055,"Gelas Mini (GOL.23058-FO, utk lilin sumbu)",Other Inventory,1400800.0,50000.0,28 Feb 2023,28 Feb 2023,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0056,Baby Chair (GOL.22235-FO),Equipment,1400600.0,400000.0,28 Feb 2023,28 Feb 2023,4 Yr 0 Mth,25.0,Straight Line Method
+PAA-0057,AC 1 PK - Meeting Hall (GOL.23046-CME),Equipment,1400600.0,3500000.0,28 Feb 2023,28 Feb 2023,4 Yr 0 Mth,25.0,Straight Line Method
+PAA-0058,"AC 1,5 PK - Chiller Kitchen (GOL.23046-CME)",Equipment,1400600.0,5400000.0,28 Feb 2023,28 Feb 2023,4 Yr 0 Mth,25.0,Straight Line Method
+PAA-0059,Kabel Extension 50m - MH (GOL.23067-CME),Other Inventory,1400600.0,650000.0,28 Feb 2023,28 Feb 2023,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0060,"Taplak Meja Putih - Stretch Rectangle Table Cover 152 (GOL.23065-FO, utk MH)",Other Inventory,1400800.0,160300.0,28 Feb 2023,28 Feb 2023,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0061,Keset Bathmat Tarve White 50x70cm (GOL.22438-HK),Other Inventory,1400700.0,545000.0,31 Mar 2023,31 Mar 2023,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0062,Placemat PVC / Tatakan Piring Modern Style (GOL.23079-FO),Other Inventory,1400800.0,1020000.0,30 Apr 2023,30 Apr 2023,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0063,Taplak Meja Maroon (GOL.23056-FO),Other Inventory,1400800.0,675000.0,30 Apr 2023,30 Apr 2023,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0064,Pot Bunga Set (GOL.23117-FO),Other Inventory,1400700.0,525480.0,30 Apr 2023,30 Apr 2023,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0065,Dining Chair Dudukan Kayu Jati - Blue Natural,Furniture,1400900.0,10860000.0,30 Apr 2023,30 Apr 2023,4 Yr 0 Mth,25.0,Straight Line Method
+PAA-0066,Dining Table S uk. 60x60x75 - Natural,Furniture,1400900.0,5874000.0,30 Apr 2023,30 Apr 2023,4 Yr 0 Mth,25.0,Straight Line Method
+PAA-0067,Sofa Kayu Jati uk. 120x60x45 - Natural,Furniture,1400900.0,20800000.0,30 Apr 2023,30 Apr 2023,4 Yr 0 Mth,25.0,Straight Line Method
+PAA-0068,Dining Table L uk. 120x60x75 - Natural ,Furniture,1400900.0,3400000.0,30 Apr 2023,30 Apr 2023,4 Yr 0 Mth,25.0,Straight Line Method
+PAA-0069,Taplak Meja BBQ Putih (GOL.23079-FO),Other Inventory,1400800.0,1049500.0,30 Apr 2023,30 Apr 2023,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0070,CCTV Resort + Material Kelengkapan (GOL.23075-HK),Equipment,1400600.0,8247152.0,30 Apr 2023,30 Apr 2023,4 Yr 0 Mth,25.0,Straight Line Method
+PAA-0071,MI LED TV A2 32 inch - CCTV Resort (GOL.23075-HK),Equipment,1400600.0,2100000.0,30 Apr 2023,30 Apr 2023,4 Yr 0 Mth,25.0,Straight Line Method
+PAA-0072,UPS Prolink PRO700SFC - CCTV Resort (GOL.23075-HK),Equipment,1400600.0,650000.0,30 Apr 2023,30 Apr 2023,4 Yr 0 Mth,25.0,Straight Line Method
+PAA-0073,Speedboat 2 mesin Yamaha F200BETX - Fiber Glass ,Ship,1400300.0,681847500.0,30 Apr 2023,30 Apr 2023,8 Yr 0 Mth,12.5,Straight Line Method
+PAA-0074,"Dapra Kapsul F1 - 15,2 x 61,0 - White",Equipment,1400600.0,3918000.0,30 Apr 2023,30 Apr 2023,4 Yr 0 Mth,25.0,Straight Line Method
+PAA-0075,1 set Keyboard + Mouse HP 150 Kabel (GOL.23105-FO),Equipment,1400600.0,175000.0,30 Apr 2023,30 Apr 2023,4 Yr 0 Mth,25.0,Straight Line Method
+PAA-0076,Adaptor charger laptop ASUS 19V-3.42A (GOL.23105-FO),Equipment,1400600.0,160000.0,30 Apr 2023,30 Apr 2023,4 Yr 0 Mth,25.0,Straight Line Method
+PAA-0077,Ring Bouy Fiber (GOL.23113-DC),Equipment,1400600.0,325000.0,30 Apr 2023,30 Apr 2023,4 Yr 0 Mth,25.0,Straight Line Method
+PAA-0078,APAR Powder 3kg (GOL.23113-DC),Equipment,1400600.0,335000.0,30 Apr 2023,30 Apr 2023,4 Yr 0 Mth,25.0,Straight Line Method
+PAA-0079,Tray Rect uk. 30.5x41cm + Tray Round uk. 40.5x2.5cm (GOL.23155-FO),Other Inventory,1400800.0,156100.0,31 May 2023,31 May 2023,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0080,Keranjang / Container (GOL.23148-FO),Other Inventory,1400800.0,587000.0,31 May 2023,31 May 2023,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0081,"Wajan Stainless, Loyang Kotak, Jepitan (GOL.23052, 23059-Kitchen)",Other Inventory,1400800.0,225000.0,31 May 2023,31 May 2023,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0082,Pita Kursi Putih (GOL.23079-FO),Other Inventory,1400700.0,950000.0,31 May 2023,31 May 2023,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0083,Tray Round uk. 25cm utk Kunci Kamar (GOL.23157-FO),Other Inventory,1400700.0,50000.0,31 May 2023,31 May 2023,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0084,Gerobak Arco (GOL.23184-DC),Other Inventory,1400600.0,640000.0,31 May 2023,31 May 2023,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0085,Gelas Coffee Maker Room Saroja (GOL.23175-HK),Other Inventory,1400700.0,60000.0,31 May 2023,31 May 2023,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0086,Whiteboard uk. 60x90 (GOL.23160-CME),Other Inventory,1400600.0,150000.0,31 May 2023,31 May 2023,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0087,Standing Fan (GOL.23142-FO),Equipment,1400600.0,465000.0,31 May 2023,31 May 2023,4 Yr 0 Mth,25.0,Straight Line Method
+PAA-0088,Pompa Otomatis Oli utk SB Diving Prata New (GOL.23132-DC),Equipment,1400600.0,1380000.0,31 May 2023,31 May 2023,4 Yr 0 Mth,25.0,Straight Line Method
+PAA-0089,Baofeng BF-8885 HT UHF Walkie Talkie utk Security (GOL.23126-GA),Equipment,1400600.0,185000.0,31 May 2023,31 May 2023,4 Yr 0 Mth,25.0,Straight Line Method
+PAA-0090,Accu Mark Yuasa 100A utk Genset Perkins (GOL.23153-CME),Machinery,1400500.0,1600000.0,31 May 2023,31 May 2023,4 Yr 0 Mth,25.0,Straight Line Method
+PAA-0091,Dipan Extra Bed,Furniture,1400900.0,490000.0,30 Jun 2023,30 Jun 2023,4 Yr 0 Mth,25.0,Straight Line Method
+PAA-0092,Life Vest tanpa Headrest + Bordir Punggung (GOL.23169-DC),Equipment,1400600.0,6330000.0,30 Jun 2023,30 Jun 2023,4 Yr 0 Mth,25.0,Straight Line Method
+PAA-0093,Bowl Kitchen Sink Lavenia utk Meja Barista (GOL.23207-CME),Equipment,1400600.0,2091900.0,30 Jun 2023,30 Jun 2023,4 Yr 0 Mth,25.0,Straight Line Method
+PAA-0094,Kran Sink Paloma Jupiter utk Meja Barista (GOL.23207-CME),Equipment,1400600.0,585000.0,30 Jun 2023,30 Jun 2023,4 Yr 0 Mth,25.0,Straight Line Method
+PAA-0095,Handuk Trip Bath Sheet Solid Gray uk. 85x160 (GOL.23055-HK),Other Inventory,1400700.0,3528681.0,30 Jun 2023,30 Jun 2023,4 Yr 0 Mth,25.0,Straight Line Method
+PAA-0096,Gantungan Handuk Kayu utk C6 (GOL.23159-HK),Furniture,1400900.0,1500000.0,30 Jun 2023,30 Jun 2023,4 Yr 0 Mth,25.0,Straight Line Method
+PAA-0097,Setrika Iron Dry NK999s utk Stock Tamu Pinjam (GOL.23235-HK),Equipment,1400600.0,230000.0,30 Jun 2023,30 Jun 2023,4 Yr 0 Mth,25.0,Straight Line Method
+PAA-0098,Napkin Gold (GOL.23155-FO),Other Inventory,1400800.0,787320.0,30 Jun 2023,30 Jun 2023,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0099,Sendok Lauk Meals Bufet (GOL.23073-KIT),Other Inventory,1400800.0,180000.0,30 Jun 2023,30 Jun 2023,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0100,Meja Mini Bar Resort (004/SPK-PRATASABA/DNC/VI/2023),Equipment,1400800.0,26000000.0,30 Jun 2023,30 Jun 2023,8 Yr 0 Mth,12.5,Straight Line Method
+PAA-0101,Timbangan Digital Proquip 30 kg TDS-30 (GOL.23078-KIT),Equipment,1400600.0,435000.0,30 Jun 2023,30 Jun 2023,4 Yr 0 Mth,25.0,Straight Line Method
+PAA-0102,OTG & USB HUB (GOL>23125-FO),Other Inventory,1400600.0,234900.0,30 Jun 2023,30 Jun 2023,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0103,Portable NX Audio Speaker BT.1515 BWR (GOL.23238-FO),Equipment,1400600.0,5200000.0,31 Jul 2023,31 Jul 2023,4 Yr 0 Mth,25.0,Straight Line Method
+PAA-0104,Biofill BF03 utk Resto (GOL.23250-CME),Equipment,1400600.0,4480000.0,31 Jul 2023,31 Jul 2023,4 Yr 0 Mth,25.0,Straight Line Method
+PAA-0105,Taplak Meja BBQ Putih (GOL.23257-FO),Other Inventory,1400800.0,1490000.0,31 Jul 2023,31 Jul 2023,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0106,Keset Door Mat 45x75 cm GRY PVCASM457 utk Saroja Room (GOL.23271-HO),Other Inventory,1400700.0,509400.0,31 Jul 2023,31 Jul 2023,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0107,"Perlengkapan Kitchen & Gelas DC (GOL.23188-DC; 23073, 23083, 23087-Kitchen)",Other Inventory,1400800.0,2365000.0,03 Aug 2023,31 Jul 2023,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0108,Pompa Otomatis Shimizu (GOL.23248-CME),Equipment,1400600.0,660000.0,31 Aug 2023,31 Aug 2023,4 Yr 0 Mth,25.0,Straight Line Method
+PAA-0109,Pillow Case Cotton 100% Putih Polos 200TC uk. 50x72 (GOL.23271-HO),Other Inventory,1400700.0,1875000.0,31 Aug 2023,31 Aug 2023,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0110,Gorden uk. 140x200 Cream utk Floating Meeting (GOL.23271-HO),Other Inventory,1400700.0,760000.0,31 Aug 2023,31 Aug 2023,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0111,Tempat Sampah Semar 40 lt Taiwan utk Seheku (GOL.23260-HK),Other Inventory,1400700.0,225000.0,31 Aug 2023,31 Aug 2023,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0112,Cermin uk. 180x70 utk Room C6 (GOL.23267-CME),Furniture,1400900.0,2400000.0,31 Aug 2023,31 Aug 2023,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0113,Teflon Telur & Fry Pan Mini Valentino (GOL.23100-Kitchen),Other Inventory,1400800.0,220000.0,31 Aug 2023,31 Aug 2023,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0114,PC Rakit utk Resort (GOL.23271-HO),Equipment,1400600.0,2813801.0,30 Sep 2023,30 Sep 2023,4 Yr 0 Mth,25.0,Straight Line Method
+PAA-0115,UPS ICA CV-700 utk PC Resort (GOL.23271-HO),Equipment,1400600.0,950000.0,30 Sep 2023,30 Sep 2023,2 Yr 0 Mth,50.0,Straight Line Method
+PAA-0116,Perlengkapan Prata Coffee,Other Inventory,1401000.0,2158650.0,30 Sep 2023,30 Sep 2023,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0117,Premium Cocktail Shaker Set 11 in 1,Other Inventory,1401000.0,480000.0,30 Sep 2023,30 Sep 2023,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0118,Ferratti Ferro Coffee Espresso Machine FCM-3121A Brazzio,Equipment,1401000.0,17454026.0,30 Sep 2023,30 Sep 2023,4 Yr 0 Mth,25.0,Straight Line Method
+PAA-0119,Ferratti Ferro Automatic Coffee Grinder Heavy Duty FGM-600AD,Equipment,1401000.0,6060000.0,30 Sep 2023,30 Sep 2023,4 Yr 0 Mth,25.0,Straight Line Method
+PAA-0120,Blender Hamilton Beach No.58151,Equipment,1401000.0,899450.0,30 Sep 2023,30 Sep 2023,2 Yr 0 Mth,50.0,Straight Line Method
+PAA-0121,Brewista Artisan Gooseneck Kettle 600ml Pure Wihte,Equipment,1401000.0,1560000.0,30 Sep 2023,30 Sep 2023,2 Yr 0 Mth,50.0,Straight Line Method
+PAA-0122,Latina Libra T60 Coffee Grinder Machine Electric - Putih,Equipment,1401000.0,1730000.0,30 Sep 2023,30 Sep 2023,4 Yr 0 Mth,25.0,Straight Line Method
+PAA-0123,MS Stabilizer AVR-1000w - Prata Coffee (GOL.23313-CME),Equipment,1401000.0,497000.0,30 Sep 2023,30 Sep 2023,2 Yr 0 Mth,50.0,Straight Line Method
+PAA-0124,Stavolt 500w - Ice Cube Prata Coffee (GOL.23321-CME),Equipment,1401000.0,480000.0,30 Sep 2023,30 Sep 2023,2 Yr 0 Mth,50.0,Straight Line Method
+PAA-0125,Perlengkapan Kitchen (GOL.23105-Kitchen),Other Inventory,1400800.0,1505000.0,30 Sep 2023,30 Sep 2023,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0126,Bantal Yobel/Busa - Mess Karyawan (GOL.23312-HK),Other Inventory,1400700.0,550000.0,30 Sep 2023,30 Sep 2023,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0127,Mixer La Coste Signora + RSP (GOL.23105-Kitchen),Equipment,1400800.0,2080000.0,30 Sep 2023,30 Sep 2023,4 Yr 0 Mth,25.0,Straight Line Method
+PAA-0128,Oven Elpiji Stainless 12060 (GOL.23105-Kitchen),Equipment,1400800.0,5700000.0,30 Sep 2023,30 Sep 2023,4 Yr 0 Mth,25.0,Straight Line Method
+PAA-0129,Milk Jug Kakagear Aretisan Rafael 350ml Latte Art,Other Inventory,1401000.0,550000.0,31 Oct 2023,31 Oct 2023,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0130,Tabung APAR 6 kg (GOL.23310-CME),Other Inventory,1400600.0,1650000.0,31 Oct 2023,31 Oct 2023,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0131,Gelas - Prata Coffee,Other Inventory,1401000.0,1499100.0,31 Oct 2023,31 Oct 2023,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0132,Pompa Sanyo PH.175 - Penampungan Air Seheku (GOL.23348-CME),Machinery,1400500.0,2830000.0,31 Oct 2023,31 Oct 2023,4 Yr 0 Mth,25.0,Straight Line Method
+PAA-0133,LCD Projector Infocus IN114AA - Meeting Hall (GOL.23271-HO),Equipment,1400600.0,5250000.0,31 Oct 2023,31 Oct 2023,4 Yr 0 Mth,25.0,Straight Line Method
+PAA-0134,Exhaust Fan Panasonic FR30 Run 5 Wall - Ruang Kompressor (GOL.23327-CME),Equipment,1400600.0,1178000.0,31 Oct 2023,31 Oct 2023,4 Yr 0 Mth,25.0,Straight Line Method
+PAA-0135,Wastafel - Pantai (GOL.23346-CME),Equipment,1400600.0,750000.0,31 Oct 2023,31 Oct 2023,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0136,Panel Listrik Resort (020/SPK-PRATASABA/DNC/X/2023),Equipment,1400600.0,16704000.0,31 Oct 2023,31 Oct 2023,4 Yr 0 Mth,25.0,Straight Line Method
+PAA-0137,Wajan Stainless & Baja - Kitchen (GOL.23120-Kitchen),Other Inventory,1400800.0,495000.0,31 Oct 2023,31 Oct 2023,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0138,"Flatsheet Single Cotton 100% Kotak 9cm Putih, 220TC uk. 220x280 - kasur 120x200 (GOL.23271-HO)",Other Inventory,1400700.0,10200000.0,31 Oct 2023,31 Oct 2023,2 Yr 0 Mth,50.0,Straight Line Method
+PAA-0139,Taplak Meja Buffet Rampel Maroon & Grey (GOL.23289-FO),Other Inventory,1400800.0,2606000.0,31 Oct 2023,31 Oct 2023,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0140,Dinner Plate - Kitchen (GOL.23105-Kitchen),Other Inventory,1400800.0,850000.0,31 Oct 2023,31 Oct 2023,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0141,Gelas Bening Tinggi Kedaung 212N - 5 lusin + Pitcher Eskan Kedaung WJ-1500C Polos - 4 pcs (GOL.23117-Kitchen),Other Inventory,1400800.0,405000.0,31 Oct 2023,31 Oct 2023,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0142,Tempat Tissue Rajawali Pinus (GOL.23308-FO),Other Inventory,1400800.0,1380000.0,31 Oct 2023,31 Oct 2023,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0143,Juicer Subron 8 Liter JD-8L/JVS-B (GOL.23117-Kitchen),Other Inventory,1400800.0,1240000.0,31 Oct 2023,31 Oct 2023,2 Yr 0 Mth,50.0,Straight Line Method
+PAA-0144,Keset Anti Selip 20 meter - Kitchen (GOL.23117-Kitchen),Other Inventory,1400600.0,2000000.0,31 Oct 2023,31 Oct 2023,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0145,Gelas Goblet - Resto (GOL.23356-FO),Other Inventory,1400800.0,1050000.0,31 Oct 2023,31 Oct 2023,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0146,Adj. Akun Other Inventory - (start 21 Sept 2022),Other Inventory,1400600.0,1902000.0,31 Jan 2023,31 Jan 2023,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0147,Adj. Akun Office Inventory (start 01 Okt 2022),Other Inventory,1400600.0,1434000.0,31 Jan 2023,31 Jan 2023,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0148,Adj. Akun Room & Housekeeping Inventory - (start 10 Sept 2022),Other Inventory,1400700.0,19203728.0,31 Jan 2023,31 Jan 2023,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0149,Adj. Akun Kitchen & Resto Inventory - (start 12 Sept 2022),Other Inventory,1400800.0,4988900.0,31 Jan 2023,31 Jan 2023,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0150,Taffsport Snorkel Equipment AS303JF - Black (GOL.23367-DC),Equipment,1400600.0,1399080.0,30 Nov 2023,30 Nov 2023,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0151,Module Gauge Zeepro 52mm 360Bar Press White Dial + High Pressure Swivel Spool Zeepro Small Nitrox Green (GOL.23394-DC),Equipment,1400600.0,869250.0,30 Nov 2023,30 Nov 2023,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0152,Bar Mat Anti Selip Shelf Liner Black uk. 150 (GOL.23354-BAR),Other Inventory,1401000.0,179500.0,30 Nov 2023,30 Nov 2023,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0153,Kipas Angin Panasonic Fey 1511 utk area Resto Bar (GOL.23391-BAR),Equipment,1401000.0,875000.0,30 Nov 2023,30 Nov 2023,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0154,Kipas Angin Sekai 1875 2 Mata - Lorong Seheku (GOL.23379-CME),Equipment,1400600.0,1650000.0,30 Nov 2023,30 Nov 2023,2 Yr 0 Mth,50.0,Straight Line Method
+PAA-0155,Bed Runner Tosca uk. 40x150 (8pcs) + uk. 40x240 (1pcs) - Room Kasilasa (GOL.23271-HO),Other Inventory,1400700.0,505000.0,30 Nov 2023,30 Nov 2023,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0156,Pigura Pajangan Resto Bar (GOL.23391-BAR),Other Inventory,1400900.0,330000.0,30 Nov 2023,30 Nov 2023,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0157,"Blender Miyako 1,5 kg (GOL.23135-Kitchen)",Equipment,1400800.0,325000.0,30 Nov 2023,30 Nov 2023,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0158,Keranjang Roti - Feeding Fish (GOL.23390-FO),Other Inventory,1400800.0,229500.0,30 Nov 2023,30 Nov 2023,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0159,Gantungan Kunci Room Resort (GOL.23405-HK),Other Inventory,1400700.0,481000.0,31 Dec 2023,31 Dec 2023,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0160,Neon Box PRATA COFFEE & RESTO + Tiang,Equipment,1400600.0,2600000.0,31 Dec 2023,31 Dec 2023,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0161,Gorden Kamar Mandi room Seheku (GOL.23413-HK),Other Inventory,1400700.0,1600000.0,31 Dec 2023,31 Dec 2023,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0162,"TaffSPORT Snorkeling Tempered Glass AS303JF (GOL.23369, 23421-DC)",Equipment,1400600.0,2698200.0,31 Jan 2024,31 Jan 2024,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0163,Exhaustfan Maspion utk Janti & Seheku (GOL.23432-CME),Equipment,1400600.0,1362000.0,31 Jan 2024,31 Jan 2024,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0164,Pompa Air Shimizu PS 135 - DC (GOL.23445-CME),Machinery,1400500.0,660000.0,31 Jan 2024,31 Jan 2024,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0165,Gorden uk. 140x200 Cream utk Floating Meeting Room (GOL.23271-HO),Other Inventory,1400700.0,380000.0,31 Jan 2024,31 Jan 2024,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0166,Pot + bunga utk meja MH (GOL.24015-FO),Other Inventory,1400700.0,251400.0,31 Jan 2024,31 Jan 2024,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0167,Piring Oval dan Dispenser Cereal (GOL.24001-Kitchen),Other Inventory,1400800.0,1781800.0,31 Jan 2024,31 Jan 2024,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0168,Sunset Dinner Table Runner Basic Line Red uk 150x30 (GOL.24015-FO),Other Inventory,1400700.0,129000.0,29 Feb 2024,29 Feb 2024,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0169,Artificial Orchid Violacea / Phalaenopsis - Bunga + Vas (GOL.24037-FO),Other Inventory,1400700.0,859120.0,29 Feb 2024,29 Feb 2024,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0170,Mic Wireless Universal (GOL.24037-FO) ,Equipment,1400600.0,800000.0,02 Mar 2024,29 Feb 2024,2 Yr 0 Mth,50.0,Straight Line Method
+PAA-0171,Mesin Molen Second Merk HERCULES (GOL.24017-Civil),Machinery,1400500.0,3500000.0,29 Feb 2024,29 Feb 2024,2 Yr 0 Mth,50.0,Straight Line Method
+PAA-0172,Soup Warmer (GOL.24005-Kitchen),Other Inventory,1400800.0,1850000.0,29 Feb 2024,29 Feb 2024,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0173,Roll Top Prasmanan Bulat Sunnex (GOL.24005-Kitchen),Other Inventory,1400800.0,9200000.0,29 Feb 2024,29 Feb 2024,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0174,Water Boiler 16 Liter (GOL.24005-KIT),Other Inventory,1400800.0,1149000.0,29 Feb 2024,29 Feb 2024,2 Yr 0 Mth,50.0,Straight Line Method
+PAA-0175,Salt & Pepper Set with Rack (GOL.24005-Kitchen),Other Inventory,1400800.0,349500.0,29 Feb 2024,29 Feb 2024,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0176,Toples Luminarc Club Jar 2L utk Kerupuk(GOL.24005-Kitchen),Other Inventory,1400800.0,284000.0,29 Feb 2024,29 Feb 2024,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0177,Soap Dispenser FO Resto (GOL.24076-FO),Other Inventory,1400700.0,250000.0,31 Mar 2024,31 Mar 2024,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0178,Septictank Biofil 1000 liter utk DC (GOL.24024-Civil),Equipment,1400600.0,3450000.0,31 Mar 2024,31 Mar 2024,2 Yr 0 Mth,50.0,Straight Line Method
+PAA-0179,Kloset Duduk Toto CW 422 utk DC (GOL.24024-Civil),Equipment,1400600.0,4300000.0,31 Mar 2024,31 Mar 2024,2 Yr 0 Mth,50.0,Straight Line Method
+PAA-0180,Kloset Jongkok Toto Putih utk DC (GOL.24025-Civil),Equipment,1400600.0,770000.0,31 Mar 2024,31 Mar 2024,2 Yr 0 Mth,50.0,Straight Line Method
+PAA-0181,Magic Com Miyako utk Mess Karyawan (GOL.24091-HK),Equipment,1400800.0,300000.0,31 Mar 2024,31 Mar 2024,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0182,Keset Doormat PVC Solid 40x60 Grey utk Room (GOL.24074-HK),Other Inventory,1400700.0,674100.0,31 Mar 2024,31 Mar 2024,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0183,Air Closet Jet Shower BD 03W ABS Material - Dive Center (GOL.24025-Civil),Equipment,1400600.0,250000.0,30 Apr 2024,30 Apr 2024,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0184,Toto Plastic Paper Tissue Holder - Dive Center (GOL.24025-Civil),Other Inventory,1400600.0,292000.0,30 Apr 2024,30 Apr 2024,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0185,Boot Open Water Wave High Cut uk. 9 (GOL.24059-DC),Equipment,1400600.0,724950.0,30 Apr 2024,30 Apr 2024,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0186,Dispenser Miyako - Dive Center (GOL.24110-DC),Equipment,1400600.0,350000.0,30 Apr 2024,30 Apr 2024,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0187,Kipas Angin Gantung Miyako - Dive Center (GOL.24110-DC),Equipment,1400600.0,280000.0,30 Apr 2024,30 Apr 2024,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0188,Keranjang Besar Mealbox (GOL.24022-Kitchen),Other Inventory,1400800.0,740000.0,30 Apr 2024,30 Apr 2024,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0189,Kursi Pantai (GOL.24072-FO),Furniture,1400900.0,9000000.0,31 May 2024,31 May 2024,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0190,Tangga Speedboat,Other Inventory,1400600.0,1700000.0,31 May 2024,31 May 2024,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0191,Wastafel Batu Hitam utk Area Seheku (GOL.24096-CME),Other Inventory,1400700.0,700000.0,31 May 2024,31 May 2024,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0192,Toples Edowado 1170ml (GOL.24157-FO),Other Inventory,1400800.0,135000.0,30 Jun 2024,30 Jun 2024,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0193,"Teko Decanter Krisbow 1,8L (GOL.24157-FO)",Other Inventory,1400800.0,321800.0,30 Jun 2024,30 Jun 2024,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0194,Keranjang utk Handuk Diving (GOL.24126-DC),Other Inventory,1400600.0,480000.0,30 Jun 2024,30 Jun 2024,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0195,Gerobak ARCO (GOL.24168-GA),Equipment,1400600.0,645000.0,30 Jun 2024,30 Jun 2024,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0196,Handuk Terry Palmer uk. 85x160cm utk Diving (GOL.24125-HK),Other Inventory,1400700.0,3853150.0,30 Jun 2024,30 Jun 2024,2 Yr 0 Mth,50.0,Straight Line Method
+PAA-0197,Kipas Angin Miyako - Mess Karyawan an. Melky (GOL.24176-FO),Equipment,1400600.0,275000.0,30 Jun 2024,30 Jun 2024,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0198,Lampu Bambu (GOL.24040-CME),Equipment,1400600.0,5700000.0,30 Jun 2024,30 Jun 2024,2 Yr 0 Mth,50.0,Straight Line Method
+PAA-0199,Tabung Scuba Tank Zeepro USA SF 80 CUFT Silver AA6061-T6 (No Valve) MFD 2023 (GOL.24126-DC),Equipment,1400600.0,41500000.0,30 Jun 2024,30 Jun 2024,2 Yr 0 Mth,50.0,Straight Line Method
+PAA-0200,Pompa Sanyo PH-175C utk Stock Operasional (GOL.24139-CME),Machinery,1400500.0,2800000.0,30 Jun 2024,30 Jun 2024,3 Yr 0 Mth,33.33,Straight Line Method
+PAA-0201,Dive Center (Perluasan),Building,1400200.0,155435444.0,30 Jun 2024,30 Jun 2024,10 Yr 0 Mth,10.0,Straight Line Method
+PAA-0202,Meja Setrika (Kemenparekraf - Loundry),Other Inventory,1400700.0,100000.0,31 Jul 2024,31 Jul 2024,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0203,Tempat Tissue - MH (GOL.24196-FO),Other Inventory,1400700.0,300000.0,31 Jul 2024,31 Jul 2024,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0204,Tabung Scuba Tank Zeepro USA SF 80 CUFT Silver AA6061-T6 (No Valve) MFD 2023 (GOL.24215-DC),Equipment,1400600.0,41500000.0,31 Jul 2024,31 Jul 2024,2 Yr 0 Mth,50.0,Straight Line Method
+PAA-0205,Standfan SEKAI 2 Baling - Lorong Seheku (GOL.24198-CME),Equipment,1400600.0,1899000.0,31 Jul 2024,31 Jul 2024,2 Yr 0 Mth,50.0,Straight Line Method
+PAA-0206,Magic Com Miyako (GOL.24204-HK),Equipment,1400600.0,300000.0,31 Jul 2024,31 Jul 2024,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0207,"Snorkel Equipment (GOL.24187,24217-DC)",Equipment,1400600.0,4875000.0,31 Jul 2024,31 Jul 2024,2 Yr 0 Mth,50.0,Straight Line Method
+PAA-0208,Kipas Angin Gantung - Kamar Tukang C5 (GOL.24059-Civil),Equipment,1400600.0,520000.0,31 Jul 2024,31 Jul 2024,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0209,Kasur uk. 90x200 (GOL.24066-Kitchen),Other Inventory,1400700.0,800000.0,31 Jul 2024,31 Jul 2024,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0210,Seprei + Bantal (GOL.24066-Kitchen),Other Inventory,1400700.0,300000.0,31 Jul 2024,31 Jul 2024,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0211,Pisau Stainless Buah,Other Inventory,1400800.0,320000.0,31 Jul 2024,31 Jul 2024,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0212,"Tray Rect Abtusjud uk. 30,5 x 41,5 cm + Tray Rect Abtusjud uk. 45,5 x 46 - MH (GOL.24196-FO)",Other Inventory,1400800.0,215700.0,31 Jul 2024,31 Jul 2024,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0213,"Perlengkapan Kitchen & Resto (GOL.24061,24071-Kitchen)",Other Inventory,1400800.0,569400.0,31 Jul 2024,31 Jul 2024,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0214,Ducting Exhaust Hood Kitchen,Equipment,1400600.0,54900000.0,31 Jul 2024,31 Jul 2024,4 Yr 0 Mth,25.0,Straight Line Method
+PAA-0215,Setrika PHilips 350w (Kemenparekraf - Loundry),Equipment,1400600.0,427000.0,31 Jul 2024,31 Jul 2024,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0216,Septictank Biofil BF03 - Proyek C5 (GOL.24066-Civil),Equipment,1400600.0,9050000.0,31 Aug 2024,31 Aug 2024,4 Yr 0 Mth,25.0,Straight Line Method
+PAA-0217,Kipas Angin Miyako - Kitchen (GOL.24080-Kitchen),Equipment,1400600.0,285000.0,31 Aug 2024,31 Aug 2024,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0218,SPG Regulator Console Zeepro 2in1 52mm Big Side Slot Press Depth+ HP Hose Gauge Braided (GOL.24239-DC),Equipment,1400600.0,1650000.0,31 Aug 2024,31 Aug 2024,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0219,Starlink - Wifi Resort + Kelengkapan Pemasangan Awal,Equipment,1400600.0,27813556.0,31 Aug 2024,31 Aug 2024,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0220,Cash Box Joyco CB-26A (GOL.24230-FO),Equipment,1400600.0,340000.0,31 Aug 2024,31 Aug 2024,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0221,"White Board - DC + Speedboat Diving (GOL.24183,24255-DC)",Other Inventory,1400600.0,470000.0,31 Aug 2024,31 Aug 2024,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0222,Kipas Angin Miyako 1662 - Mess Karyawan an. Muin (GOL.24249-HK),Equipment,1400600.0,300000.0,31 Aug 2024,31 Aug 2024,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0223,Keranjang - Perlengkapan Dive Center (GOL.24255-DC),Other Inventory,1400600.0,1140000.0,31 Aug 2024,31 Aug 2024,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0224,1 Tana 120LB Cooler Box + 1 Box Tamaga 100 lt - Wadah  Cuci Dive Equipment (GOL.24255-DC),Other Inventory,1400600.0,2075000.0,31 Aug 2024,31 Aug 2024,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0225,Bor Charger NRT DC343 13mm 20v (GOL.24084-Civil),Equipment,1400600.0,1200000.0,31 Aug 2024,31 Aug 2024,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0226,Vas Bunga (GOL.24196-FO),Other Inventory,1400600.0,540000.0,31 Aug 2024,31 Aug 2024,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0227,"Perlengkapan Kitchen & Resto (GOL.24196-FO; 24061,24067-Kitchen)",Other Inventory,1400800.0,6800000.0,31 Aug 2024,31 Aug 2024,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0228,Duvet Cover Double uk. 260x230 (GOL.24223-HK),Other Inventory,1400700.0,8700000.0,30 Sep 2024,30 Sep 2024,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0229,Jet Pump Pompa Kyodo Otomatis (GOL.24269-CME),Equipment,1400600.0,3350000.0,30 Sep 2024,30 Sep 2024,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0230,Egg Tumbler Diving + Sablon UV DTF (GOL.24089-KIT),Other Inventory,1400800.0,874480.0,30 Sep 2024,30 Sep 2024,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0231,Drum BBM (GOL.24274-CME),Other Inventory,1400600.0,1900000.0,30 Sep 2024,30 Sep 2024,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0232,"AC Daikin Sta Thailand 1,5 PK - Saroja C22 (GOL.24284-CME)",Equipment,1400600.0,5740000.0,31 Oct 2024,31 Oct 2024,4 Yr 0 Mth,25.0,Straight Line Method
+PAA-0233,Printer Epson L-3210 (GOL.24296-FO),Equipment,1400600.0,2420000.0,31 Oct 2024,31 Oct 2024,4 Yr 0 Mth,25.0,Straight Line Method
+PAA-0234,Mesin Senso Chainsaw Still No.1 (GOL.24291-GA),Equipment,1400600.0,2900000.0,31 Oct 2024,31 Oct 2024,4 Yr 0 Mth,25.0,Straight Line Method
+PAA-0235,Stand Mic Meja Betavo 202 (GOL.24305-FO),Equipment,1400600.0,450000.0,31 Oct 2024,31 Oct 2024,2 Yr 0 Mth,50.0,Straight Line Method
+PAA-0236,Kipas Angin Miyako - Mess Karyawan an. Cucup S (GOL.24321-HK),Equipment,1400600.0,285000.0,31 Oct 2024,31 Oct 2024,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0237,Meja uk. 1.50x40x75 - Meeting Hall (GOL.24203-FO),Furniture,1400900.0,11250000.0,31 Oct 2024,31 Oct 2024,2 Yr 0 Mth,50.0,Straight Line Method
+PAA-0238,Kursi Dinner BBQ (GOL.24203-FO),Furniture,1400900.0,12000000.0,31 Oct 2024,31 Oct 2024,2 Yr 0 Mth,50.0,Straight Line Method
+PAA-0239,"Taplak Meja uk. 150x39,5x75,5 + Kaki 120x41 - Meeting Hall (GOL.24238-FO)",Other Inventory,1400900.0,2100000.0,28 Oct 2024,28 Oct 2024,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0240,Terry Palmer White Bath Towel uk. 70x140cm (GOL.24319-HK),Other Inventory,1400700.0,1408800.0,30 Nov 2024,30 Nov 2024,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0241,Long Wetsuit Zeepro Sport 3mm 3rd Gen W/ Leg Zipper Unisex Full Black - Size XS (GOL.24350-DC),Equipment,1400600.0,848000.0,30 Nov 2024,30 Nov 2024,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0242,Long Wetsuit Zeepro Sport 3mm 3rd Gen W/ Leg Zipper Unisex Full Black - Size S (GOL.24348-DC),Equipment,1400600.0,848000.0,30 Nov 2024,30 Nov 2024,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0243,Tank Zeepro USA SF 80 Cuft Silver AA6061-T6 (No Valve) - MFD 2023 + Tank Valve Zeepro USA K-Valve Right 3/4-14 Din Yoke (GOL.24341-DC),Equipment,1400600.0,41500000.0,30 Nov 2024,30 Nov 2024,2 Yr 0 Mth,50.0,Straight Line Method
+PAA-0244,Regulator Octopus 2nd Stage Zeepro Xrec Plastic Ring Non Adj - Yellow (GOL.24341-DC),Equipment,1400600.0,608000.0,30 Nov 2024,30 Nov 2024,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0245,BCD Scubagear Basic V2 Jacket Black Line Red Sz. XS (GOL.24341-DC),Equipment,1400600.0,7678720.0,30 Nov 2024,30 Nov 2024,2 Yr 0 Mth,50.0,Straight Line Method
+PAA-0246,Long Boot Zeepro Classic 5mm Black Size 9 (GOL.24341-DC),Equipment,1400600.0,380800.0,30 Nov 2024,30 Nov 2024,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0247,Long Boot Zeepro Classic 5mm Black Size 10 (GOL.24341-DC),Equipment,1400600.0,380800.0,30 Nov 2024,30 Nov 2024,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0248,Fin FF Zeepro TSuper Rental Yellow Size S/38-40 (GOL.24341-DC),Equipment,1400600.0,640000.0,30 Nov 2024,30 Nov 2024,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0249,Fin FF Zeepro TSuper Rental Blue Size M/40-42 (GOL.24341-DC),Equipment,1400600.0,320000.0,30 Nov 2024,30 Nov 2024,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0250,Selang Regulator Hose 2nd Stage Zeepro Italy 40 inch Yellow (GOL.24300-DC),Equipment,1400600.0,380800.0,30 Nov 2024,30 Nov 2024,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0251,Speedboat Semi Half Cabin 38FT FRP Boat + Mesin + Aksesoris dan Suku Cadang,Ship,1400300.0,862271540.0,30 Nov 2024,30 Nov 2024,8 Yr 0 Mth,12.5,Straight Line Method
+PAA-0252,Keranjang Sampah - Teras Seheku (GOL.24359-HK),Other Inventory,1400700.0,300000.0,30 Nov 2024,30 Nov 2024,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0253,Gorden - Ruangan Manager Operasional Resort (GOL.24363-FO),Other Inventory,1400700.0,180000.0,30 Nov 2024,30 Nov 2024,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0254,Komputer Manager Operasional (GOL.24356-HO) : VenomRX Kingpin Comp Case PC M-ATX with PSU 300w + RAM 8GB DDR4 2400MHZ + SSD 512GB + Motherboard Asus Prime H110M-K LGA1151 Intel H110 + Processor Intel Core I5 6600 3.3GHz + Fan Original,Equipment,1400600.0,2769002.0,31 Dec 2024,31 Dec 2024,4 Yr 0 Mth,25.0,Straight Line Method
+PAA-0255,AOC IPS Monitor 23.8 inch 24B20JH2 - 100 Hz - Komputer Manager Operasional (GOL.24356-HO),Equipment,1400600.0,1120000.0,31 Dec 2024,31 Dec 2024,4 Yr 0 Mth,25.0,Straight Line Method
+PAA-0256,Logitech MK120 Wired Mouse + Keyboard Combo - Komputer Manager Operasional (GOL.24356-HO),Equipment,1400600.0,199000.0,31 Dec 2024,31 Dec 2024,2 Yr 0 Mth,50.0,Straight Line Method
+PAA-0257,UPS CE-1200 - Komputer Manager Operasional (GOL.24356-HO),Equipment,1400600.0,1500000.0,31 Dec 2024,31 Dec 2024,4 Yr 0 Mth,25.0,Straight Line Method
+PAA-0258,Dispenser Miyako WDP-200H - Meeting Hall (GOL.24272-FO),Equipment,1400600.0,825000.0,31 Dec 2024,31 Dec 2024,4 Yr 0 Mth,25.0,Straight Line Method
+PAA-0259,Kabel Mic Speaker 50 meter (GOL.24378-CME),Other Inventory,1400600.0,1250000.0,31 Dec 2024,31 Dec 2024,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0260,Kabel Jack Mic Speaker (GOL.24378-CME),Other Inventory,1400600.0,500000.0,31 Dec 2024,31 Dec 2024,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0261,APAR 3 kg - Speedboat Diving (GOL.24380-DC),Other Inventory,1400600.0,330000.0,31 Dec 2024,31 Dec 2024,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0262,Tripod Screen 70 inch Datalite (178x178) - Layar Infocus Meeting (GOL.24380-FO),Equipment,1400600.0,600000.0,31 Dec 2024,31 Dec 2024,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0263,NYK HDMI Splitter 4 Port (GOL.24380-FO),Other Inventory,1400600.0,130000.0,31 Dec 2024,31 Dec 2024,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0264,Lampu Rotary - Speedboat Diving (GOL.24380-DC),Other Inventory,1400600.0,250000.0,31 Dec 2024,31 Dec 2024,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0265,Lampu Sokle Foglamp - Speedboat Diving (GOL.24380-DC),Other Inventory,1400600.0,250000.0,31 Dec 2024,31 Dec 2024,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0266,Pita Putih - Kursi Dinner BBQ (GOL.24358-FO),Other Inventory,1400700.0,600000.0,31 Dec 2024,31 Dec 2024,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0267,Gelas Goblet - Meeting Hall (GOL.24089-Kitchen),Other Inventory,1400800.0,600000.0,31 Dec 2024,31 Dec 2024,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0268,Tempat Pembakaran BBQ (GOL.24119-Kitchen),Other Inventory,1400800.0,1669000.0,31 Dec 2024,31 Dec 2024,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0269,Kabel HDMI utk Proyektor Infocus Meeting Hall - 20 meter (GOL.24393-CME),Other Inventory,1400600.0,270000.0,31 Dec 2024,31 Dec 2024,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0270,Kipas Angin Maspion MWF 41S utk Kantin Mess Karyawan (GOL.24388-HK),Office Equipment,1400600.0,375000.0,31 Dec 2024,31 Dec 2024,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0271,Kipas Angin Miyako utk Gudang HK (GOL.24401-HK),Office Equipment,1400600.0,285000.0,31 Dec 2024,31 Dec 2024,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0272,Gelas Mini utk Lilin Sumbu Dinner BBQ (GOL.24398-FO),Other Inventory,1400800.0,60000.0,31 Dec 2024,31 Dec 2024,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0273,"Meja Pantai - Kayu Ulin uk. 1,50x59x82",Furniture,1400900.0,2200000.0,31 Jan 2025,31 Jan 2025,2 Yr 0 Mth,50.0,Straight Line Method
+PAA-0274,"Meja & Kursi Resto - Kayu Nyatoh uk. 1,20x90x77 : 1 set = 1 meja + 4 kursi",Furniture,1400900.0,22000000.0,31 Jan 2025,31 Jan 2025,2 Yr 0 Mth,50.0,Straight Line Method
+PAA-0275,Tempat Sampah utk Speedboat (GOL.25006-DC),Other Inventory,1400700.0,40000.0,31 Jan 2025,31 Jan 2025,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0276,Kotak P3K utk Speedboat (GOL.25006-DC),Other Inventory,1400600.0,250000.0,31 Jan 2025,31 Jan 2025,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0277,Pompa Grundfos - Seheku (GOL.25007-CME),Office Machinery,1400500.0,7700000.0,31 Jan 2025,31 Jan 2025,4 Yr 0 Mth,25.0,Straight Line Method
+PAA-0278,Payung Custom Logo Resort (GOL.24388-HK),Other Inventory,1400700.0,1694000.0,31 Jan 2025,31 Jan 2025,2 Yr 0 Mth,50.0,Straight Line Method
+PAA-0279,Wajan uk. 50 cm (GOL.25002-KIT),Other Inventory,1400800.0,420000.0,31 Jan 2025,31 Jan 2025,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0280,Waffle Pan Maker HH-B02 (GOL.25002-Kitchen),Other Inventory,1400800.0,192500.0,31 Jan 2025,31 Jan 2025,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0281,Food Processor Oxone OX-295 (GOL.24140-Kitchen),Equipment,1400800.0,1975000.0,31 Jan 2025,31 Jan 2025,2 Yr 0 Mth,50.0,Straight Line Method
+PAA-0282,Mesin Ketam Planner Makita M19202B (GOL.25007-CME),Equipment,1400600.0,990000.0,31 Jan 2025,31 Jan 2025,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0283,CCTV Area Mess Karyawan + Material Kelengkapannya (GOL.25015-CME),Equipment,1400600.0,1008590.0,28 Feb 2025,28 Feb 2025,4 Yr 0 Mth,25.0,Straight Line Method
+PAA-0284,AC Daikin Sta Indonesia 1 PK - Room Deluxe 208 (GOL.25015-CME),Equipment,1400600.0,3800000.0,28 Feb 2025,28 Feb 2025,4 Yr 0 Mth,25.0,Straight Line Method
+PAA-0285,Handuk Terry Palmer Putih uk. 70x140cm 650gsm (GOL.24319-HK),Other Inventory,1400700.0,11718270.0,28 Feb 2025,28 Feb 2025,2 Yr 0 Mth,50.0,Straight Line Method
+PAA-0286,Perlengkapan Kitchen (GOL.25019-Kitchen),Other Inventory,1400800.0,180000.0,28 Feb 2025,28 Feb 2025,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0287,Rak Piring Susun - Kantin Mess (GOL.25049-HK),Other Inventory,1400700.0,200000.0,28 Feb 2025,28 Feb 2025,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0288,Perlengkapan CME (GOL.25051-CME),Other Inventory,1400600.0,190000.0,28 Feb 2025,28 Feb 2025,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0289,Gergaji Tekiro (GOL.25058-CME),Other Inventory,1400600.0,140000.0,31 Mar 2025,31 Mar 2025,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0290,Tembakan Lem Silikon (GOL.25079-CME),Other Inventory,1400600.0,30000.0,30 Apr 2025,30 Apr 2025,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0291,Tempat Sampah - DC (GOL.25088-DC),Other Inventory,1400600.0,40000.0,30 Apr 2025,30 Apr 2025,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0292,Module Gauge Zeepro 52 mm PVD Coating 360Bar - Second Stage Pressure Gauge Regulator (GOL.25094-DC),Equipment,1400600.0,2248500.0,31 May 2025,31 May 2025,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0293,Lampu Senter GG 20W - Security (GOL.25089-GA),Equipment,1400600.0,160000.0,31 May 2025,31 May 2025,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0294,Canifer Hammock Ayunan Gantung uk. 200x145 - Room Saroja (GOL.25102-HK),Other Inventory,1400700.0,250965.0,31 May 2025,31 May 2025,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0295,Sendok Teh Komodo Glossy (GOL.25043-Kitchen),Other Inventory,1400800.0,100000.0,31 May 2025,31 May 2025,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0296,Toples Kerupuk Club Jar 1L (GOL.25043-Kitchen),Other Inventory,1400800.0,248000.0,31 May 2025,31 May 2025,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0297,Set Punch Tempat Es Buah MBBUD 7072 (GOL.25043-Kitchen),Other Inventory,1400800.0,135000.0,31 May 2025,31 May 2025,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0298,Gerinda Makita MT M0910B (GOL.25110-CME),Equipment,1400600.0,600000.0,31 May 2025,31 May 2025,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0299,Bola Volley (GOL.25115-FO),Other Inventory,1400600.0,250000.0,31 May 2025,31 May 2025,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0300,Net Bola Volley (GOL.25115-FO),Other Inventory,1400600.0,75000.0,31 May 2025,31 May 2025,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0301,Napkin Hijau (GOL.25105-FO),Other Inventory,1400800.0,1015200.0,30 Jun 2025,30 Jun 2025,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0302,Napkin Maroon (GOL-25105-FO),Other Inventory,1400800.0,507600.0,30 Jun 2025,30 Jun 2025,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0303,Table Mat PVC - Black Silver (GOL.25105-FO),Other Inventory,1400800.0,864000.0,30 Jun 2025,30 Jun 2025,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0304,Bor Listrik WRTH + Rotary Hammer 800wRGH9028 Set (GOL.25110-CME),Equipment,1400600.0,1075000.0,30 Jun 2025,30 Jun 2025,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0305,Gerobak Arco - Pantai (GOL.25193-GA),Equipment,1400600.0,770000.0,30 Jun 2025,30 Jun 2025,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0306,Pillow Case Cotton 100% Putih Polos 200TC (GOL.25109-HK),Other Inventory,1400700.0,7500000.0,30 Jun 2025,30 Jun 2025,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0307,Gantungan Tissue Roll - Room C22 (GOL.25141-CME),Other Inventory,1400800.0,105000.0,30 Jun 2025,30 Jun 2025,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0308,Taplak Meja Buffet BBQ - Putih (GOL.25096-FO),Other Inventory,1400800.0,1167500.0,30 Jun 2025,30 Jun 2025,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0309,Pita Kursi BBQ - Putih (GOL.25105-FO),Other Inventory,1400800.0,180000.0,30 Jun 2025,30 Jun 2025,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0310,Taplak Meja Buffet Pantai - Orange uk.150x60x83 (GOL.25096-FO),Other Inventory,1400800.0,840000.0,30 Jun 2025,30 Jun 2025,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0311,Pisau Butter(GOL.25047-Kitchen),Other Inventory,1400800.0,27500.0,30 Jun 2025,30 Jun 2025,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0312,Mangkok Mie Kopin (GOL.25047-Kitchen),Other Inventory,1400800.0,1026000.0,30 Jun 2025,30 Jun 2025,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0313,Sendok Makan Paris (GOL.25047-Kitchen),Other Inventory,1400800.0,700000.0,30 Jun 2025,30 Jun 2025,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0314,Garpu Makan Paris (GOL.25047-Kitchen),Other Inventory,1400800.0,700000.0,30 Jun 2025,30 Jun 2025,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0315,Pisau Steak Vavinci (GOL.25047-Kitchen),Other Inventory,1400800.0,180000.0,30 Jun 2025,30 Jun 2025,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0316,Garpu Steak Vavinci (GOL.25047-Kitchen),Other Inventory,1400800.0,180000.0,30 Jun 2026,30 Jun 2025,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0317,Gelas Polos 212 (GOL.25047-Kitchen),Other Inventory,1400800.0,250000.0,30 Jun 2025,30 Jun 2025,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0318,Piring Ceper Indokeramik 10.5 inch (GOL.25047-Kitchen),Other Inventory,1400800.0,2500000.0,30 Jun 2025,30 Jun 2025,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0319,Cangkir Set Taniti Putih Polos Teh/Kopi (GOL.25047-Kitchen),Other Inventory,1400800.0,1400000.0,30 Jun 2025,30 Jun 2025,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0320,Jepitan Pembakaran (GOL.25062-Kitchen),Other Inventory,1400800.0,250000.0,30 Jun 2025,30 Jun 2025,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0321,Kipas Pembakaran (GOL.25062-Kitchen),Other Inventory,1400800.0,70000.0,30 Jun 2025,30 Jun 2025,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0322,Teflon uk. 26 (GOL.25060-Kitchen),Other Inventory,1400800.0,320000.0,30 Jun 2025,30 Jun 2025,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0323,Pisau (GOL.25062-Kitchen),Other Inventory,1400800.0,40000.0,30 Jun 2025,30 Jun 2025,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0324,Pot Bunga Kaktus Lukis (GOL.25132-FO),Other Inventory,1400900.0,180000.0,31 Jul 2025,31 Jul 2025,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0325,Kunci L Bintang (GOL.25199-CME),Equipment,1400600.0,174000.0,31 Jul 2025,31 Jul 2025,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0326,Kepala Las Flame Gun Gas Torch Kepala 2 (GOl.25121-CME),Equipment,1400600.0,57000.0,31 Jul 2025,31 Jul 2025,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0327,Bunga Mawar Biru Tangkai Panjang 3 Pcs + Bunga Mawar Merah Tangkai Pendek 12 pcs (GOL.25132-FO),Other Inventory,1400600.0,331500.0,31 Aug 2025,31 Aug 2025,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0328,Kotak Tissue Kayu Resto (GOL.25105-FO),Other Inventory,1400600.0,210000.0,31 Aug 2025,31 Aug 2025,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0329,Bean Bag Cover Santana + 4 Kg Isi Styrofoam (GOL.25140-FO),Other Inventory,1400600.0,850000.0,31 Aug 2025,31 Aug 2025,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0330,Tong Sampah Plastik (GOL.25172-HK),Other Inventory,1400700.0,600000.0,31 Aug 2025,31 Aug 2025,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0331,Laundry Basket (GOL.25172-HK),Other Inventory,1400700.0,190000.0,31 Aug 2025,31 Aug 2025,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0332,Dispenser Cereal,Equipment,1400800.0,225000.0,31 Aug 2025,31 Aug 2025,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0333,Gelas Luminarc V-3331 Can Tumbler - Ice Coffee (GOL.25180-BAR),Other Inventory,1401000.0,185000.0,31 Aug 2025,31 Aug 2025,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0334,Gelas Latte Set - Cappucino Cup Universe Earth/Water/Flora (GOL.25180-BAR),Other Inventory,1401000.0,456000.0,31 Aug 2025,31 Aug 2025,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0335,Keranjang Roti Ikan (GOL.25145-FO),Other Inventory,1400600.0,55000.0,31 Aug 2025,31 Aug 2025,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0336,Dispenser Miyako - Dive Center (GOL.25202-DC),Equipment,1400600.0,240000.0,31 Aug 2025,31 Aug 2025,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0337,Papan WhiteBoard Tulis Putih Uk. 120 x 180 (GOL.25177-DC),Other Inventory,1400600.0,700000.0,31 Aug 2025,31 Aug 2025,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0338,Blender Panasonic - Kitchen (GOL.25084-Kitchen),Equipment,1400800.0,675000.0,31 Aug 2025,31 Aug 2025,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0339,Saringan Komodo Gagang Kayu 26 cm Azalea (GOL.25088-Kitchen),Other Inventory,1400800.0,100000.0,31 Aug 2025,31 Aug 2025,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0340,Serok Plat VVC Gagang Kayu 30 cm SP-4230 (GOL.25088-Kitchen),Other Inventory,1400800.0,260000.0,31 Aug 2025,31 Aug 2025,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0341,Cangkul - Pantai (GOL.25181-GA),Equipment,1400600.0,130000.0,31 Aug 2025,31 Aug 2025,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0342,Sepatu Takul - Pantai (GOL.25181-GA),Other Inventory,1400700.0,150000.0,31 Aug 2025,31 Aug 2025,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0343,Parang Panjang - Pantai (GOL.25181-GA),Equipment,1400600.0,240000.0,31 Aug 2025,31 Aug 2025,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0344,Tang Kombinasi + Obeng BB (GOL.25179-DC),Equipment,1400600.0,79000.0,31 Aug 2025,31 Aug 2025,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0345,Meteran (GOL.25206-CME),Equipment,1400600.0,75000.0,31 Aug 2025,31 Aug 2025,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0346,Palu (GOL.25206-CME),Equipment,1400600.0,75000.0,31 Aug 2025,31 Aug 2025,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0347,Sanbed Putih Polos (GOL.25205-FO),Furniture,1400900.0,3900000.0,30 Sep 2025,30 Sep 2025,2 Yr 0 Mth,50.0,Straight Line Method
+PAA-0348,Set Kursi Teras Aluminium Putih + Jok Hitam & Meja Kayu (GOL.25205-FO),Furniture,1400900.0,6000000.0,30 Sep 2025,30 Sep 2025,2 Yr 0 Mth,50.0,Straight Line Method
+PAA-0349,Mask Zeepro Vader (W/Antiflog Film) - Black / Orange / Yellow / Red / White (GOL.25218-DC),Equipment,1400600.0,3450000.0,30 Sep 2025,30 Sep 2025,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0350,Fins Zeepro Tsuper Size L (42-44) - Yellow / Blue (GOL.25218-DC),Equipment,1400600.0,1280000.0,30 Sep 2025,30 Sep 2025,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0351,Booties Long Boot Zeepro 5MM Black Size 8/12/13 (GOL.25218-DC),Equipment,1400600.0,1142400.0,30 Sep 2025,30 Sep 2025,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0352,Wetsuite Zeepro 3MM Black Red Size L/M/XXL (GOL.25218-DC),Equipment,1400600.0,3495000.0,30 Sep 2025,30 Sep 2025,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0353,Kipas Angin Miyako - Dive Center (GOL.25230-DC),Equipment,1400600.0,280000.0,30 Sep 2025,30 Sep 2025,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0354,Kipas Angin Cosmos 16 WFC - Kantin Mess (GOL.25188-HK),Equipment,1400600.0,280000.0,30 Sep 2025,30 Sep 2025,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0355,Pompa Air Celup 12V Yamaha - Speedboat Prata 01 & 02 (GOL.25222-GA,Equipment,1400600.0,570000.0,30 Sep 2025,30 Sep 2025,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0356,Exhaust Fan Kecil LEF20 - Toilet Resto + DC (GOL.25226-CME),Equipment,1400600.0,2475000.0,31 Oct 2025,31 Oct 2025,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0357,Stavolt 500w - Komputer Manager Operasional (GOL.25248-FO),Equipment,1400600.0,480000.0,31 Oct 2025,31 Oct 2025,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0358,BCD Scubagear Basic V2 Black Line Red - Size SM/MD (GOL.25191-DC),Equipment,1400600.0,7678720.0,31 Oct 2025,31 Oct 2025,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0359,Set Regulator 2ND Stage Zeepro XTEC Black + Selang (GOL.25191-DC),Equipment,1400600.0,1635200.0,31 Oct 2025,31 Oct 2025,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0360,Sharp TV LED - Deluxe Room (GOl.25239-HK),Equipment,1400600.0,2350000.0,31 Oct 2025,31 Oct 2025,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0361,Wireless Router Ruijie RG-EW1200G Pro AC1300 Dual Band Gigabit (GOL.25277-CME),Equipment,1400600.0,640000.0,30 Nov 2025,30 Nov 2025,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0362,Kasur Elastis uk. 90x200 - Mess Kary. (GOL.25254-HK),Other Inventory,1400700.0,780000.0,30 Nov 2025,30 Nov 2025,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0363,Perlengkapan Kitchen & Prata Coffe + Sendok Kopi Teh di Room (GOL.25112-Kitchen),Kitchen Set,1400800.0,5050000.0,30 Nov 2025,30 Nov 2025,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0364,"Gerindra Makita M09008 4"" (GOL.25241-CME)",Equipment,1400600.0,495000.0,30 Nov 2025,30 Nov 2025,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0365,Kasur Raja Tebal uk. 11x200 Mess Karyawan (GOL.25284-HK),Other Inventory,1400700.0,330000.0,31 Dec 2025,31 Dec 2025,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0366,Bantal Isabela - Mess Karyawan (GOL.25284-HK),Other Inventory,1400700.0,40000.0,31 Dec 2025,31 Dec 2025,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0367,Tempat Sampah Injak - Janti (GOL.25261-HK),Other Inventory,1400700.0,312000.0,31 Dec 2025,31 Dec 2025,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0368,Kipas Angin Miyako - Mess Karyawan (GOL.25231-HK),Equipment,1400600.0,275000.0,31 Dec 2025,31 Dec 2025,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0369,Tempat Sabun Cair (GOL.25261-HK),Other Inventory,1400700.0,130000.0,31 Dec 2025,31 Dec 2025,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0370,Kunci Inggris RRT 10 inch (GOL.25311-DC),Other Inventory,1400600.0,50000.0,31 Dec 2025,31 Dec 2025,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0371,Artco Gerobak Sorong - Pantai (GOL.26012-GA),Equipment,1400600.0,650000.0,31 Jan 2026,31 Jan 2026,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0372,"Perlengkapan Kitchen - 5 Penjepit Makanan, 6 Sapu Wajan, 2 Sutil Gagang Kayu Panjang (GOL.25135-Kitchen)",Other Inventory,1400800.0,219000.0,31 Jan 2026,31 Jan 2026,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0373,Tekiro Air Chuck / Air Blow Gun (GOL.26018-CME),Equipment,1400600.0,85000.0,31 Jan 2026,31 Jan 2026,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0374,Gergaji Bundar Circular Makita M5801B 7 inch. (GOL.26031-CME),Equipment,1400600.0,1690000.0,28 Feb 2026,28 Feb 2026,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0375,Gelas Ukur Jigger Cookmaster uk.20ml/40ml & 25ml/50ml (GOL.26017-BAR),Other Inventory,1401000.0,57500.0,28 Feb 2026,28 Feb 2026,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0376,Sandwich Toaster Getra 4 Slot EST4 (GOL.25132-Kitchen),Equipment,1400800.0,1375000.0,28 Feb 2026,28 Feb 2026,2 Yr 0 Mth,50.0,Straight Line Method
+PAA-0377,"Dispenser Air Panas Jar Sigma 9,5 Lt (GOL.25132-Kitchen)",Equipment,1400800.0,723000.0,28 Feb 2026,28 Feb 2026,2 Yr 0 Mth,50.0,Straight Line Method
+PAA-0378,Pembuka Kaleng Jeju AD-1058J (GOL.26023-BAR),Other Inventory,1401000.0,50000.0,31 Mar 2026,31 Mar 2026,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0379,Setrika Miyako utk Laundry (GOL.26032-HK),Equipment,1400600.0,320000.0,30 Apr 2026,30 Apr 2026,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0380,"Tabung APAR 6 Kg (GOL.26043,26049-CME)",Other Inventory,1400600.0,990000.0,30 Apr 2026,30 Apr 2026,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0381,Pisau Buah Stainless (GOL.26041-Kitchen),Other Inventory,1400800.0,120000.0,31 May 2026,31 May 2026,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0382,Gelas Breakfast (GOL.26083-FO),Other Inventory,1400800.0,136000.0,31 May 2026,31 May 2026,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0383,Gelas Jus Kedaung TP 360 (GOL.25135-Kitchen),Other Inventory,1400800.0,262000.0,31 May 2026,31 May 2026,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0384,Gelas Sop Buah Kedaung ICC-450 (GOL.25135-Kitchen),Other Inventory,1400800.0,153500.0,31 May 2026,31 May 2026,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0385,Cool Foodsaver - Kotak Lunch Box (25135-Kitchen),Other Inventory,1400800.0,960000.0,31 May 2026,31 May 2026,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0386,Gelas Breakfast (GOL.26083-FO),Other Inventory,1400800.0,520000.0,30 Jun 2026,30 Jun 2026,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0387,Pell Sumbu L (GOL.26062-Kitchen),Other Inventory,1400800.0,120000.0,30 Jun 2026,30 Jun 2026,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0388,Sikat Panjang (GOL.26062-Kitchen),Other Inventory,1400800.0,40000.0,30 Jun 2026,30 Jun 2026,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0389,USB HUB Type C 8in1 (GOL.26108-FO),Other Inventory,1400600.0,120000.0,30 Jun 2026,30 Jun 2026,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0390,Tembakan Silikon (GOL.26151-CME),Other Inventory,1400600.0,85000.0,30 Jun 2026,30 Jun 2026,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0391,Kipas Angin Cosmos 16 XDE - Mess Karyawan an. Muin (GOL.26139-HK),Equipment,1400600.0,275000.0,30 Jun 2026,30 Jun 2026,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0392,"AC Sharp 1,5 Pk 12zcy utk Room Saroja C12 (GOL.26123-CME)",Equipment,1400600.0,4850000.0,30 Jun 2026,30 Jun 2026,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0393,Mouthpiece Zeepro Snorkel Silicone - Black (GOL.26055-DC),Equipment,1400600.0,437500.0,30 Jun 2026,30 Jun 2026,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0394,Hose Regulator Zeepro 27 Inch Black & Yellow - (GOL.26072-DC),Equipment,1400600.0,1630720.0,30 Jun 2026,30 Jun 2026,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0395,Regulator Set Zeepro Z1 Piston Unbalance XREC Non Adjustable Single Gauge 52mm (GOL.26072-DC),Office Equipment,1400600.0,9039360.0,30 Jun 2026,30 Jun 2026,2 Yr 0 Mth,50.0,Straight Line Method
+PAA-0396,Sunbed Putih Polos - Kursi Baring Rotan (GOL.26143-FO),Furniture,1400900.0,5400000.0,31 Jul 2026,31 Jul 2026,2 Yr 0 Mth,50.0,Straight Line Method
+PAA-0397,Napkin Maroon uk. 48x48 (GOL.26168-FO),Other Inventory,1400800.0,849420.0,31 Jul 2026,31 Jul 2026,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0398,Face Towel (GOL.26184-FO),Other Inventory,1400700.0,420000.0,31 Jul 2026,31 Jul 2026,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0399,Tang Potong dan Tang Kombinasi (GOL.26151-CME),Other Inventory,1400600.0,135000.0,01 Jul 2026,01 Jul 2026,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0400,Adaptor - Komputer CME (GOL.26181-CME),Equipment,1400600.0,175000.0,31 Jul 2026,31 Jul 2026,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0401,"Jepitan Bakaran, Kipas Bakaran, Bakaran Ikan uk. 30x30 dan uk. 30x20  (GOL.26070-Kitchen)",Other Inventory,1400800.0,895000.0,31 Jul 2026,31 Jul 2026,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0402,Palu Daging Catalina (GOL.26176-Kitchen),Other Inventory,1400800.0,43500.0,31 Jul 2026,31 Jul 2026,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0403,Pisau Pizza Catalina (GOL.26176-Kitchen),Other Inventory,1400800.0,32500.0,31 Jul 2026,31 Jul 2026,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0404,Taplak Meja BBQ (GOL.25096-FO),Other Inventory,1400800.0,3240000.0,31 Jul 2026,31 Jul 2026,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0405,Magic Com Miyako MCG-171 (GOL.26076-Kitchen),Equipment,1400800.0,1450000.0,31 Jul 2026,31 Jul 2026,2 Yr 0 Mth,50.0,Straight Line Method
+PAA-0406,Triwa Mangkok Kangkung 8474/K22 22 cm (GOL.26076-Kitchen),Other Inventory,1400800.0,380000.0,31 Jul 2026,31 Jul 2026,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0407,Wajan Penggorengan Teflon (GOL.26079-Kitchen),Other Inventory,1400800.0,400000.0,31 Jul 2026,31 Jul 2026,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0408,Termos Nasi (GOL.26083-Kitchen),Other Inventory,1400800.0,265000.0,31 Jul 2026,31 Jul 2026,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0409,Toples Kerupuk Kaca Manise 2 Seal DLX+ Toples Kerupuk Kenya DIY(GOL.26076-Kitchen),Other Inventory,1400800.0,1369000.0,31 Aug 2026,31 Aug 2026,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0410,Cookmaster Cereal Dispenser DBL CMFS1108 (GOL.26012-Kitchen),Equipment,1400800.0,1904000.0,31 Aug 2026,31 Aug 2026,2 Yr 0 Mth,50.0,Straight Line Method
+PAA-0411,Gantungan Kunci Room (GOL.26186-HK),Other Inventory,1400700.0,363031.0,31 Aug 2026,31 Aug 2026,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0412,Pompa Sanyo PH-175 - Room Kasilasa + Stock (GOL.26200-CME),Machinery,1400500.0,5700000.0,31 Aug 2026,31 Aug 2026,2 Yr 0 Mth,50.0,Straight Line Method
+PAA-0413,Tangga Lipat 200 m - Pemasangan AC Room C5 (GOL.26233-CME),Equipment,1400600.0,1115000.0,31 Aug 2026,31 Aug 2026,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0414,Biogar Biofil BG-10 100 Liter - Room Saroja (GOL.26222-CME),Equipment,1400600.0,4650000.0,31 Aug 2026,31 Aug 2026,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0415,"Selang Benang 5/8"" 50m - Darurat Kebakaran (GOL.26243-HK)",Equipment,1400600.0,850000.0,31 Aug 2026,31 Aug 2026,1 Yr 0 Mth,100.0,Straight Line Method
+PAA-0416,Selang 5/8 10 meter - Kitchen (GOL.26086-Kitchen),Other Inventory,1400600.0,80000.0,31 Aug 2026,31 Aug 2026,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0001,Matras,House Keeping,1400700.0,19390000.0,01 Sep 2017,14 Mar 2015,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0002,Printer L210 Pratasaba,Office Equipment,1400600.0,2500000.0,01 Sep 2017,06 Apr 2015,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0003,Genset Perkins PPG 50 45kVA,Office Machinery,1400500.0,158604000.0,01 Sep 2017,05 Jun 2015,5 Yr 0 Mth,20.0,Straight Line Method
+PRATA-0004,Genset Honda Daishin SE,Office Machinery,1400500.0,6000000.0,01 Sep 2017,13 Jul 2015,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0005,Snorkle Mask,Office Equipment,1400600.0,855000.0,01 Sep 2017,07 Feb 2017,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0006,Handuk,House Keeping,1400700.0,33077000.0,01 Sep 2017,12 May 2017,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0007,HouseKeeping Mei 2017,House Keeping,1400700.0,891000.0,01 Sep 2017,31 May 2017,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0008,HouseKeeping June 2017,House Keeping,1400700.0,3831870.0,01 Sep 2017,30 Jun 2017,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0009,HouseKeeping July 2017,House Keeping,1400700.0,606626.0,01 Sep 2017,31 Jul 2017,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0010,HouseKeeping August 2017,House Keeping,1400700.0,271000.0,01 Sep 2017,31 Aug 2017,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0011,"Instalasi TV, Server & Asesories",Office Equipment,1400600.0,36929500.0,01 Sep 2017,01 Sep 2017,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0012,Cottage 1 & 2 ( 4 rooms ),Building,1400200.0,1238229805.0,01 Sep 2017,01 Sep 2017,10 Yr 0 Mth,10.0,Straight Line Method
+PRATA-0013,RESTAURANT & JEMBATAN (Diatas Air),Building,1400200.0,624276378.0,01 Sep 2017,01 Sep 2017,10 Yr 0 Mth,10.0,Straight Line Method
+PRATA-0014,LODGE (20 rooms) ,Building,1400200.0,2310926853.0,01 Sep 2017,01 Sep 2017,10 Yr 0 Mth,10.0,Straight Line Method
+PRATA-0015,House Of Staff (7 Rooms),Building,1400200.0,383795405.0,01 Sep 2017,01 Sep 2017,10 Yr 0 Mth,10.0,Straight Line Method
+PRATA-0016,HouseKeeping September 2017,House Keeping,1400700.0,120200.0,30 Sep 2017,30 Sep 2017,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0017,Polytron Sch 230 L,Kitchen Set,1400800.0,3250000.0,05 Oct 2017,05 Oct 2017,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0018,Printer Epson L360 All in one,Office Equipment,1400600.0,2300000.0,05 Oct 2017,05 Oct 2017,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0019,Norman Chair Meeting,Office Equipment,1400600.0,1891500.0,06 Oct 2017,06 Oct 2017,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0020,Sound System,Office Equipment,1400600.0,12200000.0,01 Dec 2017,11 Oct 2017,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0021,HouseKeeping October 2017,House Keeping,1400700.0,6795300.0,31 Oct 2017,31 Oct 2017,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0022,KitchenSet October 2017,Kitchen Set,1400800.0,14089350.0,31 Oct 2017,31 Oct 2017,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0024,Karaoke Resort Pratasaba- Lisensi,Office Equipment,1400600.0,3000000.0,16 Nov 2017,16 Nov 2017,3 Yr 0 Mth,0.0,Non Depreciable
+PRATA-0025,I Set Komputer,Office Equipment,1400600.0,3250000.0,01 Dec 2017,21 Nov 2017,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0026,HouseKeeping November 2017,House Keeping,1400700.0,2557650.0,30 Nov 2017,30 Nov 2017,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0027,KitchenSet November 2017,Kitchen Set,1400800.0,693575.0,30 Nov 2017,30 Nov 2017,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0028,Resto Table ,Kitchen Set,1400800.0,1676000.0,04 Dec 2017,04 Dec 2017,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0029,Meeting Table ,Office Equipment,1400600.0,3078000.0,04 Dec 2017,04 Dec 2017,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0030,Bed Runner,House Keeping,1400700.0,585000.0,04 Dec 2017,04 Dec 2017,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0031,Polytron Sch 230 L,Kitchen Set,1400800.0,3250000.0,05 Dec 2017,05 Dec 2017,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0032,Pompa Air Sanyo,Office Machinery,1400500.0,2000000.0,05 Dec 2017,05 Dec 2017,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0033,Pompa Sanyo p.h 175,Office Machinery,1400500.0,4000000.0,07 Dec 2017,07 Dec 2017,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0034,Chain Saw Vtech (Gergaji),Office Machinery,1400500.0,4200000.0,27 Dec 2017,27 Dec 2017,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0035,Snorkle Equipment,Office Equipment,1400600.0,4414200.0,09 Dec 2017,09 Dec 2017,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0036,Etalase Kaca,Office Equipment,1400600.0,1400000.0,19 Jan 2018,28 Dec 2017,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0037,HouseKeeping December 2017,House Keeping,1400700.0,13435830.0,31 Dec 2017,31 Dec 2017,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0038,KitchenSet December 2017,Kitchen Set,1400800.0,8668225.0,31 Dec 2017,31 Dec 2017,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0039,Genset FPT Silent Type NEF120MA,Office Machinery,1400500.0,230000000.0,01 Jan 2018,01 Jan 2018,5 Yr 0 Mth,20.0,Straight Line Method
+PRATA-0040,Polytron SCN 230,Kitchen Set,1400800.0,3239000.0,04 Jan 2018,04 Jan 2018,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0041,Radio HT ,Office Equipment,1400600.0,3200000.0,05 Jan 2018,05 Jan 2018,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0042,Pompa Celup,Office Machinery,1400500.0,695000.0,14 Jan 2018,14 Jan 2018,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0043,House Keeping January 2018,House Keeping,1400700.0,1094615.0,31 Jan 2018,31 Jan 2018,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0044,Kitchen Set Jan 2018,Kitchen Set,1400800.0,3806085.0,31 Jan 2018,31 Jan 2018,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0045,Microwave Samsung Type ME83M,Kitchen Set,1400800.0,1000000.0,02 Feb 2018,02 Feb 2018,2 Yr 0 Mth,50.0,Straight Line Method
+PRATA-0046,Kitchen Set Februari 2018,Kitchen Set,1400800.0,560000.0,28 Feb 2018,28 Feb 2018,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0047,KAPAL DENOX PRATITA,Ship,1400300.0,2333558466.0,03 Mar 2018,03 Mar 2018,10 Yr 0 Mth,0.0,Non Depreciable
+PRATA-0048,Kitchen Set Maret 2018,Kitchen Set,1400800.0,5013300.0,31 Mar 2018,31 Mar 2018,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0049,Housekeeping Maret 2018 - 26 Galon untuk air mineral di Cottage dan Lodge ,House Keeping,1400700.0,900000.0,28 Mar 2018,28 Mar 2018,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0050,Mic Wireless Kenwod K-777,Office Equipment,1400600.0,525000.0,01 Apr 2018,29 Mar 2018,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0051,Pompa Air Grundfos JPA 4 - 54,Office Machinery,1400500.0,6800000.0,07 Mar 2018,07 Mar 2018,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0052,Double and Table Fan,Office Equipment,1400600.0,2923200.0,10 Mar 2018,10 Mar 2018,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0053,Kitchen Set April 2018,Kitchen Set,1400800.0,2176000.0,30 Apr 2018,30 Apr 2018,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0054,Kitchen Set Mei 2018,Kitchen Set,1400800.0,716000.0,31 May 2018,31 May 2018,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0055,House Keeping Mei 2018,House Keeping,1400700.0,14150100.0,31 May 2018,31 May 2018,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0056,Pompa Air,Office Machinery,1400500.0,700000.0,19 May 2018,19 May 2018,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0057,Stand Fan,Office Equipment,1400600.0,470000.0,30 May 2018,30 May 2018,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0058,Gerobak Pasir,Office Equipment,1400600.0,430000.0,10 Jun 2018,10 Jun 2018,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0059,House Keeping Juni 2018,House Keeping,1400700.0,2362900.0,30 Jun 2018,30 Jun 2018,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0060,Kitchen Set Juni 2018,Kitchen Set,1400800.0,1979800.0,30 Jun 2018,30 Jun 2018,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0061,6 ea gelas sop buah,Kitchen Set,1400800.0,75000.0,31 Jul 2018,31 Jul 2018,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0062,Meja @Resto,Office Equipment,1400600.0,2000000.0,03 Aug 2018,03 Aug 2018,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0063,Kursi @Resto,Office Equipment,1400600.0,3600000.0,03 Aug 2018,03 Aug 2018,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0064,Suzuki Camry Pick Up,Vehicle,1400400.0,117000000.0,31 Aug 2018,31 Aug 2018,5 Yr 0 Mth,20.0,Straight Line Method
+PRATA-0065,Housekeeping Periode Agustus 2018,House Keeping,1400700.0,3923227.22,31 Aug 2018,31 Aug 2018,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0066,KitchenSet periode Agustus 2018,Kitchen Set,1400800.0,1362100.0,31 Aug 2018,31 Aug 2018,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0067,Mess Karyawan & Laundry House,Building,1400200.0,735986092.0,31 May 2018,31 May 2018,10 Yr 0 Mth,10.0,Straight Line Method
+PRATA-0068,Scuba Center,Building,1400200.0,275273768.0,30 Jun 2018,30 Jun 2018,10 Yr 0 Mth,10.0,Straight Line Method
+PRATA-0069,Resto Saba (extend),Building,1400200.0,226830944.0,31 May 2018,31 May 2018,10 Yr 0 Mth,10.0,Straight Line Method
+PRATA-0070,Pompa Air,Office Machinery,1400500.0,1450000.0,21 Sep 2018,21 Sep 2018,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0071,Freeser Sharp,Office Equipment,1400600.0,3160139.98,21 Sep 2018,21 Sep 2018,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0072,Show Case,Office Equipment,1400600.0,3228860.02,21 Sep 2018,21 Sep 2018,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0073,Sun Bed No. 2,Office Equipment,1400600.0,15600000.0,24 Sep 2018,24 Sep 2018,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0074,Sun Bed No. 3,Office Equipment,1400600.0,7600000.0,24 Sep 2018,24 Sep 2018,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0075,HK Sep 2018,House Keeping,1400700.0,1508000.0,30 Sep 2018,30 Sep 2018,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0076,KS Sept 2018,Kitchen Set,1400800.0,5861050.0,30 Sep 2018,30 Sep 2018,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0077,Tablet Xiomi Redmi 5,Office Equipment,1400600.0,1600000.0,02 Oct 2018,02 Oct 2018,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0078,AC STC2ONV kap 3/4 PK (R32),Office Equipment,1400600.0,19076000.0,19 Oct 2018,19 Oct 2018,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0079,Tennis table,Office Equipment,1400600.0,3750000.0,21 Oct 2018,21 Oct 2018,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0080,Matras 90*200 Comforta,House Keeping,1400700.0,7125000.0,22 Oct 2018,22 Oct 2018,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0081,Pompa shimizu PS - 135 E,Office Machinery,1400500.0,525000.0,31 Oct 2018,31 Oct 2018,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0082,Pompa air automatic,Office Machinery,1400500.0,770000.0,05 Sep 2018,05 Sep 2018,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0083,HK Okt 2018,House Keeping,1400700.0,1566000.0,31 Oct 2018,31 Oct 2018,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0084,KS Okt 2018,Kitchen Set,1400800.0,1038200.0,31 Oct 2018,31 Oct 2018,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0085,Perlengkapan diving,Office Equipment,1400600.0,18678752.0,30 Nov 2018,30 Nov 2018,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0086,Tempat Tidur type 1A,House Keeping,1400700.0,2300000.0,11 Oct 2018,11 Oct 2018,4 Yr 0 Mth,25.0,Straight Line Method
+PRATA-0087,Tempat Tidur Type 1B,House Keeping,1400700.0,2200000.0,11 Oct 2018,11 Oct 2018,4 Yr 0 Mth,25.0,Straight Line Method
+PRATA-0088,Tempat Tidur Type 2,House Keeping,1400700.0,5200000.0,11 Oct 2018,11 Oct 2018,4 Yr 0 Mth,25.0,Straight Line Method
+PRATA-0089,Tempat Tidur Type 3,House Keeping,1400700.0,1400000.0,11 Oct 2018,11 Oct 2018,4 Yr 0 Mth,25.0,Straight Line Method
+PRATA-0090,Lemari,House Keeping,1400700.0,1200000.0,11 Oct 2018,11 Oct 2018,4 Yr 0 Mth,25.0,Straight Line Method
+PRATA-0093,Pelampung,Office Equipment,1400600.0,1436000.0,26 May 2018,26 May 2018,3 Yr 7 Mth,27.91,Straight Line Method
+PRATA-0094,Dive Equipment,Office Equipment,1400600.0,38135900.0,31 Aug 2018,31 Aug 2018,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0095,SB 01 - Speedboat 200PK,Ship,1400300.0,174700000.0,31 May 2018,31 May 2018,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0096,SB 02 - Speedboat 15 PK ,Ship,1400300.0,51837000.0,31 Mar 2018,31 Mar 2018,3 Yr 0 Mth,0.0,Non Depreciable
+PRATA-0097,SB 03 - Perahu Fiber 15PK,Ship,1400300.0,8000000.0,30 Oct 2017,30 Oct 2017,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0100,Wetsuit,Office Equipment,1400600.0,529000.0,30 Nov 2018,30 Nov 2018,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0101,Jangkar,Ship,1400300.0,1320000.0,30 Nov 2018,30 Nov 2018,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0102,Tollbox dalam SpeedBoat,Office Equipment,1400600.0,3344700.0,30 Nov 2018,30 Nov 2018,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0103,HK Nov 18,House Keeping,1400700.0,5510400.0,30 Nov 2018,30 Nov 2018,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0104,KS Nov 18,Kitchen Set,1400800.0,3543000.0,30 Nov 2018,30 Nov 2018,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0105,Kipas Angin,Office Equipment,1400600.0,1820000.0,30 Nov 2018,30 Nov 2018,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0106,Surfing Board ukuran 180 cm x 56 cm,Office Equipment,1400600.0,3600000.0,29 Jan 2019,07 Dec 2018,2 Yr 0 Mth,50.0,Straight Line Method
+PRATA-0107,Hairdryer ,House Keeping,1400700.0,399000.0,20 Dec 2018,20 Dec 2018,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0108,Blender Philips ,Kitchen Set,1400800.0,699000.0,20 Dec 2018,20 Dec 2018,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0109,Screen Tripot Anylink u/ d resort,Office Equipment,1400600.0,480000.0,12 Dec 2018,05 Dec 2018,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0110,House Keeping Desember 2018,House Keeping,1400700.0,12520900.0,31 Dec 2018,31 Dec 2018,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0111,KS Des 2018,Kitchen Set,1400800.0,1686200.0,31 Dec 2018,31 Dec 2018,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0112,Catur Jumbo 2 set,House Keeping,1400700.0,130000.0,01 Apr 2018,29 Mar 2018,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0113,Infrastruktur 1 Resort,Building,1400200.0,626917650.0,01 Dec 2018,01 Dec 2018,10 Yr 0 Mth,10.0,Straight Line Method
+PRATA-0114,RUmah Genset,Building,1400200.0,57003000.0,01 Dec 2018,01 Dec 2018,10 Yr 0 Mth,10.0,Straight Line Method
+PRATA-0115,Jantik House & Dasimin Lodge,Building,1400200.0,102288060.0,01 Dec 2018,01 Dec 2018,10 Yr 0 Mth,10.0,Straight Line Method
+PRATA-0116,Ranjang 1 Set + Lemari @ Jantik House,Office Equipment,1400600.0,4150000.0,30 Dec 2018,30 Dec 2018,4 Yr 0 Mth,25.0,Straight Line Method
+PRATA-0117,Lemari Buffet Kitchen @ Resto SABA,Office Equipment,1400600.0,4000000.0,30 Dec 2018,30 Dec 2018,4 Yr 0 Mth,25.0,Straight Line Method
+PRATA-0118,Meja Kecil dan Meja Sedang @ Resto SABA,Office Equipment,1400600.0,700000.0,30 Dec 2018,30 Dec 2018,4 Yr 0 Mth,25.0,Straight Line Method
+PRATA-0119,KS Jan 2019,Kitchen Set,1400800.0,309500.0,31 Jan 2019,31 Jan 2019,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0120,HK Jan 2019,House Keeping,1400700.0,2775000.0,31 Jan 2019,31 Jan 2019,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0122,SB 05 - Speedboat 200 PK (Sebelumnya 40 PK X 2 ) ,Ship,1400300.0,47645000.0,28 Feb 2019,28 Feb 2019,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0122(2),SB 05 - Speedboat 200 PK(2),Ship,1400300.0,148702000.0,30 Sep 2019,30 Sep 2019,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0122(3),Showcase Polytron SCN 231,Kitchen Set,1400800.0,3500000.0,30 Sep 2019,30 Sep 2019,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0122(4),Kitchen Set periode September 2019,Kitchen Set,1400800.0,4324969.97,30 Sep 2019,30 Sep 2019,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0123,1 meteran angin (pompa ban mobil),Office Equipment,1400600.0,90000.0,31 Jan 2019,31 Jan 2019,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0124,Tabung oksigen emergency portable medical fit,Office Equipment,1400600.0,2850000.0,28 Feb 2019,28 Feb 2019,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0125,Gunting Hedge Shears,Office Equipment,1400600.0,279000.0,28 Feb 2019,28 Feb 2019,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0126,Remote AC Sharp ,Office Equipment,1400600.0,780500.0,28 Feb 2019,28 Feb 2019,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0127,"gerinda potong 4"" x 2",Office Equipment,1400600.0,75000.0,31 Mar 2019,31 Mar 2019,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0128,HK Maret 2019,House Keeping,1400700.0,954000.0,31 Mar 2019,31 Mar 2019,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0129,20 Kursi lipat / norman chair gray untuk meeting di resort (Informa) GOl 9 HO,Office Equipment,1400600.0,8960000.0,30 Apr 2019,30 Apr 2019,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0130,House Keeping April 2019,House Keeping,1400700.0,70000.0,30 Apr 2019,30 Apr 2019,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0131,EOP Mei 2019,Office Equipment,1400600.0,85000.0,31 May 2019,31 May 2019,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0132,5 lusin Handuk putih 50x100 cm ,House Keeping,1400700.0,1800000.0,31 May 2019,31 May 2019,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0133,Infrastruktur 2 Resort ,Building,1400200.0,224963758.33,30 Jun 2019,30 Jun 2019,10 Yr 0 Mth,10.0,Straight Line Method
+PRATA-0134,Printer HP D2135 + Cartridge HP 680 Black,Office Equipment,1400600.0,675000.0,17 Jun 2019,17 Jun 2019,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0135,Kipas angin 16 inch u/ sirkulasi lodge,House Keeping,1400700.0,3117000.0,30 Jun 2019,30 Jun 2019,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0136,TV LED LG 32 inc di lodge,House Keeping,1400700.0,1899000.0,30 Jun 2019,30 Jun 2019,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0137,HK Juni 2019,House Keeping,1400700.0,625000.0,30 Jun 2019,30 Jun 2019,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0138,KS Juni 2019,Kitchen Set,1400800.0,3392000.0,30 Jun 2019,30 Jun 2019,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0139,2 Tempat tidur (2 set) 120x200 + 1 sndaran ranjang + 1 nakas,House Keeping,1400700.0,5400000.0,31 May 2019,31 May 2019,4 Yr 0 Mth,25.0,Straight Line Method
+PRATA-0140,2 Lemari lodge L : 50 cm T : 210 cm,House Keeping,1400700.0,3200000.0,31 May 2019,31 May 2019,4 Yr 0 Mth,25.0,Straight Line Method
+PRATA-0141,"1 Lemari karyawan P : 95 cm L : 45 cm T : 1,75 cm",House Keeping,1400700.0,950000.0,31 May 2019,31 May 2019,4 Yr 0 Mth,25.0,Straight Line Method
+PRATA-0142,2 Meja P : 120 cm L : 40 cm T : 75 cm ,House Keeping,1400700.0,600000.0,31 May 2019,31 May 2019,4 Yr 0 Mth,25.0,Straight Line Method
+PRATA-0143,2 Kursi teras + 1 meja (1 set),House Keeping,1400700.0,1000000.0,31 May 2019,31 May 2019,4 Yr 0 Mth,25.0,Straight Line Method
+PRATA-0144,52 Bedsheet Single 120x200 cm,House Keeping,1400700.0,7410000.0,31 May 2019,31 May 2019,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0145,30 Bedsheet King 260x280 cm,House Keeping,1400700.0,5355000.0,31 May 2019,31 May 2019,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0146,100 pillow case 53x78 cm,House Keeping,1400700.0,3050000.0,31 May 2019,31 May 2019,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0147,10 lusin Handuk hotel 70x140 cm,House Keeping,1400700.0,7500000.0,31 May 2019,31 May 2019,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0148,HK Mei 2019,House Keeping,1400700.0,605000.0,31 May 2019,31 May 2019,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0149,"Snorkel J Basic plus CL/TBLU, dno",Office Equipment,1400600.0,2100000.0,31 Jul 2019,31 Jul 2019,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0150,"Mask fusion frameless T Blue, dno",Office Equipment,1400600.0,5835000.0,31 Jul 2019,31 Jul 2019,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0151,Tangga/ Ladder 10 Step combination ,House Keeping,1400700.0,3199000.0,31 Jul 2019,31 Jul 2019,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0152,Water solar heater 130 L SWh 130,House Keeping,1400700.0,14850000.0,31 Jul 2019,31 Jul 2019,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0153,Blender miyako u/ jus,Kitchen Set,1400800.0,350000.0,31 Jul 2019,31 Jul 2019,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0154,AC DAIKIN Untuk Cottage3  2 PK,Office Equipment,1400600.0,12000000.0,31 Jul 2019,31 Jul 2019,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0155,HS Juli 2019,House Keeping,1400700.0,765000.0,31 Jul 2019,31 Jul 2019,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0156,"Tang, Charger Battery, Engsel untuk tempat sampah dan Sunbed",Office Equipment,1400600.0,200000.0,31 Jul 2019,31 Jul 2019,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0157,"Standing bamboo lamps (2 M, Lampu 5W LED Kuning) ",Office Equipment,1400600.0,5600000.0,31 Aug 2019,31 Aug 2019,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0158,Gauge Slim depth Mod Only Mtr,Office Equipment,1400600.0,858750.0,31 Aug 2019,31 Aug 2019,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0159,Bauer Synthetic Compressor Oil 1 L,Office Equipment,1400600.0,7129800.0,31 Aug 2019,31 Aug 2019,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0160,Mouthpiece comfo BK silicone RG911251,Office Equipment,1400600.0,1020000.0,31 Aug 2019,31 Aug 2019,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0161,"Replacement filter cartridge, for units with electric",Office Equipment,1400600.0,1373601.0,31 Aug 2019,31 Aug 2019,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0162,Snorkel resort purge BK Sil BK,Office Equipment,1400600.0,1530000.0,31 Aug 2019,31 Aug 2019,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0163,Filter element ,Office Equipment,1400600.0,984300.0,31 Aug 2019,31 Aug 2019,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0164,Gerobak ARCO,Office Equipment,1400600.0,550000.0,31 Aug 2019,31 Aug 2019,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0165,Gurinda tangan,Office Equipment,1400600.0,600000.0,31 Aug 2019,31 Aug 2019,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0166,Matras,House Keeping,1400700.0,30600000.0,31 Aug 2019,31 Aug 2019,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0167,House Keeping  Periode Agustus 2019,House Keeping,1400700.0,6891100.0,31 Aug 2019,31 Aug 2019,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0168,Food processor ,Kitchen Set,1400800.0,1199000.0,31 Aug 2019,31 Aug 2019,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0169,Coffee plate warmer,Kitchen Set,1400800.0,998000.0,31 Aug 2019,31 Aug 2019,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0170,Oven Salamander SLV 220V EB-450,Kitchen Set,1400800.0,1736400.0,31 Aug 2019,31 Aug 2019,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0171,Blender Miyako,Kitchen Set,1400800.0,280000.0,31 Aug 2019,31 Aug 2019,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0172,Kitchen Set periode Agustus 2019,Kitchen Set,1400800.0,3683300.0,31 Aug 2019,31 Aug 2019,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0173,Zoop novo black/ jam tangan diving,Office Equipment,1400600.0,3292500.0,30 Sep 2019,30 Sep 2019,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0174,Genset Alkon mark Robin 3.5 HP,Office Machinery,1400500.0,3500000.0,30 Sep 2019,30 Sep 2019,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0175,Gorden set  & 2 Tutup gorden uk. 5.80 M dan 5.73 M,House Keeping,1400700.0,6600000.0,30 Sep 2019,30 Sep 2019,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0176,Foldable Laundry Cart Silver B,House Keeping,1400700.0,3804583.33,30 Sep 2019,30 Sep 2019,2 Yr 0 Mth,50.0,Straight Line Method
+PRATA-0177,Luggage Trolley SS SLV EK7502G,House Keeping,1400700.0,4604583.33,25 Oct 2019,30 Sep 2019,2 Yr 0 Mth,50.0,Straight Line Method
+PRATA-0178,House keeping September 2019,House Keeping,1400700.0,3271583.33,30 Sep 2019,30 Sep 2019,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0179,2 TV Samsung UA32N4003AK u/ di cottage C31 dan C32,House Keeping,1400700.0,4206000.0,31 Oct 2019,31 Oct 2019,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0180,Housekeeping periode Oktober 2019,House Keeping,1400700.0,2065000.0,31 Oct 2019,31 Oct 2019,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0181,Kitchen Set periode Oktober 2019,Kitchen Set,1400800.0,918000.0,31 Oct 2019,31 Oct 2019,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0182,Kitchen Set November 2019,Kitchen Set,1400800.0,2250600.0,30 Nov 2019,30 Nov 2019,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0183,Masterselam : 1 Zoop Novo Blue dan 1 Zoop Novo Lime (Jam tangan diving),Office Equipment,1400600.0,5928000.0,30 Nov 2019,30 Nov 2019,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0184,4 beanbag di Cottage 3 ,House Keeping,1400700.0,3960000.0,30 Nov 2019,30 Nov 2019,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0185,Sunbed,House Keeping,1400700.0,7000000.0,30 Nov 2019,30 Nov 2019,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0186,Tandon My Tank 5200,House Keeping,1400700.0,17400000.0,30 Nov 2019,30 Nov 2019,4 Yr 0 Mth,25.0,Straight Line Method
+PRATA-0187,Meja meeting ,House Keeping,1400700.0,4194000.0,30 Nov 2019,30 Nov 2019,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0188,Housekeeping November 2019,House Keeping,1400700.0,5438500.0,30 Nov 2019,30 Nov 2019,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0189,Cylinder luxver 80 Cuft Scuba Alumunium/ Valve,Office Equipment,1400600.0,24375000.0,31 Dec 2019,31 Dec 2019,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0190,K-Valve Thermo Din with Insert,Office Equipment,1400600.0,8625000.0,31 Dec 2019,31 Dec 2019,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0191,Wetsuit Full Bali Men 3 MM XL,Office Equipment,1400600.0,2502750.0,31 Dec 2019,31 Dec 2019,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0192,Lead Weight Local 1 Kg u/ perlengkapan diving ,Office Equipment,1400600.0,1005000.0,31 Dec 2019,31 Dec 2019,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0193,Maktec u/ memotong besi,Office Machinery,1400500.0,1950000.0,31 Dec 2019,31 Dec 2019,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0194,mesin gurinda duduk,Office Machinery,1400500.0,823000.0,31 Dec 2019,31 Dec 2019,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0195,Ultrasonic Cleaner 750 Ml u/ cuci alat diving ,Office Equipment,1400600.0,560000.0,31 Dec 2019,31 Dec 2019,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0196,Meja (kayu ulin) u/ meeting,House Keeping,1400700.0,6300000.0,31 Dec 2019,31 Dec 2019,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0197,Meja (kayu nyatoh) u/ meeting,House Keeping,1400700.0,1000000.0,31 Dec 2019,31 Dec 2019,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0198,outdoor AC Panasonic 1 pk u/ di janti,House Keeping,1400700.0,1300000.0,31 Dec 2019,31 Dec 2019,4 Yr 0 Mth,25.0,Straight Line Method
+PRATA-0199,AL kipas baling 48 CF240 u/ janti,House Keeping,1400700.0,443220.0,31 Dec 2019,31 Dec 2019,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0200,Dust Bin 60L ,House Keeping,1400700.0,1000000.0,31 Dec 2019,31 Dec 2019,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0201,"Kipas 12"" 300NEX",House Keeping,1400700.0,1902300.0,31 Dec 2019,31 Dec 2019,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0202,"Kipas gantung 16"" MWF-41K",House Keeping,1400700.0,567800.0,31 Dec 2019,31 Dec 2019,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0203,Housekeeping periode Desember 2019,House Keeping,1400700.0,3059000.0,31 Dec 2019,31 Dec 2019,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0204,Kitchen Set periode Desember 2019,Kitchen Set,1400800.0,148000.0,31 Dec 2019,31 Dec 2019,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0205,"BC, Wafe, BLK/ Char/ORG/XL ",Office Equipment,1400600.0,4678500.0,31 Dec 2019,31 Dec 2019,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0206,Equipment On Proses Periode Desember 2019,Office Equipment,1400600.0,2286500.0,31 Dec 2019,31 Dec 2019,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0207,"Portable Wls 15"" Mr Big aktif Pro (Soundsystem u/ karaoke) dan Tripod ",Office Equipment,1400600.0,7500000.0,31 Jan 2020,31 Jan 2020,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0208,EOP Housekeeping periode Januari 2020,House Keeping,1400700.0,2516000.0,31 Jan 2020,31 Jan 2020,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0209,Cooler box 72 2 box ,Kitchen Set,1400800.0,2150000.0,29 Feb 2020,29 Feb 2020,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0210,magic com 14L ,Kitchen Set,1400800.0,1160000.0,29 Feb 2020,29 Feb 2020,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0211,Pompa air type JPA 4-47 PT-V 230V 50Hz u/ genset iveco (gol enginering 20020),Office Equipment,1400600.0,3700000.0,29 Feb 2020,29 Feb 2020,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0212,"Fuel pump ( pompa bensin u/ genset iveco ) 2 pcs (gol eng. 20020) & Hand tally/Mesin hitung, senter,golok  & 2 Pcs Tespen",Office Equipment,1400600.0,800000.0,29 Feb 2020,29 Feb 2020,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0213,Equipemnt On Procses period Feb 2020,House Keeping,1400700.0,2095800.0,29 Feb 2020,29 Feb 2020,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0214,Equipemnt On Procses period Feb 2020,House Keeping,1400700.0,425761.0,29 Feb 2020,29 Feb 2020,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0215,Equipment On Procses - Kitchen Set per Feb 2020,Kitchen Set,1400800.0,8705400.0,29 Feb 2020,29 Feb 2020,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0216,Kharisma Teknik - 1 Mesin Es Batu ,Kitchen Set,1400800.0,9615000.0,04 Mar 2020,04 Mar 2020,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0217,DP 1 Termometer untuk mengukur suhu tubuh,Office Equipment,1400600.0,1375000.0,27 Mar 2020,27 Mar 2020,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0218,Lily Yuliana - 1 Jack hammer (Bosch SDS max Flat Chisel) Gol 48 Umum Resort ,Office Equipment,1400600.0,1520000.0,24 Mar 2020,24 Mar 2020,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0219,32 Gantungan Kunci untuk di room resort,House Keeping,1400700.0,1664000.0,27 Mar 2020,27 Mar 2020,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0220,1 Ea Gerobak Dorong  ,Office Equipment,1400600.0,550000.0,29 Mar 2020,29 Mar 2020,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0221,4 Solar water heater 130 L SR 130 untuk lodge,House Keeping,1400700.0,59620000.0,30 Apr 2020,30 Apr 2020,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0222,20 matras extrabed ukuran 120 untuk stock,House Keeping,1400700.0,37000000.0,02 Mar 2020,02 Mar 2020,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0223,Plat besi A36 ( alat pembakaran ) 1 pcs u/ resort,House Keeping,1400700.0,480000.0,10 Mar 2020,10 Mar 2020,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0224,Sapu Lidi 4 buah & Sapu Tawau 4 buah ,House Keeping,1400700.0,380000.0,31 Mar 2020,31 Mar 2020,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0226,Kitchen Set per Mar 2020,Kitchen Set,1400800.0,5756400.0,31 Mar 2020,31 Mar 2020,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0227,"Tang Potong  1 pcs, Tang Kombinasi 1 pcs, Obeng Kembang Besar 1 pcs, Obeng Kembang sedang 1 pcs, Obeng Kembang kecil 1 pcs, Obeng Min Sedang 1 pcs, Sarung Tangan anti sayat 3 set, Solder 220w 1pcs u/ radio HT mess, 2 ea Kuas 1/2"" cat bambu",Office Equipment,1400600.0,699000.0,31 Mar 2020,31 Mar 2020,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0228,"Longsock 14 MM 1/2 Segi 6, Longsock 17 MM 1/2 Segi 6, Longsock 22 MM 1/2 Segi 6",Office Equipment,1400600.0,175000.0,30 Apr 2020,30 Apr 2020,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0229,1 set kunci L Hexagonal  & 1 set kunci  L Bintang ,Office Equipment,1400600.0,330000.0,31 May 2020,31 May 2020,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0230,"4 Pcs Grindra 14"" (Mata Cutting Well) ",Office Equipment,1400600.0,200000.0,30 Jun 2020,30 Jun 2020,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0231,EOP Housekeeping periode Mei 2020,House Keeping,1400700.0,621304.0,31 May 2020,31 May 2020,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0232,EOP Housekeeping periode Juni 2020,House Keeping,1400700.0,1015000.0,30 Jun 2020,30 Jun 2020,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0233,EOP Housekeeping periode Juli 2020,House Keeping,1400700.0,1475000.0,31 Jul 2020,31 Jul 2020,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0234,22 Meter selang LPG untuk kompor resto,Kitchen Set,1400800.0,770000.0,07 Aug 2020,30 Jun 2020,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0235,Gunting Kodok untuk bersihini kepiting ,Kitchen Set,1400800.0,36000.0,31 Jul 2020,31 Jul 2020,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0236,Tang kombinasi u/ tool engineering,Office Equipment,1400600.0,90000.0,31 Jul 2020,31 Jul 2020,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0237,Gergaji ,Office Equipment,1400600.0,17900.0,31 Aug 2020,31 Aug 2020,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0238,Housekeeping Agustus 2020,House Keeping,1400700.0,1921800.0,31 Aug 2020,31 Aug 2020,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0239,Kitchen Set Agustus 2020,Kitchen Set,1400800.0,755625.0,31 Aug 2020,31 Aug 2020,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0240,Mouthpiece Amscud for Snorkel,Office Equipment,1400600.0,340000.0,30 Sep 2020,30 Sep 2020,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0241,Mask strap thenice,Office Equipment,1400600.0,280000.0,30 Sep 2020,30 Sep 2020,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0242, mask strap retainer oceanpro - black (loop strap),Office Equipment,1400600.0,104000.0,30 Sep 2020,30 Sep 2020,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0243,snorkel holder simple release T1856 S (Loop google),Office Equipment,1400600.0,140000.0,30 Sep 2020,30 Sep 2020,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0245,EOP Houseekeeping periode Sept 2020 ,House Keeping,1400700.0,255000.0,30 Sep 2020,30 Sep 2020,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0246,Diesel Genset Silent Type Cummins kap 150kVa,Office Machinery,1400500.0,234027950.0,31 Oct 2020,31 Oct 2020,5 Yr 0 Mth,20.0,Straight Line Method
+PRATA-0247,EOP Housekeeping periode Okt 2020,House Keeping,1400700.0,240000.0,31 Oct 2020,31 Oct 2020,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0248,EOP Kitchen Set periode Okt 2020,Kitchen Set,1400800.0,80000.0,31 Oct 2020,31 Oct 2020,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0249,EOP periode November 2020,Office Equipment,1400600.0,948700.0,30 Nov 2020,30 Nov 2020,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0250,11 pcs sprei (bedsheet) single 200x280 (120x200),House Keeping,1400700.0,1705000.0,30 Nov 2020,30 Nov 2020,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0251,5 lusin Handuk hotel putih 70x140 ,House Keeping,1400700.0,3900000.0,30 Nov 2020,30 Nov 2020,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0252,5 lusin sapu tangan hotel,House Keeping,1400700.0,900000.0,30 Nov 2020,30 Nov 2020,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0253,Bunga untuk ornamen resort,House Keeping,1400700.0,9070000.0,30 Nov 2020,30 Nov 2020,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0254,EOP Housekeeping periode Nov 2020 ,House Keeping,1400700.0,660000.0,30 Nov 2020,30 Nov 2020,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0255,EOP Kitchen set periode November 2020 ,Kitchen Set,1400800.0,2034750.0,30 Nov 2020,30 Nov 2020,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0256,Equipment On Process periode Desember 2020,Office Equipment,1400600.0,2606000.0,31 Dec 2020,31 Dec 2020,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0257,EOP Housekeeping periode Des 20,House Keeping,1400700.0,3498000.0,31 Dec 2020,31 Dec 2020,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0258,EOP Housekeeping periode Des 20,House Keeping,1400700.0,6290995.0,31 Dec 2020,31 Dec 2020,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0259,EOP Kitchen Set periode Des 20,Kitchen Set,1400800.0,1190000.0,31 Dec 2020,31 Dec 2020,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0260,EOP  periode Januari 2021 ,Office Equipment,1400600.0,255000.0,31 Jan 2021,31 Jan 2021,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0261,EOP HS Periode Januari 2021 ,House Keeping,1400700.0,215000.0,31 Jan 2021,31 Jan 2021,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0262,EOP HS Periode Desember 2020,House Keeping,1400700.0,44372000.0,31 Dec 2020,31 Dec 2020,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0263,EOP KS Periode Januari 2021,Kitchen Set,1400800.0,1920400.0,31 Jan 2021,31 Jan 2021,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0264,Informa : Pembelian 100 buah kursi untuk MH,House Keeping,1400700.0,34716000.0,28 Feb 2021,28 Feb 2021,2 Yr 0 Mth,50.0,Straight Line Method
+PRATA-0265,EOP Hoosekeeping ,House Keeping,1400700.0,2780820.0,28 Feb 2021,28 Feb 2021,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0266,EOP Kitchen set periode Februari 2021,Kitchen Set,1400800.0,4917600.0,28 Feb 2021,28 Feb 2021,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0268,Sparepart tanki diving,Office Equipment,1400600.0,6441000.0,31 Mar 2021,31 Mar 2021,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0269,EOP Periode Maret 2021,Office Equipment,1400600.0,479000.0,31 Mar 2021,31 Mar 2021,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0270,EOP Housekeeping periode Maret 2021,House Keeping,1400700.0,4832000.0,31 Mar 2021,31 Mar 2021,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0271,Meja untuk MH ,House Keeping,1400700.0,8750000.0,31 Mar 2021,31 Mar 2021,2 Yr 0 Mth,50.0,Straight Line Method
+PRATA-0272,EOP Kitchen Set periode April 2021,Kitchen Set,1400800.0,327580.0,30 Apr 2021,30 Apr 2021,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0273,EOP Periode April 2021,Office Equipment,1400600.0,974100.0,30 Apr 2021,30 Apr 2021,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0274,"Sinar Kasih : Pembelian septictank biofil BF04 1 unit, tablet biofil 1 bks, cairan biofil 300ml GOL 21020 Civil",House Keeping,1400700.0,4750000.0,30 Apr 2021,30 Apr 2021,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0275,EOP Housekeeping periode April 2021,House Keeping,1400700.0,300000.0,30 Apr 2021,30 Apr 2021,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0276,EOP periode Mei 2021,Office Equipment,1400600.0,7131000.0,31 May 2021,31 May 2021,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0277,EOP Housekeeping periode Mei 2021,House Keeping,1400700.0,170000.0,31 May 2021,31 May 2021,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0278,EOP Kitchen Set periode Mei 2021,Kitchen Set,1400800.0,223400.0,31 May 2021,31 May 2021,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0279,EOP Housekeeping periode Juni 2021,House Keeping,1400700.0,550000.0,30 Jun 2021,30 Jun 2021,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0280,EOP periode Juni 2021,Office Equipment,1400600.0,160000.0,30 Jun 2021,30 Jun 2021,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0281,EOP Kitchen Set periode Juni 2021,Kitchen Set,1400800.0,50000.0,30 Jun 2021,30 Jun 2021,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0282,"lampu led A60 E27 11 Watt, kaca mata safety",Office Equipment,1400600.0,279824.0,31 Jul 2021,31 Jul 2021,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0285,Mesin Rumput,Office Machinery,1400500.0,1750000.0,31 Aug 2021,31 Aug 2021,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0286,EOP Periode September 2021,Office Equipment,1400600.0,1739000.0,30 Sep 2021,30 Sep 2021,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0287,3 drum plastik untuk bak sampah,House Keeping,1400700.0,750000.0,30 Sep 2021,30 Sep 2021,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0288,EOP Kitchen Set periode September 2021,Kitchen Set,1400800.0,338500.0,30 Sep 2021,30 Sep 2021,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0289,EOP KS Periode Oktober 2021,Kitchen Set,1400800.0,690000.0,31 Oct 2021,31 Oct 2021,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0290,EOP HS Periode Oktober 2021,House Keeping,1400700.0,960000.0,31 Oct 2021,31 Oct 2021,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0291,EOP Periode Oktober 2021,Office Equipment,1400600.0,6178747.0,31 Oct 2021,31 Oct 2021,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0292,EOP Periode November 2021,Office Equipment,1400600.0,1080000.0,30 Nov 2021,30 Nov 2021,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0293,EOP HK Periode November 2021,House Keeping,1400700.0,13676531.0,30 Nov 2021,30 Nov 2021,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0294,EOP KS Periode November 2021,Kitchen Set,1400800.0,340000.0,30 Nov 2021,30 Nov 2021,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0295,EOP HK Periode Desember 2021,House Keeping,1400700.0,12156000.0,31 Dec 2021,31 Dec 2021,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0296,EOP KS Periode Desember 2021,Kitchen Set,1400800.0,920000.0,31 Dec 2021,31 Dec 2021,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0297,Meja Receptionist New Kitchen,Office Equipment,1400600.0,4850000.0,31 Dec 2021,31 Dec 2021,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0298,Lampu Gantung & Lampu Dinding Hias @2pcs,Kitchen Set,1400800.0,1500000.0,31 Jan 2022,31 Jan 2022,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0299,Artificial Flower & Pot,House Keeping,1400700.0,3202000.0,31 Jan 2022,31 Jan 2022,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0300,Profil Tank 2300Liter- Cottage C6,Office Equipment,1400600.0,25425000.0,31 Jan 2022,31 Jan 2022,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0301,Pompa Air Sanyo P-H1750 - New Kitchen ,Office Machinery,1400500.0,2350000.0,31 Jan 2022,31 Jan 2022,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0302,Lounge Chair Double Seat (natural-navy),Office Equipment,1400600.0,3500000.0,31 Jan 2022,31 Jan 2022,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0303,Kursi Rotan Brekele Single Seat (natural-navy),Office Equipment,1400600.0,1450000.0,31 Jan 2022,31 Jan 2022,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0304,Duvet Inner Double Microtex Putih Polos,House Keeping,1400700.0,4470000.0,31 Jan 2022,31 Jan 2022,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0305,Duvet Cover Double Cotton 100%,House Keeping,1400700.0,6525000.0,31 Jan 2022,31 Jan 2022,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0306,Flatsheet Single No Rubber Cotton 100%,House Keeping,1400700.0,34680000.0,31 Jan 2022,31 Jan 2022,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0307,Face Towel,House Keeping,1400700.0,500000.0,28 Feb 2022,28 Feb 2022,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0308,Gorden MH,House Keeping,1400700.0,6500000.0,28 Feb 2022,28 Feb 2022,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0309,Pompa Air Sanyo P-H1750 - C6,Office Machinery,1400500.0,2350000.0,28 Feb 2022,28 Feb 2022,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0310,Trolly FO & HK,Office Equipment,1400600.0,1660000.0,28 Feb 2022,28 Feb 2022,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0311,Neon Box Pratasaba,Office Equipment,1400600.0,600000.0,28 Feb 2022,28 Feb 2022,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0312,Mesin Cuci LG F2721STWV1 - Frontloading 21 Kg,Office Equipment,1400600.0,15500000.0,28 Feb 2022,28 Feb 2022,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0313,Ventilasifan Panasonic FV40AFU,Office Equipment,1400600.0,3196000.0,28 Feb 2022,28 Feb 2022,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0314,Kipas Angin Baling Advance CF-5622A,Office Equipment,1400600.0,1700000.0,28 Feb 2022,28 Feb 2022,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0315,Set Meja (20ea) & Kursi (40ea) New Kitchen,Office Equipment,1400600.0,18500000.0,28 Feb 2022,28 Feb 2022,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0316,AC 1 PK - Lobby New Kitchen,Office Equipment,1400600.0,6700000.0,28 Feb 2022,28 Feb 2022,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0317,Analog Stabilizer BLK SH-1KVA - Stavolt 1000w,Office Equipment,1400600.0,1299000.0,28 Feb 2022,28 Feb 2022,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0318,Sofa 3111,Office Equipment,1400600.0,5800000.0,28 Feb 2022,28 Feb 2022,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0319,Lavenia 1 Bowl Kitchen Sink LVX-0 336 S/S,Office Equipment,1400600.0,7520000.0,31 Mar 2022,31 Mar 2022,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0320,C/Paloma Gallant 1/2 2-Outlet Angle Valve 2192,Office Equipment,1400600.0,1050000.0,31 Mar 2022,31 Mar 2022,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0321,C/Paloma Toilet Shower Set Superior 2103,Office Equipment,1400600.0,900000.0,31 Mar 2022,31 Mar 2022,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0322,Stainless Steel Double Sink uk. 100x60x85/95,Office Equipment,1400600.0,3100000.0,31 Mar 2022,31 Mar 2022,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0323,Baofeng BF-888s HT UHF Walkie Talkie,Office Equipment,1400600.0,875000.0,31 Mar 2022,31 Mar 2022,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0324,Podium Meeting Hall,Office Equipment,1400600.0,2300000.0,31 Mar 2022,31 Mar 2022,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0325,"Neon Sign Pratasaba Resort (Uk.logo 60x50, huruf 30/20)",Office Equipment,1400600.0,7200000.0,31 Mar 2022,31 Mar 2022,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0326,Speaker Aktif NX Audio 15 A1530 Pro - MH,Office Equipment,1400600.0,27000000.0,31 Mar 2022,31 Mar 2022,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0327,Sekai Industrial Double Fan IFL 1875,Office Equipment,1400600.0,1650000.0,31 Mar 2022,31 Mar 2022,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0328,Madani Table Round DIA 72 cm Black - Lobby,Office Equipment,1400600.0,2328000.0,31 Mar 2022,31 Mar 2022,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0329,Whiteboard 60x90 - MH,Office Equipment,1400600.0,1486000.0,31 Mar 2022,31 Mar 2022,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0330,Gantungan Handuk,House Keeping,1400700.0,9600000.0,31 Mar 2022,31 Mar 2022,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0331,Pompa Semprotan Rumput,House Keeping,1400700.0,680000.0,31 Mar 2022,31 Mar 2022,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0332,Gerobak Dorong ,House Keeping,1400700.0,1950000.0,31 Mar 2022,31 Mar 2022,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0333,Tempat Lampu Hias Neo Manley KD Stool Gunmetal - Lobby,House Keeping,1400700.0,499000.0,31 Mar 2022,31 Mar 2022,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0334,Perlengkapan Kitchen,Kitchen Set,1400800.0,10382450.0,31 Mar 2022,31 Mar 2022,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0335,Solar Water Heater 150 liter SR 150 S1,Office Machinery,1400500.0,17500000.0,30 Apr 2022,30 Apr 2022,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0336,Kulkas 10 Rak,Office Equipment,1400600.0,4100000.0,30 Apr 2022,30 Apr 2022,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0337,"Electric Chafing Dish Sunnex 8,5 Liter ",Office Equipment,1400600.0,4443370.0,31 May 2022,31 May 2022,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0338,Magic Com Miyako MCG-171,Kitchen Set,1400800.0,1260000.0,31 May 2022,31 May 2022,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0339,Magic Com Miyako MCM-528,Kitchen Set,1400800.0,230000.0,31 May 2022,31 May 2022,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0340,Perlengkapan Kitchen,Kitchen Set,1400800.0,8816000.0,31 May 2022,31 May 2022,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0341,Magic Com Miyako (mess Karyawan),Kitchen Set,1400800.0,540000.0,31 May 2022,31 May 2022,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0342,Meja Prasmanan uk. 55x198x70,Kitchen Set,1400800.0,750000.0,31 May 2022,31 May 2022,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0343,Kasur Busa utk Mess Karyawan ,House Keeping,1400700.0,2000000.0,31 May 2022,31 May 2022,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0344,Bantal utk Mess Karyawan ,House Keeping,1400700.0,750000.0,31 May 2022,31 May 2022,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0345,Kompor Gas Rinnai utk Mess Karyawan,Kitchen Set,1400800.0,350000.0,31 May 2022,31 May 2022,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0346,Cottage 3,Building,1400200.0,303451938.38,31 May 2022,31 May 2022,10 Yr 0 Mth,10.0,Straight Line Method
+PRATA-0347,Infrastructure 3,Building,1400200.0,177510720.0,31 May 2022,31 May 2022,10 Yr 0 Mth,10.0,Straight Line Method
+PRATA-0348,Gudang,Building,1400200.0,113895610.0,31 May 2022,31 May 2022,10 Yr 0 Mth,10.0,Straight Line Method
+PRATA-0349,Dermaga Baru,Building,1400200.0,572035017.0,31 May 2022,31 May 2022,10 Yr 0 Mth,10.0,Straight Line Method
+PRATA-0350,Meeting Hall,Building,1400200.0,1928494798.1,31 May 2022,31 May 2022,10 Yr 0 Mth,10.0,Straight Line Method
+PRATA-0351,AC Daikin Breeze 1 PK - C6,Office Equipment,1400600.0,16500000.0,30 Jun 2022,30 Jun 2022,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0352,Pompa Sanyo PH-175C - Water Heater C6,Office Machinery,1400500.0,2500000.0,30 Jun 2022,30 Jun 2022,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0353,Bangku Tambahan - Mobil Hilux,House Keeping,1400700.0,400000.0,30 Jun 2022,30 Jun 2022,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0354,Canggu Floating Breakfast Brown,Kitchen Set,1400800.0,650000.0,30 Jun 2022,30 Jun 2022,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0355,Flipchart with Wheels uk. 70x100 cm,Office Equipment,1400600.0,1168200.0,31 Jul 2022,31 Jul 2022,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0356,Baofeng BF-888S HT UHF Walkie Talkie,Office Equipment,1400600.0,370000.0,31 Jul 2022,31 Jul 2022,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0357,Exhaustfan Cosmos CL252 - Toilet Resto,Office Equipment,1400600.0,500000.0,31 Jul 2022,31 Jul 2022,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0358,Wallfan Cosmos 16WFW,Office Equipment,1400600.0,1425000.0,31 Jul 2022,31 Jul 2022,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0359,Payung Golf,House Keeping,1400700.0,2500000.0,31 Jul 2022,31 Jul 2022,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0360,Taplak Meja dan Pita Kursi,House Keeping,1400800.0,2343000.0,31 Jul 2022,31 Jul 2022,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0361,Cake Stand Holand Acaciaround ,Kitchen Set,1400800.0,698000.0,31 Jul 2022,31 Jul 2022,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0362,Dish Collector Cart uk. 80x44x93 cm - FO,Kitchen Set,1400800.0,1609000.0,31 Jul 2022,31 Jul 2022,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0363,New Kitchen,Building,1400200.0,1090376561.06,31 Jul 2022,31 Jul 2022,10 Yr 0 Mth,10.0,Straight Line Method
+PRATA-0364,Freezer Modena MD37,Office Equipment,1400600.0,10900000.0,31 Aug 2022,31 Aug 2022,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0365,Handphone Xiaomi Redmi 10C,Office Equipment,1400600.0,1899000.0,31 Aug 2022,31 Aug 2022,3 Yr 0 Mth,33.33,Straight Line Method
+PRATA-0366,Carpet Twist 543 Ivory uk.120x170,House Keeping,1400700.0,699000.0,31 Aug 2022,31 Aug 2022,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0367,Carpet Twist 513 Grey uk.120x170,House Keeping,1400700.0,699000.0,31 Aug 2022,31 Aug 2022,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0368,Black Janitor Cart with Cover,House Keeping,1400700.0,1819000.0,31 Aug 2022,31 Aug 2022,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0369,Arco Gerobak Dorong - Pantai,House Keeping,1400700.0,625000.0,31 Aug 2022,31 Aug 2022,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0370,"Cake Stand, Serving Set, Tray",Kitchen Set,1400800.0,2305880.0,31 Aug 2022,31 Aug 2022,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0371,Water Boiler 16ltr,Kitchen Set,1400800.0,1158000.0,31 Aug 2022,31 Aug 2022,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-0372,"Mask resort 1+ BK Sil BK (GOL.22012-DC, 22036-DC))",Office Equipment,1400600.0,6269400.0,31 Jan 2022,31 Jan 2022,4 Yr 0 Mth,25.0,Straight Line Method
+PRATA-0373,"Snorkel Jetstream Flexable Black (GOL.22012,22036-DC)",Office Equipment,1400600.0,3045600.0,31 Jan 2022,31 Jan 2022,4 Yr 0 Mth,25.0,Straight Line Method
+PRATA-0374,Gauge Slim Press Mod only Mtr (GOL.22034-DC),Office Equipment,1400600.0,3726000.0,31 Jan 2022,31 Jan 2022,4 Yr 0 Mth,25.0,Straight Line Method
+PRATA-0375,Shelving Steel 5 Tier 120x45,Office Equipment,1400600.0,5208300.0,28 Feb 2022,28 Feb 2022,4 Yr 0 Mth,25.0,Straight Line Method
+PRATA-0376,Rack Metal 5 Tier 120x45x190,Office Equipment,1400600.0,1406400.0,28 Feb 2022,28 Feb 2022,4 Yr 0 Mth,25.0,Straight Line Method
+PRATA-0377,Storage 5 Shelf Rack 80x30,Office Equipment,1400600.0,1399000.0,28 Feb 2022,28 Feb 2022,4 Yr 0 Mth,25.0,Straight Line Method
+PRATA-0378,Sink Bowl BCP Prestile set 2 lubang (+kaki +kran),Office Equipment,1400600.0,1250000.0,31 Mar 2022,31 Mar 2022,4 Yr 0 Mth,25.0,Straight Line Method
+PRATA-0379,MCCB Merlin Gerin 200A u/k panel genset ivaco GOL-21052,Office Machinery,1400500.0,2500000.0,31 Mar 2021,31 Mar 2021,8 Yr 0 Mth,12.5,Straight Line Method
+PRATA-0380,"Pompa Sanyo 15,8 kg P-H175C",Office Machinery,1400500.0,2200000.0,31 Mar 2021,31 Mar 2021,8 Yr 0 Mth,12.5,Straight Line Method
+PRATA-0381,Gorden Kamar C6,House Keeping,1400700.0,7800000.0,31 Aug 2022,31 Aug 2022,4 Yr 0 Mth,25.0,Straight Line Method
+PRATA-0382,Akari Android LED TV AT-54425 1 Pcs utk MH,Office Equipment,1400600.0,4150000.0,30 Nov 2021,30 Nov 2021,4 Yr 0 Mth,25.0,Straight Line Method
+PRATA-0383,Bracket LED Standing Roda 32-65 inch utk MH,Office Equipment,1400600.0,1300000.0,30 Nov 2021,30 Nov 2021,4 Yr 0 Mth,25.0,Straight Line Method
+PRATA-0384,"Led Samsung 32""",Office Equipment,1400600.0,2499000.0,30 Nov 2021,30 Nov 2021,4 Yr 0 Mth,25.0,Straight Line Method
+PRATA-1500,21 Ea Bantal Kepala Vardana,House Keeping,1400700.0,1470000.0,30 Jun 2016,27 Jun 2015,1 Yr 0 Mth,100.0,Straight Line Method
+PRATA-1601,TV LED TOSHIBA 32 L 1600,Office Equipment,1400600.0,13898000.0,31 Oct 2016,31 Oct 2016,2 Yr 0 Mth,50.0,Straight Line Method
+PRATA-1602,"Selimut Prata (20 pcs), Sprei (24 pcs), Bantal dll",House Keeping,1400700.0,6543700.0,31 Oct 2016,31 Oct 2016,2 Yr 0 Mth,50.0,Straight Line Method
+PRATA-1603,POMPA SANYO PH-130 ,Office Machinery,1400500.0,1300000.0,31 Oct 2016,31 Oct 2016,2 Yr 0 Mth,50.0,Straight Line Method
+PRATA-1604,MESIN GENERATOR HONDA DAISHIN GENSET,Office Machinery,1400500.0,15500000.0,31 Oct 2016,31 Oct 2016,2 Yr 0 Mth,50.0,Straight Line Method
+,,,,19629703835.99,,,,,

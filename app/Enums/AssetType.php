@@ -9,6 +9,8 @@ enum AssetType: string
     case Electrical = 'electrical';
     case Furniture = 'furniture';
     case Appliance = 'appliance';
+    case Machinery = 'machinery';
+    case Equipment = 'equipment';
     case Other = 'other';
 
     public function label(): string
@@ -19,6 +21,8 @@ enum AssetType: string
             self::Electrical => 'Electrical',
             self::Furniture => 'Furniture',
             self::Appliance => 'Appliance',
+            self::Machinery => 'Machinery',
+            self::Equipment => 'Equipment',
             self::Other => 'Other',
         };
     }
