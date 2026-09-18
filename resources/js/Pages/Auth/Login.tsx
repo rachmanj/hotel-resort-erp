@@ -6,8 +6,8 @@ import resortTwo from '@/assets/login/resort-2.jpg';
 import GuestLayout from '@/Layouts/GuestLayout';
 
 const resortSlides = [
-    { src: resortOne, alt: 'Pratasaba Resort coastline' },
-    { src: resortTwo, alt: 'Pratasaba Resort diving experience' },
+    { src: resortOne, alt: 'Pratasaba Resort over the water' },
+    { src: resortTwo, alt: 'Pratasaba Resort room interior' },
 ];
 
 export default function Login() {
