@@ -47,7 +47,7 @@ class OrderService
                 'status' => OrderStatus::New->value,
                 'opened_by' => $openedBy->id,
                 'total_amount' => 0,
-                'charged_to_room' => $chargedToRoom,
+                'charged_to_room' => false,
             ]);
 
             $this->addItems($order, $items);

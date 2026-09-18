@@ -87,14 +87,18 @@ class OrderController extends Controller
 
     public function store(StoreOrderRequest $request): RedirectResponse
     {
-        $order = $this->orderService->createOrder(
-            orderType: $request->string('order_type')->toString(),
-            items: $request->validated('items'),
-            openedBy: $request->user(),
-            restaurantTableId: $request->integer('restaurant_table_id') ?: null,
-            reservationId: $request->integer('reservation_id') ?: null,
-            chargedToRoom: $request->boolean('charged_to_room'),
-        );
+        try {
+            $order = $this->orderService->createOrder(
+                orderType: $request->string('order_type')->toString(),
+                items: $request->validated('items'),
+                openedBy: $request->user(),
+                restaurantTableId: $request->integer('restaurant_table_id') ?: null,
+                reservationId: $request->integer('reservation_id') ?: null,
+                chargedToRoom: $request->boolean('charged_to_room'),
+            );
+        } catch (\InvalidArgumentException $e) {
+            return back()->with('error', $e->getMessage());
+        }
 
         return redirect()
             ->route('fb.orders.show', $order)
