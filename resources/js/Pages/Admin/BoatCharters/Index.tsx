@@ -266,6 +266,7 @@ export default function BoatChartersIndex({
                     resetText: 'Reset',
                     labelWidth: 'auto',
                     defaultCollapsed: false,
+                    collapseRender: false,
                 }}
                 form={{
                     initialValues: { search: filters.search },

@@ -78,7 +78,7 @@ export default function TransfersIndex({ transfers, cashAccounts, allAccounts }:
 
             <ProTable
                 rowKey="id"
-                search={{ searchText: 'Search', resetText: 'Reset' }}
+                search={{ searchText: 'Search', resetText: 'Reset', collapseRender: false }}
                 options={false}
                 pagination={{
                     showTotal: (total, range) => `${range[0]}-${range[1]} of ${total}`,

@@ -131,6 +131,7 @@ export default function UsersIndex({ users, hotels, roles, filters }: UsersIndex
                     resetText: 'Reset',
                     labelWidth: 'auto',
                     defaultCollapsed: false,
+                    collapseRender: false,
                 }}
                 form={{
                     initialValues: { search: filters.search },

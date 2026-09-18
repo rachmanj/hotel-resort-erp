@@ -150,6 +150,7 @@ export default function DivePackagesIndex({
                     resetText: 'Reset',
                     labelWidth: 'auto',
                     defaultCollapsed: false,
+                    collapseRender: false,
                 }}
                 form={{
                     initialValues: { search: filters.search },

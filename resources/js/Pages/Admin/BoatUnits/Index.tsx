@@ -131,6 +131,7 @@ export default function BoatUnitsIndex({ boatUnits, filters }: BoatUnitsIndexPro
                     resetText: 'Reset',
                     labelWidth: 'auto',
                     defaultCollapsed: false,
+                    collapseRender: false,
                 }}
                 form={{
                     initialValues: { search: filters.search },
