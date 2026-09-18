@@ -72,6 +72,8 @@ export default function GuestLayout({ children, slides = [] }: GuestLayoutProps)
                             autoplay
                             arrows
                             dots
+                            speed={1400}
+                            autoplaySpeed={6000}
                             style={{ height: '100vh' }}
                         >
                             {slides.map((slide) => (
