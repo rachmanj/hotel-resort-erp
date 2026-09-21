@@ -1,3 +1,4 @@
+import '@ant-design/v5-patch-for-react-19';
 import '../css/app.css';
 import { createInertiaApp } from '@inertiajs/react';
 import { createRoot } from 'react-dom/client';
