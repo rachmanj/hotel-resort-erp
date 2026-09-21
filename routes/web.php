@@ -129,6 +129,7 @@ Route::middleware(['auth', 'hotel.context'])->group(function (): void {
 
     Route::get('/folios/{folio}', [FolioController::class, 'show'])->name('folios.show')->middleware('can:folios.view');
     Route::post('/folios/{folio}/payments', [FolioController::class, 'postPayment'])->name('folios.payments.store')->middleware(['can:billing.payment', 'idempotency']);
+    Route::post('/folios/{folio}/charges', [FolioController::class, 'postCharge'])->name('folios.charges.store')->middleware(['can:billing.post', 'idempotency']);
     Route::get('/folios/{folio}/invoice', [InvoiceController::class, 'show'])->name('folios.invoice')->middleware('can:billing.invoice');
     Route::get('/folios/{folio}/invoice/download', [InvoiceController::class, 'download'])->name('folios.invoice.download')->middleware('can:billing.invoice');
 

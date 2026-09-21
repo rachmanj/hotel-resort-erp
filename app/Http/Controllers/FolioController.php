@@ -2,18 +2,24 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\FolioItemType;
 use App\Enums\FolioStatus;
 use App\Enums\PaymentMethod;
+use App\Http\Requests\PostFolioChargeRequest;
 use App\Http\Requests\PostFolioPaymentRequest;
+use App\Models\DivePackage;
 use App\Models\Folio;
+use App\Models\RevenueCategory;
 use App\Services\FolioPostingService;
+use App\Services\TaxCalculator;
+use App\Support\FolioItemAppliesTo;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class FolioController extends Controller
 {
-    public function show(Folio $folio, FolioPostingService $folioPostingService): Response
+    public function show(Folio $folio, FolioPostingService $folioPostingService, TaxCalculator $taxCalculator): Response
     {
         $folio->load([
             'guest',
@@ -85,8 +91,73 @@ class FolioController extends Controller
                 'label' => $m->label(),
             ]),
             'canPostPayment' => request()->user()?->can('billing.payment') && $folio->status === FolioStatus::Open,
+            'canPostCharge' => request()->user()?->can('billing.post') && $folio->status === FolioStatus::Open,
             'canViewInvoice' => request()->user()?->can('billing.invoice') ?? false,
+            'miscChargeTaxRules' => $taxCalculator->activeRulesPayload(
+                FolioItemAppliesTo::forItemType(FolioItemType::Misc->value),
+            ),
+            'divePackages' => DivePackage::query()
+                ->where('is_active', true)
+                ->orderBy('name')
+                ->get(['id', 'code', 'name', 'price_per_person'])
+                ->map(fn (DivePackage $package) => [
+                    'id' => $package->id,
+                    'code' => $package->code,
+                    'name' => $package->name,
+                    'price_per_person' => (float) $package->price_per_person,
+                ]),
+            'revenueCategories' => RevenueCategory::query()
+                ->where('is_active', true)
+                ->orderBy('sort_order')
+                ->orderBy('name')
+                ->get(['id', 'code', 'name'])
+                ->map(fn (RevenueCategory $category) => [
+                    'id' => $category->id,
+                    'code' => $category->code,
+                    'name' => $category->name,
+                ]),
         ]);
+    }
+
+    public function postCharge(
+        Folio $folio,
+        PostFolioChargeRequest $request,
+        FolioPostingService $folioPostingService,
+    ): RedirectResponse {
+        $validated = $request->validated();
+        $description = $validated['description'];
+        $revenueCategoryId = $validated['revenue_category_id'] ?? null;
+
+        if ($validated['dive_package_id'] ?? null) {
+            $divePackage = DivePackage::query()->findOrFail($validated['dive_package_id']);
+            $description = 'Dive: '.$divePackage->name;
+
+            if ($revenueCategoryId === null) {
+                $revenueCategoryId = RevenueCategory::query()
+                    ->where('hotel_id', $folio->hotel_id)
+                    ->where('code', 'dive_center')
+                    ->value('id');
+            }
+        }
+
+        try {
+            $folioPostingService->postCharge(
+                folio: $folio,
+                itemType: FolioItemType::Misc->value,
+                description: $description,
+                amount: (float) $validated['unit_price'],
+                quantity: (float) $validated['quantity'],
+                referenceType: 'manual_charge',
+                referenceId: null,
+                postedBy: $request->user(),
+                applyTax: true,
+                revenueCategoryId: $revenueCategoryId,
+            );
+        } catch (\InvalidArgumentException $e) {
+            return back()->with('error', $e->getMessage());
+        }
+
+        return back()->with('success', 'Charge posted to folio successfully.');
     }
 
     public function postPayment(

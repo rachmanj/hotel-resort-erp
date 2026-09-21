@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\FolioItem;
 use App\Models\TaxRule;
+use App\Support\TaxAmountCalculator;
 use Illuminate\Support\Collection;
 
 class TaxCalculator
@@ -13,32 +14,22 @@ class TaxCalculator
      */
     public function calculate(float $amount, string $appliesTo = 'room'): array
     {
-        $rules = $this->getActiveRules($appliesTo);
+        return TaxAmountCalculator::calculate($amount, $this->activeRulesPayload($appliesTo));
+    }
 
-        $subtotal = round($amount, 2);
-        $serviceCharge = 0.0;
-        $tax = 0.0;
-        $runningBase = $subtotal;
-
-        foreach ($rules as $rule) {
-            $rate = (float) $rule->rate_percent / 100;
-
-            if ($rule->code === 'service_charge') {
-                $serviceCharge = round($subtotal * $rate, 2);
-                $runningBase = $subtotal + $serviceCharge;
-            } elseif ($rule->is_compounding) {
-                $tax = round($runningBase * $rate, 2);
-            } else {
-                $tax += round($subtotal * $rate, 2);
-            }
-        }
-
-        return [
-            'subtotal' => $subtotal,
-            'service_charge' => $serviceCharge,
-            'tax' => $tax,
-            'total' => round($subtotal + $serviceCharge + $tax, 2),
-        ];
+    /**
+     * @return array<int, array{code: string, rate_percent: float, is_compounding: bool}>
+     */
+    public function activeRulesPayload(string $appliesTo): array
+    {
+        return $this->getActiveRules($appliesTo)
+            ->map(fn (TaxRule $rule) => [
+                'code' => $rule->code,
+                'rate_percent' => (float) $rule->rate_percent,
+                'is_compounding' => (bool) $rule->is_compounding,
+            ])
+            ->values()
+            ->all();
     }
 
     /**

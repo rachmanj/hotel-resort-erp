@@ -4,8 +4,12 @@ import ProTable from '@ant-design/pro-table';
 import { Button, DatePicker, Form, Input, InputNumber, Modal, Select } from 'antd';
 import dayjs from 'dayjs';
 import { useState } from 'react';
+import FolioChargeTotalsPreview from '@/components/FolioChargeTotalsPreview';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import { calculateTaxAmount, type TaxRuleForCalculation } from '@/lib/taxCalculator';
 import type { Paginated } from '@/types';
+
+const formatIdr = (v: number) => `Rp ${v.toLocaleString('id-ID')}`;
 
 interface BoatCharterRow {
     id: number;
@@ -33,10 +37,11 @@ interface BoatCharterRow {
     notes?: string | null;
 }
 
-interface IdOption {
+interface DivePackageOption {
     id: number;
-    name?: string;
-    code?: string;
+    name: string;
+    code: string;
+    price_per_person: number;
 }
 
 interface ReservationOption {
@@ -59,8 +64,9 @@ interface OptionItem {
 interface BoatChartersIndexProps {
     boatCharters: Paginated<BoatCharterRow>;
     filters: { search?: string };
-    boatUnits: IdOption[];
-    divePackages: IdOption[];
+    boatUnits: Array<{ id: number; name?: string; code?: string }>;
+    divePackages: DivePackageOption[];
+    miscChargeTaxRules: TaxRuleForCalculation[];
     reservations: ReservationOption[];
     folios: FolioOption[];
     charterTypes: OptionItem[];
@@ -78,6 +84,7 @@ export default function BoatChartersIndex({
     charterTypes,
     guideTypes,
     statusOptions,
+    miscChargeTaxRules,
 }: BoatChartersIndexProps) {
     const [modalOpen, setModalOpen] = useState(false);
     const [editing, setEditing] = useState<BoatCharterRow | null>(null);
@@ -166,11 +173,33 @@ export default function BoatChartersIndex({
     };
 
     const billCharter = (record: BoatCharterRow) => {
+        const totals = calculateTaxAmount(record.price, record.quantity, miscChargeTaxRules);
         Modal.confirm({
             title: 'Bill to folio?',
-            content: `Post charge for "${record.destination}" (${record.quantity} pax) to guest folio?`,
+            content: (
+                <div>
+                    <p>
+                        Post charge for &quot;{record.destination}&quot; ({record.quantity} pax) to guest
+                        folio?
+                    </p>
+                    <p>Subtotal: {formatIdr(totals.subtotal)}</p>
+                    <p>
+                        <strong>Total to folio: {formatIdr(totals.total)}</strong>
+                    </p>
+                </div>
+            ),
             onOk: () => router.post(`/admin/boat-charters/${record.id}/bill`),
         });
+    };
+
+    const onDivePackageChange = (packageId: number | null) => {
+        form.setData('dive_package_id', packageId);
+        if (packageId !== null) {
+            const pkg = divePackages.find((p) => p.id === packageId);
+            if (pkg) {
+                form.setData('price', pkg.price_per_person);
+            }
+        }
     };
 
     const columns: ProColumns<BoatCharterRow>[] = [
@@ -331,7 +360,7 @@ export default function BoatChartersIndex({
                                 value: pkg.id,
                                 label: `${pkg.code} · ${pkg.name}`,
                             }))}
-                            onChange={(value) => form.setData('dive_package_id', value ?? null)}
+                            onChange={(value) => onDivePackageChange(value ?? null)}
                         />
                     </Form.Item>
                     <Form.Item label="Reservation">
@@ -446,6 +475,11 @@ export default function BoatChartersIndex({
                             onChange={(e) => form.setData('notes', e.target.value)}
                         />
                     </Form.Item>
+                    <FolioChargeTotalsPreview
+                        unitPrice={form.data.price}
+                        quantity={form.data.quantity}
+                        taxRules={miscChargeTaxRules}
+                    />
                 </Form>
             </Modal>
         </AuthenticatedLayout>

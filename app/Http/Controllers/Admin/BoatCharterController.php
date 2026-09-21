@@ -18,6 +18,8 @@ use App\Models\Folio;
 use App\Models\Reservation;
 use App\Models\RevenueCategory;
 use App\Services\FolioPostingService;
+use App\Services\TaxCalculator;
+use App\Support\FolioItemAppliesTo;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -30,7 +32,7 @@ class BoatCharterController extends Controller
         private FolioPostingService $folioPostingService,
     ) {}
 
-    public function index(Request $request): Response
+    public function index(Request $request, TaxCalculator $taxCalculator): Response
     {
         $boatCharters = BoatCharter::query()
             ->with([
@@ -79,7 +81,19 @@ class BoatCharterController extends Controller
             'boatCharters' => $boatCharters,
             'filters' => $request->only(['search']),
             'boatUnits' => BoatUnit::query()->where('is_active', true)->orderBy('name')->get(['id', 'name', 'code']),
-            'divePackages' => DivePackage::query()->where('is_active', true)->orderBy('name')->get(['id', 'name', 'code']),
+            'divePackages' => DivePackage::query()
+                ->where('is_active', true)
+                ->orderBy('name')
+                ->get(['id', 'name', 'code', 'price_per_person'])
+                ->map(fn (DivePackage $package) => [
+                    'id' => $package->id,
+                    'name' => $package->name,
+                    'code' => $package->code,
+                    'price_per_person' => (float) $package->price_per_person,
+                ]),
+            'miscChargeTaxRules' => $taxCalculator->activeRulesPayload(
+                FolioItemAppliesTo::forItemType(FolioItemType::Misc->value),
+            ),
             'reservations' => Reservation::query()
                 ->with('guest:id,full_name')
                 ->whereIn('status', [

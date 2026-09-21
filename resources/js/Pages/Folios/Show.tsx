@@ -1,7 +1,10 @@
 import { Head, Link, useForm } from '@inertiajs/react';
-import { Button, Descriptions, Form, Input, InputNumber, Select, Space, Table, Tag } from 'antd';
+import { Button, Descriptions, Form, Input, InputNumber, Modal, Select, Space, Table, Tag } from 'antd';
+import { useState } from 'react';
+import FolioChargeTotalsPreview from '@/components/FolioChargeTotalsPreview';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { newIdempotencyKey } from '@/lib/idempotency';
+import type { TaxRuleForCalculation } from '@/lib/taxCalculator';
 
 interface FolioShowProps {
     folio: {
@@ -52,7 +55,16 @@ interface FolioShowProps {
     payments_total: number;
     paymentMethods: Array<{ value: string; label: string }>;
     canPostPayment: boolean;
+    canPostCharge: boolean;
     canViewInvoice: boolean;
+    miscChargeTaxRules: TaxRuleForCalculation[];
+    divePackages: Array<{
+        id: number;
+        code: string;
+        name: string;
+        price_per_person: number;
+    }>;
+    revenueCategories: Array<{ id: number; code: string; name: string }>;
 }
 
 const formatIdr = (v: number | string) => `Rp ${Number(v).toLocaleString('id-ID')}`;
@@ -64,12 +76,26 @@ export default function FolioShow({
     payments_total,
     paymentMethods,
     canPostPayment,
+    canPostCharge,
     canViewInvoice,
+    miscChargeTaxRules,
+    divePackages,
+    revenueCategories,
 }: FolioShowProps) {
+    const [chargeModalOpen, setChargeModalOpen] = useState(false);
+
     const paymentForm = useForm({
         amount: balance > 0 ? balance : 0,
         method: 'cash',
         reference_no: '',
+    });
+
+    const chargeForm = useForm({
+        dive_package_id: null as number | null,
+        revenue_category_id: null as number | null,
+        description: '',
+        quantity: 1,
+        unit_price: 0,
     });
 
     const submitPayment = () => {
@@ -77,6 +103,41 @@ export default function FolioShow({
             headers: { 'X-Idempotency-Key': newIdempotencyKey() },
             preserveScroll: true,
             onSuccess: () => paymentForm.reset('reference_no'),
+        });
+    };
+
+    const openChargeModal = () => {
+        chargeForm.reset();
+        chargeForm.setData({
+            dive_package_id: null,
+            revenue_category_id: null,
+            description: '',
+            quantity: 1,
+            unit_price: 0,
+        });
+        setChargeModalOpen(true);
+    };
+
+    const onChargeDivePackageChange = (packageId: number | null) => {
+        chargeForm.setData('dive_package_id', packageId);
+        if (packageId !== null) {
+            const pkg = divePackages.find((p) => p.id === packageId);
+            if (pkg) {
+                chargeForm.setData('description', `Dive: ${pkg.name}`);
+                chargeForm.setData('unit_price', pkg.price_per_person);
+                const diveCategory = revenueCategories.find((c) => c.code === 'dive_center');
+                if (diveCategory) {
+                    chargeForm.setData('revenue_category_id', diveCategory.id);
+                }
+            }
+        }
+    };
+
+    const submitCharge = () => {
+        chargeForm.post(`/folios/${folio.id}/charges`, {
+            headers: { 'X-Idempotency-Key': newIdempotencyKey() },
+            preserveScroll: true,
+            onSuccess: () => setChargeModalOpen(false),
         });
     };
 
@@ -190,13 +251,94 @@ export default function FolioShow({
                             />
                         </Form.Item>
                         <Form.Item>
-                            <Button type="primary" htmlType="submit" loading={paymentForm.processing}>
-                                Post Payment
-                            </Button>
+                            <Space>
+                                {canPostCharge && (
+                                    <Button onClick={openChargeModal}>Add Charge</Button>
+                                )}
+                                <Button type="primary" htmlType="submit" loading={paymentForm.processing}>
+                                    Post Payment
+                                </Button>
+                            </Space>
                         </Form.Item>
                     </Form>
                 </>
             )}
+
+            {canPostCharge && !canPostPayment && (
+                <div style={{ marginTop: 16 }}>
+                    <Button type="primary" onClick={openChargeModal}>Add Charge</Button>
+                </div>
+            )}
+
+            <Modal
+                title="Add Charge"
+                open={chargeModalOpen}
+                onCancel={() => setChargeModalOpen(false)}
+                onOk={submitCharge}
+                confirmLoading={chargeForm.processing}
+                okText="Save"
+                width={560}
+            >
+                <Form layout="vertical">
+                    <Form.Item label="Dive Package">
+                        <Select
+                            allowClear
+                            showSearch
+                            optionFilterProp="label"
+                            placeholder="Optional dive package"
+                            value={chargeForm.data.dive_package_id ?? undefined}
+                            options={divePackages.map((pkg) => ({
+                                value: pkg.id,
+                                label: `${pkg.code} · ${pkg.name} · ${formatIdr(pkg.price_per_person)}`,
+                            }))}
+                            onChange={(value) => onChargeDivePackageChange(value ?? null)}
+                        />
+                    </Form.Item>
+                    <Form.Item label="Revenue Category">
+                        <Select
+                            allowClear
+                            showSearch
+                            optionFilterProp="label"
+                            placeholder="Select revenue category"
+                            value={chargeForm.data.revenue_category_id ?? undefined}
+                            options={revenueCategories.map((category) => ({
+                                value: category.id,
+                                label: `${category.code} · ${category.name}`,
+                            }))}
+                            onChange={(value) =>
+                                chargeForm.setData('revenue_category_id', value ?? null)
+                            }
+                        />
+                    </Form.Item>
+                    <Form.Item label="Description" required>
+                        <Input
+                            value={chargeForm.data.description}
+                            onChange={(e) => chargeForm.setData('description', e.target.value)}
+                        />
+                    </Form.Item>
+                    <Form.Item label="Quantity" required>
+                        <InputNumber
+                            min={0.01}
+                            style={{ width: '100%' }}
+                            value={chargeForm.data.quantity}
+                            onChange={(v) => chargeForm.setData('quantity', v ?? 1)}
+                        />
+                    </Form.Item>
+                    <Form.Item label="Unit Price" required>
+                        <InputNumber
+                            min={0}
+                            style={{ width: '100%' }}
+                            value={chargeForm.data.unit_price}
+                            onChange={(v) => chargeForm.setData('unit_price', v ?? 0)}
+                        />
+                    </Form.Item>
+                    <FolioChargeTotalsPreview
+                        unitPrice={chargeForm.data.unit_price}
+                        quantity={chargeForm.data.quantity}
+                        taxRules={miscChargeTaxRules}
+                    />
+                </Form>
+            </Modal>
         </AuthenticatedLayout>
     );
 }

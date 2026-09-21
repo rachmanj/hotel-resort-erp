@@ -13,6 +13,7 @@ use App\Models\FolioItem;
 use App\Models\Payment;
 use App\Models\ReservationGroup;
 use App\Models\User;
+use App\Support\FolioItemAppliesTo;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
 
@@ -46,7 +47,7 @@ class FolioPostingService
         $serviceChargeAmount = 0.0;
 
         if ($applyTax && ! in_array($itemType, ['tax', 'service_charge', 'discount', 'deposit_credit'], true)) {
-            $taxes = $this->taxCalculator->calculate($lineAmount, $this->mapItemTypeToAppliesTo($itemType));
+            $taxes = $this->taxCalculator->calculate($lineAmount, FolioItemAppliesTo::forItemType($itemType));
             $taxAmount = $taxes['tax'];
             $serviceChargeAmount = $taxes['service_charge'];
         }
@@ -212,16 +213,6 @@ class FolioPostingService
 
             return $prefix.str_pad((string) $sequence, 4, '0', STR_PAD_LEFT);
         });
-    }
-
-    private function mapItemTypeToAppliesTo(string $itemType): string
-    {
-        return match ($itemType) {
-            FolioItemType::Room->value, 'room' => 'room',
-            FolioItemType::Fb->value, 'fb' => 'fb',
-            FolioItemType::Spa->value, 'spa' => 'spa',
-            default => 'all',
-        };
     }
 
     /**
