@@ -149,7 +149,7 @@ class ProformaPaymentTest extends TestCase
         $invoice = ProformaInvoice::query()->where('reservation_id', $reservation->id)->firstOrFail();
 
         $this->assertSame(ProformaPaymentStatus::Verified, $payment->status);
-        $this->assertSame('PR-001/PI/PRATA/VI/2026', $payment->receipt_number);
+        $this->assertSame('PR-072/PI/PRATA/VI/2026', $payment->receipt_number);
         $this->assertSame(1, $payment->receipt_sequence);
         $this->assertNotNull($payment->receipt_issued_at);
         $this->assertSame($this->financeUser->id, $payment->verified_by);
@@ -171,8 +171,8 @@ class ProformaPaymentTest extends TestCase
         $this->post("/proforma-payments/{$first->id}/verify")->assertRedirect();
         $this->post("/proforma-payments/{$second->id}/verify")->assertRedirect();
 
-        $this->assertSame('PR-001/PI/PRATA/VI/2026', $first->refresh()->receipt_number);
-        $this->assertSame('PR-001/PI/PRATA/VI/2026-2', $second->refresh()->receipt_number);
+        $this->assertSame('PR-072/PI/PRATA/VI/2026', $first->refresh()->receipt_number);
+        $this->assertSame('PR-072/PI/PRATA/VI/2026-2', $second->refresh()->receipt_number);
 
         $invoice = ProformaInvoice::query()->where('reservation_id', $reservation->id)->firstOrFail();
 
@@ -194,7 +194,7 @@ class ProformaPaymentTest extends TestCase
             ->withSession(['current_hotel_id' => $this->hotel->id])
             ->post("/proforma-payments/{$payment->id}/verify")
             ->assertRedirect()
-            ->assertSessionHas('error', 'Payment already verified, receipt PR-001/PI/PRATA/VI/2026 was issued.');
+            ->assertSessionHas('error', 'Payment already verified, receipt PR-072/PI/PRATA/VI/2026 was issued.');
 
         $invoice = ProformaInvoice::query()->where('reservation_id', $reservation->id)->firstOrFail();
 

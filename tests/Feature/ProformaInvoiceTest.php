@@ -107,7 +107,7 @@ class ProformaInvoiceTest extends TestCase
 
         $invoice = ProformaInvoice::query()->where('reservation_id', $reservation->id)->firstOrFail();
 
-        $this->assertSame('001/PI/PRATA/VIII/2026', $invoice->number);
+        $this->assertSame('072/PI/PRATA/VIII/2026', $invoice->number);
         $this->assertSame(ProformaInvoiceStatus::Draft, $invoice->status);
         $this->assertSame(1, $invoice->revision);
         $this->assertNull($invoice->issued_at);
@@ -153,7 +153,7 @@ class ProformaInvoiceTest extends TestCase
             ->assertInertia(fn ($page) => $page
                 ->component('Reservations/Proforma')
                 ->where('canRelease', false)
-                ->where('proforma.number', '001/PI/PRATA/VIII/2026')
+                ->where('proforma.number', '072/PI/PRATA/VIII/2026')
                 ->has('proforma.lines', 1)
                 ->etc()
             );
@@ -203,7 +203,7 @@ class ProformaInvoiceTest extends TestCase
         $released->refresh()->load('lines');
 
         $this->assertSame(ProformaInvoiceStatus::Released, $released->status);
-        $this->assertSame('001/PI/PRATA/VIII/2026', $released->number);
+        $this->assertSame('072/PI/PRATA/VIII/2026', $released->number);
         $this->assertEquals(9_000_000, (float) $released->total);
         $this->assertCount(1, $released->lines);
 
@@ -214,7 +214,7 @@ class ProformaInvoiceTest extends TestCase
 
         $this->assertCount(2, $revisions);
         $this->assertSame(2, $revisions[1]->revision);
-        $this->assertSame('002/PI/PRATA/VIII/2026', $revisions[1]->number);
+        $this->assertSame('073/PI/PRATA/VIII/2026', $revisions[1]->number);
         $this->assertSame(ProformaInvoiceStatus::Draft, $revisions[1]->status);
         $this->assertEquals(10_500_000, (float) $revisions[1]->total);
     }

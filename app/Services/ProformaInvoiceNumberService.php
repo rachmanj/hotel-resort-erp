@@ -51,7 +51,9 @@ class ProformaInvoiceNumberService
             ->lockForUpdate()
             ->max('sequence');
 
-        $sequence = $lastSequence + 1;
+        $floor = (int) (config('proforma.sequence_floor_by_year')[$year] ?? 0);
+
+        $sequence = max($lastSequence, $floor) + 1;
 
         return [
             'sequence' => $sequence,

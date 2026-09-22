@@ -1,6 +1,19 @@
 <?php
 
 return [
+    /*
+    |--------------------------------------------------------------------------
+    | Per-year sequence floor (manual series before go-live)
+    |--------------------------------------------------------------------------
+    |
+    | Maps calendar year => last sequence already issued outside the system.
+    | The next number is max(highest stored sequence, floor) + 1 for that year.
+    |
+    */
+    'sequence_floor_by_year' => [
+        2026 => 71,
+    ],
+
     'number_prefix' => env('PROFORMA_NUMBER_PREFIX', 'PRATA'),
 
     'company_name' => env('PROFORMA_COMPANY_NAME', 'PRATASABA RESORT'),
