@@ -59,6 +59,7 @@ use App\Http\Controllers\MenuController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\Profile\TelegramLinkController;
 use App\Http\Controllers\ProformaInvoiceController;
+use App\Http\Controllers\ProformaPaymentController;
 use App\Http\Controllers\PromotionQuoteController;
 use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\PurchaseRequisitionController;
@@ -118,6 +119,9 @@ Route::middleware(['auth', 'hotel.context'])->group(function (): void {
     Route::get('/reservations/{reservation}/proforma', [ProformaInvoiceController::class, 'show'])->name('reservations.proforma')->middleware('can:reservations.view');
     Route::get('/reservations/{reservation}/proforma/download', [ProformaInvoiceController::class, 'download'])->name('reservations.proforma.download')->middleware('can:reservations.view');
     Route::post('/reservations/{reservation}/proforma/release', [ProformaInvoiceController::class, 'release'])->name('reservations.proforma.release')->middleware('can:proforma.release');
+    Route::post('/reservations/{reservation}/proforma/payments', [ProformaPaymentController::class, 'store'])->name('reservations.proforma.payments.store')->middleware('can:proforma.payment.record');
+    Route::post('/proforma-payments/{proformaPayment}/verify', [ProformaPaymentController::class, 'verify'])->name('proforma-payments.verify')->middleware('can:proforma.payment.verify');
+    Route::get('/proforma-payments/{proformaPayment}/receipt', [ProformaPaymentController::class, 'receipt'])->name('proforma-payments.receipt')->middleware('can:reservations.view');
     Route::post('/reservation-rooms/{reservationRoom}/checkout', [CheckOutController::class, 'store'])->name('reservations.checkout')->middleware(['can:reservations.checkout', 'idempotency']);
 
     Route::get('/groups', [GroupController::class, 'index'])->name('groups.index')->middleware('can:groups.view');

@@ -59,4 +59,12 @@
 
 ---
 
+### [M005] Down payment, payment receipt and outstanding tracking (reservation document flow, phase 2) implemented (2026-09-22) ✅ COMPLETE
+
+- **Challenge/Decision**: Marketing records a down payment with proof of transfer, Finance verifies the money actually reached the bank account, and only then does the guest get a paper `Tanda Terima Pembayaran` and the booking become firm. The money cannot go into the folio-level `payments` table because no folio exists at booking time, and the receipt number must be readable next to the proforma invoice number it belongs to (`PR-045/PI/PRATA/VI/2026`).
+- **Solution**: `proforma_payments` (`BelongsToHotel`, unique `receipt_number`) with a two-step `recorded` → `verified` status. `RecordProformaPaymentAction` only logs the claim; `VerifyProformaPaymentAction` issues the receipt via `ProformaPaymentReceiptNumberService::reserveNext()` (locks the invoice row, counts only issued receipts, refuses to run outside a transaction), flips a Tentative reservation to Confirmed, and refuses a second verification with an `InvalidArgumentException` the controller turns into a flash error. `RefreshProformaInvoiceTotalsAction` keeps `received_total`/`outstanding_total` on the invoice in step and is also called from `SyncProformaInvoiceAction` so a rate change reprices the outstanding balance. `IndonesianNumberWordsService` renders the amount in words for the receipt PDF (`receipts.payment`).
+- **Key Learning**: `activity_logs.event` is `varchar(20)`, so descriptive event names like `proforma_payment_recorded` blow up with a MySQL 1406 truncation error at runtime rather than at validation — keep new event names under 20 characters (`payment_recorded`). Also, only *verified* payments may count toward `received_total`: counting recorded ones would let Marketing zero out the outstanding balance without any money arriving.
+
+---
+
 [Add new memory entries below, following the format above]

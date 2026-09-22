@@ -13,7 +13,10 @@ use Illuminate\Support\Facades\DB;
 
 class SyncProformaInvoiceAction
 {
-    public function __construct(private ProformaInvoiceNumberService $numberService) {}
+    public function __construct(
+        private ProformaInvoiceNumberService $numberService,
+        private RefreshProformaInvoiceTotalsAction $refreshTotals,
+    ) {}
 
     /**
      * Keep the reservation proforma invoice in step with the reservation.
@@ -49,6 +52,20 @@ class SyncProformaInvoiceAction
 
             return $this->issue($reservation, $lines, revision: $current->revision + 1);
         });
+    }
+
+    /**
+     * Reservations booked before this module existed have no document yet, so the
+     * latest revision is created on demand.
+     */
+    public function current(Reservation $reservation): ProformaInvoice
+    {
+        $invoice = ProformaInvoice::query()
+            ->where('reservation_id', $reservation->id)
+            ->orderByDesc('revision')
+            ->first();
+
+        return $invoice ?? $this($reservation);
     }
 
     /**
@@ -97,6 +114,8 @@ class SyncProformaInvoiceAction
             'subtotal' => round($total, 2),
             'total' => round($total, 2),
         ]);
+
+        ($this->refreshTotals)($invoice);
 
         $invoice->load('lines');
     }

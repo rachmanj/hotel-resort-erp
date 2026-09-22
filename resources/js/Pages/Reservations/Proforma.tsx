@@ -1,5 +1,25 @@
 import { Head, Link, useForm } from '@inertiajs/react';
-import { Button, Descriptions, Popconfirm, Space, Table, Tag, theme } from 'antd';
+import {
+    Button,
+    Card,
+    Col,
+    DatePicker,
+    Descriptions,
+    Form,
+    Input,
+    InputNumber,
+    Popconfirm,
+    Row,
+    Select,
+    Space,
+    Statistic,
+    Table,
+    Tag,
+    Upload,
+    theme,
+} from 'antd';
+import { UploadOutlined } from '@ant-design/icons';
+import dayjs, { type Dayjs } from 'dayjs';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 
 interface ProformaLine {
@@ -11,6 +31,25 @@ interface ProformaLine {
     nights: number;
     stay_price: number;
     amount: number;
+}
+
+interface ProformaPayment {
+    id: number;
+    amount: number;
+    method: string;
+    method_label: string;
+    received_from: string;
+    reference_no?: string | null;
+    paid_at: string;
+    status: string;
+    status_label: string;
+    status_color: string;
+    recorded_by?: string | null;
+    verified_by?: string | null;
+    verified_at?: string | null;
+    receipt_number?: string | null;
+    proof_url?: string | null;
+    notes?: string | null;
 }
 
 interface ProformaProps {
@@ -34,13 +73,18 @@ interface ProformaProps {
         notes?: string | null;
         subtotal: number;
         total: number;
+        received_total: number;
+        outstanding_total: number;
         lines: ProformaLine[];
     };
     payment_details: {
         bank_accounts: Array<{ bank_name: string; account_no: string; account_name: string }>;
         terms: string[];
     };
+    payments: ProformaPayment[];
     canRelease: boolean;
+    canRecordPayment: boolean;
+    canVerifyPayment: boolean;
 }
 
 const formatIdr = (value: number | string) => `Rp ${Number(value).toLocaleString('id-ID')}`;
@@ -51,15 +95,51 @@ export default function Proforma({
     customer,
     proforma,
     payment_details,
+    payments,
     canRelease,
+    canRecordPayment,
+    canVerifyPayment,
 }: ProformaProps) {
     const { token } = theme.useToken();
     const releaseForm = useForm({});
+    const paymentForm = useForm({});
+    const verifyForm = useForm({});
+    const [recordForm] = Form.useForm();
 
     const submitRelease = () => {
         releaseForm.post(`/reservations/${reservation.id}/proforma/release`, {
             preserveScroll: true,
         });
+    };
+
+    const submitPayment = (values: {
+        amount: number;
+        method: string;
+        received_from: string;
+        reference_no?: string;
+        paid_at: Dayjs;
+        notes?: string;
+        proof?: Array<{ originFileObj?: File }>;
+    }) => {
+        paymentForm.transform(() => ({
+            amount: values.amount,
+            method: values.method,
+            received_from: values.received_from,
+            reference_no: values.reference_no ?? '',
+            paid_at: values.paid_at.format('YYYY-MM-DD'),
+            notes: values.notes ?? '',
+            proof: values.proof?.[0]?.originFileObj ?? null,
+        }));
+
+        paymentForm.post(`/reservations/${reservation.id}/proforma/payments`, {
+            forceFormData: true,
+            preserveScroll: true,
+            onSuccess: () => recordForm.resetFields(),
+        });
+    };
+
+    const verifyPayment = (paymentId: number) => {
+        verifyForm.post(`/proforma-payments/${paymentId}/verify`, { preserveScroll: true });
     };
 
     const isReleased = proforma.status === 'released';
@@ -150,6 +230,191 @@ export default function Proforma({
                         Purchase Total: {formatIdr(proforma.total)}
                     </div>
                 </div>
+
+                <Card title="Payments" size="small" style={{ marginTop: 32 }}>
+                    <Row gutter={16} style={{ marginBottom: 16 }}>
+                        <Col span={8}>
+                            <Statistic title="Purchase Total" value={proforma.total} formatter={(value) => formatIdr(value as number)} />
+                        </Col>
+                        <Col span={8}>
+                            <Statistic
+                                title="Received (verified)"
+                                value={proforma.received_total}
+                                valueStyle={{ color: token.colorSuccess }}
+                                formatter={(value) => formatIdr(value as number)}
+                            />
+                        </Col>
+                        <Col span={8}>
+                            <Statistic
+                                title="Outstanding"
+                                value={proforma.outstanding_total}
+                                valueStyle={{ color: proforma.outstanding_total > 0 ? token.colorWarning : token.colorSuccess }}
+                                formatter={(value) => formatIdr(value as number)}
+                            />
+                        </Col>
+                    </Row>
+
+                    <Table<ProformaPayment>
+                        rowKey="id"
+                        size="small"
+                        pagination={false}
+                        dataSource={payments}
+                        locale={{ emptyText: 'No payment recorded yet' }}
+                        columns={[
+                            { title: 'Paid Date', dataIndex: 'paid_at' },
+                            { title: 'Received From', dataIndex: 'received_from' },
+                            { title: 'Method', dataIndex: 'method_label' },
+                            { title: 'Reference', dataIndex: 'reference_no', render: (value: string | null) => value ?? '-' },
+                            { title: 'Amount', dataIndex: 'amount', align: 'right', render: formatIdr },
+                            {
+                                title: 'Status',
+                                dataIndex: 'status',
+                                render: (_: string, payment) => (
+                                    <Tag color={payment.status_color}>{payment.status_label}</Tag>
+                                ),
+                            },
+                            { title: 'Receipt No.', dataIndex: 'receipt_number', render: (value: string | null) => value ?? '-' },
+                            {
+                                title: 'Actions',
+                                key: 'actions',
+                                render: (_: unknown, payment) => (
+                                    <Space size="small" wrap>
+                                        {payment.proof_url && (
+                                            <a href={payment.proof_url} target="_blank" rel="noreferrer">
+                                                Proof
+                                            </a>
+                                        )}
+                                        {payment.status === 'verified' && (
+                                            <a href={`/proforma-payments/${payment.id}/receipt`}>Receipt PDF</a>
+                                        )}
+                                        {canVerifyPayment && payment.status !== 'verified' && (
+                                            <Popconfirm
+                                                title="Verify payment"
+                                                description="Confirm the money reached the bank account. A payment receipt will be issued."
+                                                okText="Verify"
+                                                cancelText="Cancel"
+                                                onConfirm={() => verifyPayment(payment.id)}
+                                            >
+                                                <Button size="small" type="primary" loading={verifyForm.processing}>
+                                                    Verify
+                                                </Button>
+                                            </Popconfirm>
+                                        )}
+                                    </Space>
+                                ),
+                            },
+                        ]}
+                    />
+
+                    {canRecordPayment && (
+                        <Form
+                            form={recordForm}
+                            layout="vertical"
+                            style={{ marginTop: 24 }}
+                            initialValues={{
+                                method: 'bank_transfer',
+                                received_from: customer.name ?? '',
+                                paid_at: dayjs(),
+                            }}
+                            onFinish={submitPayment}
+                        >
+                            <Row gutter={16}>
+                                <Col xs={24} md={8}>
+                                    <Form.Item
+                                        name="amount"
+                                        label="Amount"
+                                        rules={[{ required: true, message: 'Amount is required' }]}
+                                        validateStatus={paymentForm.errors.amount ? 'error' : undefined}
+                                        help={paymentForm.errors.amount}
+                                    >
+                                        <InputNumber
+                                            style={{ width: '100%' }}
+                                            min={1}
+                                            addonBefore="Rp"
+                                            formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, '.')}
+                                            parser={(value) => Number(`${value}`.replace(/\./g, ''))}
+                                        />
+                                    </Form.Item>
+                                </Col>
+                                <Col xs={24} md={8}>
+                                    <Form.Item
+                                        name="method"
+                                        label="Method"
+                                        rules={[{ required: true }]}
+                                        validateStatus={paymentForm.errors.method ? 'error' : undefined}
+                                        help={paymentForm.errors.method}
+                                    >
+                                        <Select
+                                            options={[
+                                                { value: 'bank_transfer', label: 'Transfer Bank' },
+                                                { value: 'cash', label: 'Cash' },
+                                            ]}
+                                        />
+                                    </Form.Item>
+                                </Col>
+                                <Col xs={24} md={8}>
+                                    <Form.Item
+                                        name="paid_at"
+                                        label="Paid Date"
+                                        rules={[{ required: true }]}
+                                        validateStatus={paymentForm.errors.paid_at ? 'error' : undefined}
+                                        help={paymentForm.errors.paid_at}
+                                    >
+                                        <DatePicker style={{ width: '100%' }} format="DD MMM YYYY" />
+                                    </Form.Item>
+                                </Col>
+                                <Col xs={24} md={8}>
+                                    <Form.Item
+                                        name="received_from"
+                                        label="Received From"
+                                        rules={[{ required: true, message: 'Received from is required' }]}
+                                        validateStatus={paymentForm.errors.received_from ? 'error' : undefined}
+                                        help={paymentForm.errors.received_from}
+                                    >
+                                        <Input />
+                                    </Form.Item>
+                                </Col>
+                                <Col xs={24} md={8}>
+                                    <Form.Item
+                                        name="reference_no"
+                                        label="Reference Number"
+                                        validateStatus={paymentForm.errors.reference_no ? 'error' : undefined}
+                                        help={paymentForm.errors.reference_no}
+                                    >
+                                        <Input placeholder="Transfer reference / slip number" />
+                                    </Form.Item>
+                                </Col>
+                                <Col xs={24} md={8}>
+                                    <Form.Item
+                                        name="proof"
+                                        label="Proof of Payment"
+                                        valuePropName="fileList"
+                                        getValueFromEvent={(event) => (Array.isArray(event) ? event : event?.fileList)}
+                                        validateStatus={paymentForm.errors.proof ? 'error' : undefined}
+                                        help={paymentForm.errors.proof}
+                                    >
+                                        <Upload beforeUpload={() => false} maxCount={1} accept=".jpg,.jpeg,.png,.pdf">
+                                            <Button icon={<UploadOutlined />}>Select file</Button>
+                                        </Upload>
+                                    </Form.Item>
+                                </Col>
+                                <Col span={24}>
+                                    <Form.Item
+                                        name="notes"
+                                        label="Notes"
+                                        validateStatus={paymentForm.errors.notes ? 'error' : undefined}
+                                        help={paymentForm.errors.notes}
+                                    >
+                                        <Input.TextArea rows={2} placeholder="Shown as In Payment Of on the receipt" />
+                                    </Form.Item>
+                                </Col>
+                            </Row>
+                            <Button type="primary" htmlType="submit" loading={paymentForm.processing}>
+                                Record Payment
+                            </Button>
+                        </Form>
+                    )}
+                </Card>
 
                 <div style={{ marginTop: 32 }}>
                     <h3>Payment Details</h3>

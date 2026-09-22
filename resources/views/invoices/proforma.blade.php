@@ -105,6 +105,16 @@
             <td class="label">Purchase Total</td>
             <td class="value">Rp {{ number_format($proforma['total'], 0, ',', '.') }}</td>
         </tr>
+        @if ($proforma['received_total'] > 0)
+        <tr>
+            <td class="label">Received</td>
+            <td class="value">Rp {{ number_format($proforma['received_total'], 0, ',', '.') }}</td>
+        </tr>
+        <tr class="grand">
+            <td class="label">Outstanding</td>
+            <td class="value">Rp {{ number_format($proforma['outstanding_total'], 0, ',', '.') }}</td>
+        </tr>
+        @endif
     </table>
 
     <div class="payment">

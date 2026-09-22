@@ -30,6 +30,32 @@ Decision: [Title] - [YYYY-MM-DD]
 
 ## Recent Decisions
 
+Decision: Down payments live on the proforma invoice, not the folio, and only count as received once Finance verifies them - 2026-09-22
+
+**Context**: Pratasaba takes a down payment at booking time to secure a reservation. Marketing collects the transfer slip, Finance checks the bank account, and the guest gets a paper `Tanda Terima Pembayaran` whose number mirrors the proforma invoice (`PR-045/PI/PRATA/VI/2026`). The existing `payments` table hangs off a folio, and a folio does not exist until check-in, so there is nowhere to post the money at the moment it arrives.
+
+**Options Considered**:
+
+1. **Create the folio early so the down payment can be posted to it**: open a folio at booking and post a deposit payment.
+   - ✅ Pros: one payments table, GL posting is already solved.
+   - ❌ Cons: folios drive check-out and billing; an open folio for every tentative booking corrupts occupancy and billing reports, and cancelled bookings leave orphan folios.
+2. **A separate `proforma_payments` table keyed to the proforma invoice (chosen)**: record the claim, verify it, then issue a receipt.
+   - ✅ Pros: models what the paperwork actually is (a pre-arrival deposit against a quotation), keeps folios meaning "a stay in progress", and the receipt naturally derives its number from the invoice.
+   - ❌ Cons: a second money table, and the transfer into the folio at check-in has to be built later.
+3. **One-step recording with no verification**: whoever enters the payment also confirms it.
+   - ✅ Pros: fewer clicks.
+   - ❌ Cons: removes the segregation of duties the client explicitly asked for; Marketing could clear an outstanding balance on the strength of an unverified screenshot.
+
+**Decision**: Option 2 with the two-step `recorded` → `verified` status from Option 3 rejected. Recording is a claim and issues nothing; verification is what issues the receipt number, sets `received_total`/`outstanding_total`, and promotes a Tentative reservation to Confirmed.
+
+**Rationale**: The outstanding amount is a financial statement shown to the customer, so it may only move on money Finance has seen in the bank account. Splitting record from verify also gives the receipt an unambiguous issue event to hang its number and timestamp on.
+
+**Implementation**: `proforma_payments` (unique `receipt_number`, nullable until issued), `RecordProformaPaymentAction` / `VerifyProformaPaymentAction`, `ProformaPaymentReceiptNumberService::reserveNext()` (locks the invoice row and counts only issued receipts inside the verifying transaction; a second and later receipt against the same invoice is suffixed `-2`, `-3`), `RefreshProformaInvoiceTotalsAction` (also called by `SyncProformaInvoiceAction` so a rate change reprices the outstanding balance), permissions `proforma.payment.record` (admin, finance, front_office) and `proforma.payment.verify` (admin, finance only).
+
+**Review Date**: When the folio/check-in phase picks up deposits - decide how a verified proforma payment is carried into the folio and posted to the GL without being counted twice.
+
+---
+
 Decision: Released proforma invoices are immutable; reservation changes issue a new numbered revision - 2026-09-22
 
 **Context**: Marketing books a reservation and the system issues a Proforma Invoice that only Finance may release. After Finance releases it the document has usually been sent to the customer, yet reservations keep changing (rooms added, dates moved, rates renegotiated). The document number is a per-year counter printed on paper (`066/PI/PRATA/VIII/2026`), so it cannot be silently reused.

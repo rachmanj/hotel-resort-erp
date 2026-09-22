@@ -22,6 +22,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
     'released_by',
     'subtotal',
     'total',
+    'received_total',
+    'outstanding_total',
     'prepared_by',
     'notes',
 ])]
@@ -40,6 +42,8 @@ class ProformaInvoice extends Model
             'released_at' => 'datetime',
             'subtotal' => 'decimal:2',
             'total' => 'decimal:2',
+            'received_total' => 'decimal:2',
+            'outstanding_total' => 'decimal:2',
         ];
     }
 
@@ -61,6 +65,11 @@ class ProformaInvoice extends Model
     public function lines(): HasMany
     {
         return $this->hasMany(ProformaInvoiceLine::class)->orderBy('sort_order');
+    }
+
+    public function payments(): HasMany
+    {
+        return $this->hasMany(ProformaPayment::class)->orderBy('paid_at')->orderBy('id');
     }
 
     public function isDraft(): bool

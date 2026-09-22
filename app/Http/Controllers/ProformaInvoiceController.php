@@ -6,11 +6,13 @@ use App\Actions\Reservations\ReleaseProformaInvoiceAction;
 use App\Actions\Reservations\SyncProformaInvoiceAction;
 use App\Models\ProformaInvoice;
 use App\Models\ProformaInvoiceLine;
+use App\Models\ProformaPayment;
 use App\Models\Reservation;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response as InertiaResponse;
 use InvalidArgumentException;
@@ -21,9 +23,14 @@ class ProformaInvoiceController extends Controller
     {
         $invoice = $this->currentInvoice($reservation, $syncProformaInvoice);
 
+        $user = $request->user();
+
         return Inertia::render('Reservations/Proforma', [
             ...$this->buildDocumentData($reservation, $invoice),
-            'canRelease' => $request->user()?->can('proforma.release') ?? false,
+            'payments' => $this->buildPayments($invoice),
+            'canRelease' => $user?->can('proforma.release') ?? false,
+            'canRecordPayment' => $user?->can('proforma.payment.record') ?? false,
+            'canVerifyPayment' => $user?->can('proforma.payment.verify') ?? false,
         ]);
     }
 
@@ -60,18 +67,9 @@ class ProformaInvoiceController extends Controller
         return back()->with('success', "Proforma invoice {$invoice->number} released.");
     }
 
-    /**
-     * Reservations booked before this module existed have no document yet, so the
-     * latest revision is created on demand.
-     */
     private function currentInvoice(Reservation $reservation, SyncProformaInvoiceAction $syncProformaInvoice): ProformaInvoice
     {
-        $invoice = ProformaInvoice::query()
-            ->where('reservation_id', $reservation->id)
-            ->orderByDesc('revision')
-            ->first();
-
-        return $invoice ?? $syncProformaInvoice($reservation);
+        return $syncProformaInvoice->current($reservation);
     }
 
     /**
@@ -116,6 +114,8 @@ class ProformaInvoiceController extends Controller
                 'notes' => $invoice->notes,
                 'subtotal' => (float) $invoice->subtotal,
                 'total' => (float) $invoice->total,
+                'received_total' => (float) $invoice->received_total,
+                'outstanding_total' => (float) $invoice->outstanding_total,
                 'lines' => $invoice->lines->map(fn (ProformaInvoiceLine $line) => [
                     'id' => $line->id,
                     'description' => $line->description,
@@ -132,5 +132,34 @@ class ProformaInvoiceController extends Controller
                 'terms' => config('proforma.payment_terms'),
             ],
         ];
+    }
+
+    /**
+     * @return list<array<string, mixed>>
+     */
+    private function buildPayments(ProformaInvoice $invoice): array
+    {
+        return $invoice->payments()
+            ->with(['recordedBy:id,name', 'verifiedBy:id,name'])
+            ->get()
+            ->map(fn (ProformaPayment $payment) => [
+                'id' => $payment->id,
+                'amount' => (float) $payment->amount,
+                'method' => $payment->method->value,
+                'method_label' => $payment->method->label(),
+                'received_from' => $payment->received_from,
+                'reference_no' => $payment->reference_no,
+                'paid_at' => $payment->paid_at->format('d M Y'),
+                'status' => $payment->status->value,
+                'status_label' => $payment->status->label(),
+                'status_color' => $payment->status->color(),
+                'recorded_by' => $payment->recordedBy?->name,
+                'verified_by' => $payment->verifiedBy?->name,
+                'verified_at' => $payment->verified_at?->format('d M Y H:i'),
+                'receipt_number' => $payment->receipt_number,
+                'proof_url' => $payment->proof_path === null ? null : Storage::disk('public')->url($payment->proof_path),
+                'notes' => $payment->notes,
+            ])
+            ->all();
     }
 }
