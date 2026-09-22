@@ -26,4 +26,17 @@ enum FolioItemType: string
             self::DepositCredit => 'Deposit Credit',
         };
     }
+
+    /**
+     * Only Room and F&B revenue carries service charge and tax. Dive center,
+     * boat trips, rentals, laundry, spa, and every other misc charge are sold
+     * inclusive of everything and must be posted with no tax breakdown.
+     */
+    public function isTaxable(): bool
+    {
+        return match ($this) {
+            self::Room, self::Fb => true,
+            self::Spa, self::Misc, self::Tax, self::ServiceCharge, self::Discount, self::DepositCredit => false,
+        };
+    }
 }

@@ -69,7 +69,7 @@ class FolioChargeTest extends TestCase
         ]);
     }
 
-    public function test_manual_charge_posts_misc_folio_item_with_tax_and_service_charge(): void
+    public function test_manual_charge_posts_misc_folio_item_with_no_tax_and_no_service_charge(): void
     {
         $response = $this->actingAs($this->cashier)->post(route('folios.charges.store', $this->folio), [
             'description' => 'Extra towels',
@@ -86,8 +86,9 @@ class FolioChargeTest extends TestCase
         $this->assertSame(FolioItemType::Misc, $item->item_type);
         $this->assertSame('manual_charge', $item->reference_type);
         $this->assertEquals(500_000, (float) $item->amount);
-        $this->assertEquals(50_000, (float) $item->service_charge_amount);
-        $this->assertEquals(60_500, (float) $item->tax_amount);
+        $this->assertEquals(0, (float) $item->service_charge_amount);
+        $this->assertEquals(0, (float) $item->tax_amount);
+        $this->assertEquals(500_000, $item->line_total);
         $this->assertSame('Extra towels', $item->description);
     }
 

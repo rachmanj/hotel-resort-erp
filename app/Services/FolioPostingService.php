@@ -46,7 +46,7 @@ class FolioPostingService
         $taxAmount = 0.0;
         $serviceChargeAmount = 0.0;
 
-        if ($applyTax && ! in_array($itemType, ['tax', 'service_charge', 'discount', 'deposit_credit'], true)) {
+        if ($applyTax && (FolioItemType::from($itemType))->isTaxable()) {
             $taxes = $this->taxCalculator->calculate($lineAmount, FolioItemAppliesTo::forItemType($itemType));
             $taxAmount = $taxes['tax'];
             $serviceChargeAmount = $taxes['service_charge'];

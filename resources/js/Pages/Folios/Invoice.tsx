@@ -30,11 +30,12 @@ interface FolioInvoiceProps {
     };
     balance: number;
     charges_total: number;
+    show_tax_columns: boolean;
 }
 
 const formatIdr = (v: number | string) => `Rp ${Number(v).toLocaleString('id-ID')}`;
 
-export default function FolioInvoice({ folio, balance, charges_total }: FolioInvoiceProps) {
+export default function FolioInvoice({ folio, balance, charges_total, show_tax_columns }: FolioInvoiceProps) {
     const { token } = theme.useToken();
     return (
         <AuthenticatedLayout title={`Invoice ${folio.folio_no}`}>
@@ -74,8 +75,12 @@ export default function FolioInvoice({ folio, balance, charges_total }: FolioInv
                         { title: 'Qty', dataIndex: 'quantity', render: (v) => Number(v) },
                         { title: 'Unit', dataIndex: 'unit_price', render: formatIdr },
                         { title: 'Amount', dataIndex: 'amount', render: formatIdr },
-                        { title: 'SC', dataIndex: 'service_charge_amount', render: formatIdr },
-                        { title: 'Tax', dataIndex: 'tax_amount', render: formatIdr },
+                        ...(show_tax_columns
+                            ? [
+                                  { title: 'SC', dataIndex: 'service_charge_amount', render: formatIdr },
+                                  { title: 'Tax', dataIndex: 'tax_amount', render: formatIdr },
+                              ]
+                            : []),
                         { title: 'Total', dataIndex: 'line_total', render: formatIdr },
                     ]}
                 />

@@ -34,6 +34,10 @@ class InvoiceController extends Controller
     {
         $folio->load(['guest', 'reservation', 'company', 'items', 'payments']);
 
+        $showTaxColumns = $folio->items->contains(
+            fn ($item) => (float) $item->tax_amount > 0 || (float) $item->service_charge_amount > 0,
+        );
+
         return [
             'folio' => [
                 'id' => $folio->id,
@@ -62,6 +66,7 @@ class InvoiceController extends Controller
             ],
             'balance' => $folioPostingService->getBalance($folio),
             'charges_total' => $folioPostingService->getChargesTotal($folio),
+            'show_tax_columns' => $showTaxColumns,
         ];
     }
 }
