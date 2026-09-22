@@ -51,4 +51,12 @@
 
 ---
 
+### [M004] Proforma Invoice (reservation document flow, phase 1) implemented (2026-09-22) ✅ COMPLETE
+
+- **Challenge/Decision**: Pratasaba issues a paper Proforma Invoice when Marketing books a reservation, but only Finance may release it. The document must stay identical to the copy already sent to the customer once released, and its number format (`066/PI/PRATA/VIII/2026`) counts per year with no gaps or collisions.
+- **Solution**: `proforma_invoices` + `proforma_invoice_lines` (`BelongsToHotel`), `ProformaInvoiceNumberService::reserveNext()` (roman month, `lockForUpdate` range lock, refuses to run outside a transaction), `SyncProformaInvoiceAction` wired through `ReservationProformaObserver` + `ReservationRoomProformaObserver` so every booking path (web, Telegram, OTA) issues and regenerates the draft, `ReleaseProformaInvoiceAction` behind the new `proforma.release` permission (admin + finance), `ProformaInvoiceController` (show/download/release), DomPDF view `invoices.proforma`, Inertia page `Reservations/Proforma`.
+- **Key Learning**: The document number is only unique per property (the `PRATA` segment *is* the property token), so the unique index must be `(hotel_id, number)` — a bare unique on `number` broke `DashboardTest`, where two hotels each legitimately issue `001/PI/PRATA/IX/2026`. Also, a number reserved in its own committed transaction is unsafe: the range lock has to be held by the same transaction that inserts the row, which is why the sequence is reserved inside `SyncProformaInvoiceAction`'s transaction.
+
+---
+
 [Add new memory entries below, following the format above]

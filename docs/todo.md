@@ -61,10 +61,12 @@ Include relevant context in brackets to help with future AI-assisted coding:
 
 ## Recently Completed
 
+- `[done] P1: Reservation document flow phase 1 - Proforma Invoice issued as draft on booking, released by Finance only [proforma_invoices/proforma_invoice_lines migrations, app/Services/ProformaInvoiceNumberService.php, app/Actions/Reservations/SyncProformaInvoiceAction.php + ReleaseProformaInvoiceAction.php, app/Observers/Reservation*ProformaObserver.php, app/Http/Controllers/ProformaInvoiceController.php, resources/views/invoices/proforma.blade.php, resources/js/Pages/Reservations/Proforma.tsx, config/proforma.php, proforma.release permission] (completed: 2026-09-22)`
 - `[done] P0: Resequence docs/plan.md Section 9 so Room Reservation (Phase 2) + Telegram Bot (Phase 3) ship before Billing/Housekeeping; split Telegram command rollout across Phases 3-9a [docs/plan.md Sections 6.2, 6.3, 6.3 (new), 6.4, 9, 11.3] (completed: 2026-07-26)`
 - `[done] P0: Resolve all 15 stakeholder Open Questions in docs/plan.md; rewrite plan for multi-property + multi-currency + spatie architecture [docs/plan.md Sections 1-11, .cursorrules Auth/Multi-property/Multi-currency lines] (completed: 2026-07-25)`
 
 ## Quick Notes
 
+- Proforma Invoice is phase 1 of the reservation document flow only. Payments, receipts, outstanding tracking and invoice release are later phases and deliberately absent. Run `php artisan db:seed --class=RolePermissionSeeder` on existing databases to create the new `proforma.release` permission.
 - Plan is v2.1 as of 2026-07-26 — phases resequenced so Room Reservation + Telegram (core differentiator) land by Phase 3; Telegram bot now ships in 5 incremental slices (Phases 3/4/5/6/7, plus 8/9a for accounting/reporting commands) instead of one monolithic phase. See docs/decisions.md for the full decision record and MEMORY.md [M002] for the summary.
 ```

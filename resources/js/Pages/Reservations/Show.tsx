@@ -137,6 +137,9 @@ export default function ReservationShow({
                         Check In
                     </Button>
                 )}
+                <Link href={`/reservations/${reservation.id}/proforma`}>
+                    <Button>Proforma Invoice</Button>
+                </Link>
                 {canViewFolio && folio && (
                     <Link href={`/folios/${folio.id}`}>
                         <Button>View Folio ({folio.folio_no})</Button>

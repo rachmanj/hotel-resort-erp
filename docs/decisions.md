@@ -30,6 +30,32 @@ Decision: [Title] - [YYYY-MM-DD]
 
 ## Recent Decisions
 
+Decision: Released proforma invoices are immutable; reservation changes issue a new numbered revision - 2026-09-22
+
+**Context**: Marketing books a reservation and the system issues a Proforma Invoice that only Finance may release. After Finance releases it the document has usually been sent to the customer, yet reservations keep changing (rooms added, dates moved, rates renegotiated). The document number is a per-year counter printed on paper (`066/PI/PRATA/VIII/2026`), so it cannot be silently reused.
+
+**Options Considered**:
+
+1. **Rewrite the released document in place**: keep one row per reservation and regenerate its lines whenever the reservation changes.
+   - ✅ Pros: simplest model, one document per reservation, no numbering pressure.
+   - ❌ Cons: the customer holds a copy that no longer matches the system; no audit trail of what was actually quoted.
+2. **Same number, bump the revision counter**: keep the released row, overwrite nothing, but reuse the number with a revision suffix.
+   - ✅ Pros: matches how staff talk about a "revised PI".
+   - ❌ Cons: the number is no longer a unique key, and two documents in circulation carry the same `No.` field.
+3. **New revision as a new numbered document (chosen)**: released rows are frozen; a change issues a fresh draft with `revision = previous + 1` and its own sequence number.
+   - ✅ Pros: every piece of paper in circulation maps to exactly one immutable row; unique index on the number holds; Finance re-approves what changed.
+   - ❌ Cons: burns sequence numbers faster, and the reservation detail page must show only the latest revision.
+
+**Decision**: Option 3. Drafts are regenerated in place; released documents are never written to again. A change to reservation rooms, dates, or rates creates the next revision as a new draft with a new number, and only when the computed lines actually differ from the released ones.
+
+**Rationale**: A proforma invoice is an external commitment, not internal state. Once it leaves the building the stored row is the only evidence of what was quoted, so freezing it is what makes later phases (down payment tracking, receipts, invoice release) auditable.
+
+**Implementation**: `proforma_invoices.revision` + `status`; `SyncProformaInvoiceAction` decides create/regenerate/revise and is driven by `ReservationProformaObserver` and `ReservationRoomProformaObserver` so all booking paths behave identically. Uniqueness is `(hotel_id, number)` rather than `number` alone, because the number is only unique per property. `ProformaInvoiceNumberService::reserveNext()` must be called inside the transaction that inserts the row, so its `lockForUpdate` range lock is still held when the insert lands.
+
+**Review Date**: When the payment and receipt phases are built - confirm with Finance whether a revision should carry forward the down payment already collected against the superseded document.
+
+---
+
 Decision: Resolve all 15 stakeholder Open Questions in docs/plan.md; adopt multi-property, multi-currency, and spatie/laravel-permission as active Phase 1 architecture - 2026-07-25
 
 **Context**: `docs/plan.md` (Section 11) carried 15 unresolved Open Questions blocking Phase 1 scaffolding. The stakeholder reviewed and decided all 15; three are architecture-changing (spatie/laravel-permission, multi-property from Phase 1, multi-currency from Phase 1) and required updating every affected section of the plan for internal consistency, not just the decisions log.

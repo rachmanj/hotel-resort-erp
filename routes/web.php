@@ -58,6 +58,7 @@ use App\Http\Controllers\MaintenanceRequestController;
 use App\Http\Controllers\MenuController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\Profile\TelegramLinkController;
+use App\Http\Controllers\ProformaInvoiceController;
 use App\Http\Controllers\PromotionQuoteController;
 use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\PurchaseRequisitionController;
@@ -114,6 +115,9 @@ Route::middleware(['auth', 'hotel.context'])->group(function (): void {
     Route::post('/reservations/{reservation}/cancel', [ReservationController::class, 'cancel'])->name('reservations.cancel')->middleware('can:reservations.cancel');
     Route::post('/reservations/{reservation}/send-whatsapp', [ReservationController::class, 'sendWhatsApp'])->name('reservations.send-whatsapp')->middleware(['can:reservations.send-whatsapp', 'idempotency']);
     Route::post('/reservations/{reservation}/checkin', [CheckInController::class, 'store'])->name('reservations.checkin')->middleware(['can:reservations.checkin', 'idempotency']);
+    Route::get('/reservations/{reservation}/proforma', [ProformaInvoiceController::class, 'show'])->name('reservations.proforma')->middleware('can:reservations.view');
+    Route::get('/reservations/{reservation}/proforma/download', [ProformaInvoiceController::class, 'download'])->name('reservations.proforma.download')->middleware('can:reservations.view');
+    Route::post('/reservations/{reservation}/proforma/release', [ProformaInvoiceController::class, 'release'])->name('reservations.proforma.release')->middleware('can:proforma.release');
     Route::post('/reservation-rooms/{reservationRoom}/checkout', [CheckOutController::class, 'store'])->name('reservations.checkout')->middleware(['can:reservations.checkout', 'idempotency']);
 
     Route::get('/groups', [GroupController::class, 'index'])->name('groups.index')->middleware('can:groups.view');
