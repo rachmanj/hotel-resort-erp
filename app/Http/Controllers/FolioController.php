@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\DivePackageType;
 use App\Enums\FolioItemType;
 use App\Enums\FolioStatus;
 use App\Enums\PaymentMethod;
 use App\Http\Requests\PostFolioChargeRequest;
 use App\Http\Requests\PostFolioPaymentRequest;
 use App\Models\DivePackage;
+use App\Models\DiveRateItem;
 use App\Models\Folio;
 use App\Models\RevenueCategory;
 use App\Services\FolioPostingService;
@@ -99,13 +101,15 @@ class FolioController extends Controller
             'divePackages' => DivePackage::query()
                 ->where('is_active', true)
                 ->orderBy('name')
-                ->get(['id', 'code', 'name', 'price_per_person'])
+                ->get(['id', 'code', 'name', 'type', 'price_per_person'])
                 ->map(fn (DivePackage $package) => [
                     'id' => $package->id,
                     'code' => $package->code,
                     'name' => $package->name,
+                    'type' => $package->type->value,
                     'price_per_person' => (float) $package->price_per_person,
                 ]),
+            'diveBoatRoutes' => DiveRateItem::boatRoutesPayload(),
             'revenueCategories' => RevenueCategory::query()
                 ->where('is_active', true)
                 ->orderBy('sort_order')
@@ -128,9 +132,21 @@ class FolioController extends Controller
         $description = $validated['description'];
         $revenueCategoryId = $validated['revenue_category_id'] ?? null;
 
+        $unitPrice = (float) $validated['unit_price'];
+
         if ($validated['dive_package_id'] ?? null) {
             $divePackage = DivePackage::query()->findOrFail($validated['dive_package_id']);
             $description = 'Dive: '.$divePackage->name;
+
+            if ($divePackage->type === DivePackageType::DivePackage) {
+                $boatRate = DiveRateItem::query()->findOrFail($validated['dive_boat_rate_item_id']);
+                $description = 'Dive: '.$divePackage->name.' · '.$boatRate->route;
+                $quantity = (float) $validated['quantity'];
+                $packageLineAmount = (float) $divePackage->price_per_person * $quantity;
+                $unitPrice = $quantity > 0
+                    ? ($packageLineAmount + (float) $boatRate->price) / $quantity
+                    : (float) $divePackage->price_per_person;
+            }
 
             if ($revenueCategoryId === null) {
                 $revenueCategoryId = RevenueCategory::query()
@@ -145,7 +161,7 @@ class FolioController extends Controller
                 folio: $folio,
                 itemType: FolioItemType::Misc->value,
                 description: $description,
-                amount: (float) $validated['unit_price'],
+                amount: $unitPrice,
                 quantity: (float) $validated['quantity'],
                 referenceType: 'manual_charge',
                 referenceId: null,

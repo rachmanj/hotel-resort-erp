@@ -7,6 +7,7 @@ use App\Enums\FolioItemType;
 use App\Enums\FolioStatus;
 use App\Enums\FolioType;
 use App\Models\DivePackage;
+use App\Models\DiveRateItem;
 use App\Models\Folio;
 use App\Models\FolioItem;
 use App\Models\Guest;
@@ -99,7 +100,7 @@ class FolioChargeTest extends TestCase
             'hotel_id' => $this->hotel->id,
             'code' => 'DP-2D',
             'name' => 'Two Tank Dive',
-            'type' => DivePackageType::DivePackage->value,
+            'type' => DivePackageType::NightDive->value,
             'price_per_person' => 1_200_000,
             'min_pax' => 1,
             'is_active' => true,
@@ -167,6 +168,53 @@ class FolioChargeTest extends TestCase
             ->component('Folios/Show')
             ->has('miscChargeTaxRules', 0)
         );
+    }
+
+    public function test_show_page_exposes_dive_boat_routes_with_engine_prices(): void
+    {
+        $this->artisan('pratasaba:import-dive-price-list')->assertSuccessful();
+
+        $response = $this->actingAs($this->cashier)->get(route('folios.show', $this->folio));
+
+        $response->assertOk();
+        $response->assertInertia(fn ($page) => $page
+            ->component('Folios/Show')
+            ->has('diveBoatRoutes', 6)
+            ->where('diveBoatRoutes.0.route', 'House Reef')
+            ->has('diveBoatRoutes.0.boat_prices', 2)
+            ->where('diveBoatRoutes.0.boat_prices.0.price', 2_000_000)
+            ->where('diveBoatRoutes.0.boat_prices.1.price', 3_000_000)
+        );
+    }
+
+    public function test_licensed_dive_package_charge_with_route_and_boat_has_no_tax_or_service_charge(): void
+    {
+        $this->artisan('pratasaba:import-dive-price-list')->assertSuccessful();
+
+        $divePackage = DivePackage::query()
+            ->where('hotel_id', $this->hotel->id)
+            ->where('code', 'DV-PKG-GRP')
+            ->firstOrFail();
+
+        $boatRate = DiveRateItem::query()->where('code', 'BOAT-HOUSE-REEF-200HP')->firstOrFail();
+
+        $response = $this->actingAs($this->cashier)->post(route('folios.charges.store', $this->folio), [
+            'description' => 'ignored',
+            'quantity' => 2,
+            'unit_price' => 2_500_000,
+            'dive_package_id' => $divePackage->id,
+            'dive_boat_rate_item_id' => $boatRate->id,
+        ]);
+
+        $response->assertRedirect();
+        $response->assertSessionHas('success');
+
+        $item = FolioItem::query()->where('folio_id', $this->folio->id)->firstOrFail();
+        $this->assertSame('Dive: Dive Package (Group) · House Reef', $item->description);
+        $this->assertEquals(5_000_000, (float) $item->amount);
+        $this->assertEquals(0, (float) $item->service_charge_amount);
+        $this->assertEquals(0, (float) $item->tax_amount);
+        $this->assertEquals(5_000_000, $item->line_total);
     }
 
     public function test_active_rules_payload_for_item_type_still_returns_rules_for_taxable_room_charges(): void

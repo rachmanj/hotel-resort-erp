@@ -65,9 +65,39 @@ interface FolioShowProps {
         id: number;
         code: string;
         name: string;
+        type: string;
         price_per_person: number;
     }>;
+    diveBoatRoutes: Array<{
+        route: string;
+        dive_spots: string;
+        label: string;
+        boat_prices: Array<{
+            id: number;
+            boat_engine_option: string;
+            boat_engine_label: string;
+            price: number;
+        }>;
+    }>;
     revenueCategories: Array<{ id: number; code: string; name: string }>;
+}
+
+function computeDiveUnitPrice(
+    pkg: FolioShowProps['divePackages'][number] | undefined,
+    boatPrice: number | null,
+    quantity: number,
+): number {
+    if (!pkg) {
+        return 0;
+    }
+
+    if (pkg.type !== 'dive_package' || boatPrice === null) {
+        return pkg.price_per_person;
+    }
+
+    const packageLine = pkg.price_per_person * quantity;
+
+    return quantity > 0 ? (packageLine + boatPrice) / quantity : pkg.price_per_person;
 }
 
 const formatIdr = (v: number | string) => `Rp ${Number(v).toLocaleString('id-ID')}`;
@@ -84,6 +114,7 @@ export default function FolioShow({
     canViewGuestInvoice,
     miscChargeTaxRules,
     divePackages,
+    diveBoatRoutes,
     revenueCategories,
 }: FolioShowProps) {
     const [chargeModalOpen, setChargeModalOpen] = useState(false);
@@ -96,11 +127,17 @@ export default function FolioShow({
 
     const chargeForm = useForm({
         dive_package_id: null as number | null,
+        dive_route_label: null as string | null,
+        dive_boat_rate_item_id: null as number | null,
         revenue_category_id: null as number | null,
         description: '',
         quantity: 1,
         unit_price: 0,
     });
+
+    const selectedDivePackage = divePackages.find((p) => p.id === chargeForm.data.dive_package_id);
+    const requiresBoatRoute = selectedDivePackage?.type === 'dive_package';
+    const selectedRoute = diveBoatRoutes.find((route) => route.label === chargeForm.data.dive_route_label);
 
     const submitPayment = () => {
         paymentForm.post(`/folios/${folio.id}/payments`, {
@@ -114,6 +151,8 @@ export default function FolioShow({
         chargeForm.reset();
         chargeForm.setData({
             dive_package_id: null,
+            dive_route_label: null,
+            dive_boat_rate_item_id: null,
             revenue_category_id: null,
             description: '',
             quantity: 1,
@@ -122,19 +161,72 @@ export default function FolioShow({
         setChargeModalOpen(true);
     };
 
-    const onChargeDivePackageChange = (packageId: number | null) => {
-        chargeForm.setData('dive_package_id', packageId);
-        if (packageId !== null) {
-            const pkg = divePackages.find((p) => p.id === packageId);
-            if (pkg) {
-                chargeForm.setData('description', `Dive: ${pkg.name}`);
-                chargeForm.setData('unit_price', pkg.price_per_person);
-                const diveCategory = revenueCategories.find((c) => c.code === 'dive_center');
-                if (diveCategory) {
-                    chargeForm.setData('revenue_category_id', diveCategory.id);
-                }
-            }
+    const applyDiveChargePricing = (
+        pkg: FolioShowProps['divePackages'][number] | undefined,
+        routeLabel: string | null,
+        boatRateId: number | null,
+        quantity: number,
+    ) => {
+        const route = diveBoatRoutes.find((item) => item.label === routeLabel);
+        const boatPrice =
+            boatRateId !== null
+                ? route?.boat_prices.find((price) => price.id === boatRateId)?.price ?? null
+                : null;
+
+        if (pkg) {
+            const description =
+                pkg.type === 'dive_package' && route
+                    ? `Dive: ${pkg.name} · ${route.route}`
+                    : `Dive: ${pkg.name}`;
+            chargeForm.setData('description', description);
+            chargeForm.setData('unit_price', computeDiveUnitPrice(pkg, boatPrice, quantity));
         }
+    };
+
+    const onChargeDivePackageChange = (packageId: number | null) => {
+        const pkg = packageId !== null ? divePackages.find((p) => p.id === packageId) : undefined;
+
+        chargeForm.setData({
+            dive_package_id: packageId,
+            dive_route_label: null,
+            dive_boat_rate_item_id: null,
+        });
+
+        if (pkg) {
+            const diveCategory = revenueCategories.find((c) => c.code === 'dive_center');
+            if (diveCategory) {
+                chargeForm.setData('revenue_category_id', diveCategory.id);
+            }
+            applyDiveChargePricing(pkg, null, null, chargeForm.data.quantity);
+        }
+    };
+
+    const onChargeDiveRouteChange = (routeLabel: string | null) => {
+        chargeForm.setData({
+            dive_route_label: routeLabel,
+            dive_boat_rate_item_id: null,
+        });
+        applyDiveChargePricing(selectedDivePackage, routeLabel, null, chargeForm.data.quantity);
+    };
+
+    const onChargeBoatEngineChange = (boatRateId: number | null) => {
+        chargeForm.setData('dive_boat_rate_item_id', boatRateId);
+        applyDiveChargePricing(
+            selectedDivePackage,
+            chargeForm.data.dive_route_label,
+            boatRateId,
+            chargeForm.data.quantity,
+        );
+    };
+
+    const onChargeQuantityChange = (quantity: number) => {
+        chargeForm.setData('quantity', quantity);
+        applyDiveChargePricing(
+            selectedDivePackage,
+            chargeForm.data.dive_route_label,
+            chargeForm.data.dive_boat_rate_item_id,
+            quantity,
+        );
     };
 
     const submitCharge = () => {
@@ -320,6 +412,36 @@ export default function FolioShow({
                             onChange={(value) => onChargeDivePackageChange(value ?? null)}
                         />
                     </Form.Item>
+                    {requiresBoatRoute && (
+                        <>
+                            <Form.Item label="Boat Route" required>
+                                <Select
+                                    showSearch
+                                    optionFilterProp="label"
+                                    placeholder="Select dive route"
+                                    value={chargeForm.data.dive_route_label ?? undefined}
+                                    options={diveBoatRoutes.map((route) => ({
+                                        value: route.label,
+                                        label: route.label,
+                                    }))}
+                                    onChange={(value) => onChargeDiveRouteChange(value ?? null)}
+                                />
+                            </Form.Item>
+                            {selectedRoute && (
+                                <Form.Item label="Boat Engine" required>
+                                    <Select
+                                        placeholder="Select boat engine option"
+                                        value={chargeForm.data.dive_boat_rate_item_id ?? undefined}
+                                        options={selectedRoute.boat_prices.map((price) => ({
+                                            value: price.id,
+                                            label: `${price.boat_engine_label} · ${formatIdr(price.price)}`,
+                                        }))}
+                                        onChange={(value) => onChargeBoatEngineChange(value ?? null)}
+                                    />
+                                </Form.Item>
+                            )}
+                        </>
+                    )}
                     <Form.Item label="Revenue Category">
                         <Select
                             allowClear
@@ -347,7 +469,7 @@ export default function FolioShow({
                             min={0.01}
                             style={{ width: '100%' }}
                             value={chargeForm.data.quantity}
-                            onChange={(v) => chargeForm.setData('quantity', v ?? 1)}
+                            onChange={(v) => onChargeQuantityChange(v ?? 1)}
                         />
                     </Form.Item>
                     <Form.Item label="Unit Price" required>

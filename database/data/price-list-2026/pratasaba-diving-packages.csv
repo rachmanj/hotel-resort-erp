@@ -1,0 +1,22 @@
+code,name,item_type,route,dive_spots,boat_engine_option,price,min_pax,valid_from,valid_to
+DV-PKG-GRP,Dive Package (Group),dive_package,,,,1500000,2,2026-01-01,2026-12-31
+DV-PKG-SOLO,Dive Package (Solo),dive_package,,,,2500000,1,2026-01-01,2026-12-31
+BOAT-HOUSE-REEF-200HP,House Reef Boat Dive (200 HP),boat_rent,House Reef,"Maratua Reef, Hanging Garden, Turtle Traffic, Mid Reef, Smooth Face",200_hp,2000000,,2026-01-01,2026-12-31
+BOAT-HOUSE-REEF-400HP,House Reef Boat Dive (200 HP x 2),boat_rent,House Reef,"Maratua Reef, Hanging Garden, Turtle Traffic, Mid Reef, Smooth Face",200_hp_x2,3000000,,2026-01-01,2026-12-31
+BOAT-THE-CHANNEL-200HP,The Channel Boat Dive (200 HP),boat_rent,The Channel,"Channel, Leo Point, Small Fish, Gorgonzola, House Reef",200_hp,3000000,,2026-01-01,2026-12-31
+BOAT-THE-CHANNEL-400HP,The Channel Boat Dive (200 HP x 2),boat_rent,The Channel,"Channel, Leo Point, Small Fish, Gorgonzola, House Reef",200_hp_x2,4500000,,2026-01-01,2026-12-31
+BOAT-KAKABAN-200HP,Kakaban Boat Dive (200 HP),boat_rent,Kakaban,"Kelapa Dua, Baracuda Point, Tanjung Kelapa",200_hp,2500000,,2026-01-01,2026-12-31
+BOAT-KAKABAN-400HP,Kakaban Boat Dive (200 HP x 2),boat_rent,Kakaban,"Kelapa Dua, Baracuda Point, Tanjung Kelapa",200_hp_x2,4000000,,2026-01-01,2026-12-31
+BOAT-SANGALAKI-200HP,Sangalaki Boat Dive (200 HP),boat_rent,Sangalaki,"Cleaning Station, Manta Run, House Reef",200_hp,3000000,,2026-01-01,2026-12-31
+BOAT-SANGALAKI-400HP,Sangalaki Boat Dive (200 HP x 2),boat_rent,Sangalaki,"Cleaning Station, Manta Run, House Reef",200_hp_x2,4500000,,2026-01-01,2026-12-31
+BOAT-MARATUA-200HP,Maratua Boat Dive (200 HP),boat_rent,Maratua,"Second Channel, East Wall, House Reef",200_hp,3000000,,2026-01-01,2026-12-31
+BOAT-MARATUA-400HP,Maratua Boat Dive (200 HP x 2),boat_rent,Maratua,"Second Channel, East Wall, House Reef",200_hp_x2,4500000,,2026-01-01,2026-12-31
+BOAT-NUNUKAN-200HP,Nunukan Express Boat Dive (200 HP),boat_rent,Nunukan Express,"Nunukan Express, Pandoga Point, House Reef",200_hp,3500000,,2026-01-01,2026-12-31
+BOAT-NUNUKAN-400HP,Nunukan Express Boat Dive (200 HP x 2),boat_rent,Nunukan Express,"Nunukan Express, Pandoga Point, House Reef",200_hp_x2,5000000,,2026-01-01,2026-12-31
+DV-NIGHT,Night Dive,night_dive,,,,600000,1,2026-01-01,2026-12-31
+DV-DSD-GUEST-GRP,Discover Scuba Diving Guest Stay (Group),discovery_scuba,,,,800000,2,2026-01-01,2026-12-31
+DV-DSD-GUEST-SOLO,Discover Scuba Diving Guest Stay (Solo),discovery_scuba,,,,1200000,1,2026-01-01,2026-12-31
+DV-DSD-VISITOR-GRP,Discover Scuba Diving Visitor (Group),discovery_scuba,,,,1000000,2,2026-01-01,2026-12-31
+DV-DSD-VISITOR-SOLO,Discover Scuba Diving Visitor (Solo),discovery_scuba,,,,1500000,1,2026-01-01,2026-12-31
+EQ-RENT-ITEM,Rental Equipment (per item per day),equipment_rental,,,,100000,,2026-01-01,2026-12-31
+EQ-FULL-SET,Full Equipment Set (per day),equipment_rental,,,,500000,,2026-01-01,2026-12-31

@@ -24,7 +24,7 @@ class DiveCenterSeeder extends Seeder
                 'code' => 'DV-PKG-SOLO',
                 'name' => 'Dive Package (Solo)',
                 'type' => DivePackageType::DivePackage->value,
-                'price_per_person' => 2000000,
+                'price_per_person' => 2500000,
                 'min_pax' => 1,
                 'includes' => 'Per day, 3x dives, incl. weight, tank, dive guide, snack, coffee/tea',
             ],
