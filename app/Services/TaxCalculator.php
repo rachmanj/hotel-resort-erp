@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use App\Enums\FolioItemType;
-use App\Models\FolioItem;
 use App\Models\TaxRule;
 use App\Support\FolioItemAppliesTo;
 use App\Support\TaxAmountCalculator;
@@ -17,6 +16,16 @@ class TaxCalculator
     public function calculate(float $amount, string $appliesTo = 'room'): array
     {
         return TaxAmountCalculator::calculate($amount, $this->activeRulesPayload($appliesTo));
+    }
+
+    /**
+     * Split a price list amount that already includes service charge and PBJT.
+     *
+     * @return array{dpp: float, service_charge: float, tax: float, total: float}
+     */
+    public function extractInclusive(float $amount, string $appliesTo = 'room'): array
+    {
+        return TaxAmountCalculator::extractInclusive($amount, $this->activeRulesPayload($appliesTo));
     }
 
     /**
@@ -49,19 +58,6 @@ class TaxCalculator
         }
 
         return $this->activeRulesPayload(FolioItemAppliesTo::forItemType($itemType));
-    }
-
-    /**
-     * @param  Collection<int, FolioItem>  $items
-     * @return array{subtotal: float, service_charge: float, tax: float, total: float}
-     */
-    public function applyToFolio(Collection $items, string $appliesTo): array
-    {
-        $subtotal = $items
-            ->whereNotIn('item_type', ['tax', 'service_charge', 'discount', 'deposit_credit'])
-            ->sum(fn ($item) => (float) $item->amount);
-
-        return $this->calculate($subtotal, $appliesTo);
     }
 
     /**

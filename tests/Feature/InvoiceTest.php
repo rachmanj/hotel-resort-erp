@@ -65,7 +65,7 @@ class InvoiceTest extends TestCase
         ]);
     }
 
-    public function test_invoice_hides_tax_columns_when_folio_has_only_misc_charges(): void
+    public function test_invoice_never_breaks_a_misc_charge_down(): void
     {
         app(FolioPostingService::class)->postCharge(
             folio: $this->folio,
@@ -84,11 +84,12 @@ class InvoiceTest extends TestCase
         $response->assertOk();
         $response->assertInertia(fn ($page) => $page
             ->component('Folios/Invoice')
-            ->where('show_tax_columns', false)
+            ->missing('show_tax_columns')
+            ->where('charges_total', 1_200_000)
         );
     }
 
-    public function test_invoice_shows_tax_columns_when_folio_has_taxable_items(): void
+    public function test_invoice_never_breaks_a_tax_inclusive_room_charge_down(): void
     {
         app(FolioPostingService::class)->postCharge(
             folio: $this->folio,
@@ -107,30 +108,25 @@ class InvoiceTest extends TestCase
         $response->assertOk();
         $response->assertInertia(fn ($page) => $page
             ->component('Folios/Invoice')
-            ->where('show_tax_columns', true)
+            ->missing('show_tax_columns')
+            ->missing('folio.items.0.tax_amount')
+            ->missing('folio.items.0.service_charge_amount')
+            ->where('charges_total', 1_000_000)
         );
     }
 
-    public function test_invoice_blade_view_omits_sc_and_tax_headers_when_show_tax_columns_is_false(): void
+    public function test_invoice_blade_view_omits_sc_and_tax_headers(): void
     {
-        $html = View::make('invoices.folio', $this->invoiceViewData(showTaxColumns: false))->render();
+        $html = View::make('invoices.folio', $this->invoiceViewData())->render();
 
         $this->assertStringNotContainsString('>SC<', $html);
         $this->assertStringNotContainsString('>Tax<', $html);
     }
 
-    public function test_invoice_blade_view_includes_sc_and_tax_headers_when_show_tax_columns_is_true(): void
-    {
-        $html = View::make('invoices.folio', $this->invoiceViewData(showTaxColumns: true))->render();
-
-        $this->assertStringContainsString('>SC<', $html);
-        $this->assertStringContainsString('>Tax<', $html);
-    }
-
     /**
      * @return array<string, mixed>
      */
-    private function invoiceViewData(bool $showTaxColumns): array
+    private function invoiceViewData(): array
     {
         return [
             'folio' => [
@@ -147,15 +143,12 @@ class InvoiceTest extends TestCase
                         'quantity' => 1,
                         'unit_price' => 1_200_000,
                         'amount' => 1_200_000,
-                        'tax_amount' => 0,
-                        'service_charge_amount' => 0,
                         'line_total' => 1_200_000,
                     ],
                 ],
             ],
             'balance' => 1_200_000,
             'charges_total' => 1_200_000,
-            'show_tax_columns' => $showTaxColumns,
         ];
     }
 }

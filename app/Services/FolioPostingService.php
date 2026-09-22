@@ -19,6 +19,12 @@ use InvalidArgumentException;
 
 class FolioPostingService
 {
+    /**
+     * Tax-inclusive lines already carry service charge and PBJT inside amount, so
+     * adding the split columns back would bill the guest twice.
+     */
+    public const LINE_TOTAL_SUM_SQL = 'SUM(CASE WHEN is_tax_inclusive = 1 THEN amount ELSE amount + tax_amount + service_charge_amount END)';
+
     public function __construct(
         private TaxCalculator $taxCalculator,
     ) {}
@@ -45,11 +51,13 @@ class FolioPostingService
 
         $taxAmount = 0.0;
         $serviceChargeAmount = 0.0;
+        $isTaxInclusive = false;
 
         if ($applyTax && (FolioItemType::from($itemType))->isTaxable()) {
-            $taxes = $this->taxCalculator->calculate($lineAmount, FolioItemAppliesTo::forItemType($itemType));
-            $taxAmount = $taxes['tax'];
-            $serviceChargeAmount = $taxes['service_charge'];
+            $split = $this->taxCalculator->extractInclusive($lineAmount, FolioItemAppliesTo::forItemType($itemType));
+            $taxAmount = $split['tax'];
+            $serviceChargeAmount = $split['service_charge'];
+            $isTaxInclusive = true;
         }
 
         $resolvedDepartmentId = $departmentId ?? $this->defaultDepartmentForItemType($itemType);
@@ -67,6 +75,7 @@ class FolioPostingService
             'amount' => $lineAmount,
             'tax_amount' => $taxAmount,
             'service_charge_amount' => $serviceChargeAmount,
+            'is_tax_inclusive' => $isTaxInclusive,
             'posted_by' => $postedBy?->id,
             'posted_at' => now(),
         ]);
@@ -112,7 +121,7 @@ class FolioPostingService
     {
         $charges = FolioItem::query()
             ->where('folio_id', $folio->id)
-            ->selectRaw('SUM(amount + tax_amount + service_charge_amount) as total')
+            ->selectRaw(self::LINE_TOTAL_SUM_SQL.' as total')
             ->value('total') ?? 0;
 
         $payments = Payment::query()
@@ -127,7 +136,7 @@ class FolioPostingService
     {
         return (float) (FolioItem::query()
             ->where('folio_id', $folio->id)
-            ->selectRaw('SUM(amount + tax_amount + service_charge_amount) as total')
+            ->selectRaw(self::LINE_TOTAL_SUM_SQL.' as total')
             ->value('total') ?? 0);
     }
 

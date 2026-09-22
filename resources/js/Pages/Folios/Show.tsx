@@ -1,5 +1,5 @@
 import { Head, Link, useForm } from '@inertiajs/react';
-import { Button, Descriptions, Form, Input, InputNumber, Modal, Select, Space, Table, Tag } from 'antd';
+import { Button, Descriptions, Form, Input, InputNumber, Modal, Select, Space, Table, Tag, Typography } from 'antd';
 import { useState } from 'react';
 import FolioChargeTotalsPreview from '@/components/FolioChargeTotalsPreview';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
@@ -34,8 +34,10 @@ interface FolioShowProps {
             quantity: string;
             unit_price: string;
             amount: string;
+            dpp_amount: number;
             tax_amount: string;
             service_charge_amount: string;
+            is_tax_inclusive: boolean;
             line_total: number;
             posted_at?: string;
             posted_by?: { name: string } | null;
@@ -197,6 +199,10 @@ export default function FolioShow({
             </Descriptions>
 
             <h3>Line Items</h3>
+            <Typography.Paragraph type="secondary">
+                Room and F&amp;B prices already include service charge and PBJT. The DPP, SC and PBJT columns are
+                the split carved out of the price for reporting and never change what the guest pays.
+            </Typography.Paragraph>
             <Table
                 rowKey="id"
                 size="small"
@@ -209,8 +215,21 @@ export default function FolioShow({
                     { title: 'Qty', dataIndex: 'quantity', render: (v) => Number(v) },
                     { title: 'Unit Price', dataIndex: 'unit_price', render: formatIdr },
                     { title: 'Amount', dataIndex: 'amount', render: formatIdr },
-                    { title: 'SC', dataIndex: 'service_charge_amount', render: formatIdr },
-                    { title: 'Tax', dataIndex: 'tax_amount', render: formatIdr },
+                    {
+                        title: 'DPP',
+                        dataIndex: 'dpp_amount',
+                        render: (v, record) => (record.is_tax_inclusive ? formatIdr(v) : '–'),
+                    },
+                    {
+                        title: 'SC',
+                        dataIndex: 'service_charge_amount',
+                        render: (v, record) => (record.is_tax_inclusive ? formatIdr(v) : '–'),
+                    },
+                    {
+                        title: 'PBJT',
+                        dataIndex: 'tax_amount',
+                        render: (v, record) => (record.is_tax_inclusive ? formatIdr(v) : '–'),
+                    },
                     { title: 'Total', dataIndex: 'line_total', render: formatIdr },
                 ]}
             />

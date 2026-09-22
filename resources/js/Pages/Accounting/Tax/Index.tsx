@@ -1,7 +1,7 @@
 import { Head, router } from '@inertiajs/react';
 import type { ProColumns } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
-import { Button, Input, Select, Table } from 'antd';
+import { Button, Input, Select, Table, Typography } from 'antd';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 
 interface TaxTransactionRow {
@@ -27,16 +27,33 @@ interface TaxSummaryRow {
     count: number;
 }
 
+interface PbjtRow {
+    item_type: string;
+    label: string;
+    gross: number;
+    dpp: number;
+    service_charge: number;
+    tax: number;
+    count: number;
+}
+
+interface PbjtRecap {
+    period: string;
+    by_item_type: PbjtRow[];
+    totals: Omit<PbjtRow, 'item_type' | 'label'>;
+}
+
 interface TaxIndexProps {
     transactions: TaxTransactionRow[];
     summary: TaxSummaryRow[];
+    pbjt: PbjtRecap;
     filters: { period: string; tax_type: string };
     taxTypeOptions: Array<{ value: string; label: string }>;
 }
 
 const formatIdr = (n: number) => `Rp ${n.toLocaleString('id-ID')}`;
 
-export default function TaxIndex({ transactions, summary, filters, taxTypeOptions }: TaxIndexProps) {
+export default function TaxIndex({ transactions, summary, pbjt, filters, taxTypeOptions }: TaxIndexProps) {
     const columns: ProColumns<TaxTransactionRow>[] = [
         { title: 'Date', dataIndex: 'transaction_date', width: 110 },
         { title: 'Type', dataIndex: 'tax_type_label', width: 120 },
@@ -92,6 +109,39 @@ export default function TaxIndex({ transactions, summary, filters, taxTypeOption
                     { title: 'Total DPP', render: (_, r) => formatIdr(r.total_base) },
                     { title: 'Total Tax', render: (_, r) => formatIdr(r.total_tax) },
                 ]}
+            />
+
+            <Typography.Title level={5}>PBJT on tax-inclusive room & F&B revenue</Typography.Title>
+            <Typography.Paragraph type="secondary">
+                Room and F&amp;B price lists already include service charge and PBJT, so the tax is carved out of
+                the posted folio amount rather than added on top. Gross is what the guest paid.
+            </Typography.Paragraph>
+            <Table
+                rowKey="item_type"
+                dataSource={pbjt.by_item_type}
+                pagination={false}
+                style={{ marginBottom: 24 }}
+                locale={{ emptyText: 'No tax-inclusive revenue posted in this period' }}
+                columns={[
+                    { title: 'Department', dataIndex: 'label' },
+                    { title: 'Lines', dataIndex: 'count' },
+                    { title: 'Gross (guest paid)', render: (_, r) => formatIdr(r.gross) },
+                    { title: 'DPP', render: (_, r) => formatIdr(r.dpp) },
+                    { title: 'Service Charge', render: (_, r) => formatIdr(r.service_charge) },
+                    { title: 'PBJT 10%', render: (_, r) => formatIdr(r.tax) },
+                ]}
+                summary={() => (
+                    <Table.Summary.Row>
+                        <Table.Summary.Cell index={0}>
+                            <strong>Total</strong>
+                        </Table.Summary.Cell>
+                        <Table.Summary.Cell index={1}>{pbjt.totals.count}</Table.Summary.Cell>
+                        <Table.Summary.Cell index={2}>{formatIdr(pbjt.totals.gross)}</Table.Summary.Cell>
+                        <Table.Summary.Cell index={3}>{formatIdr(pbjt.totals.dpp)}</Table.Summary.Cell>
+                        <Table.Summary.Cell index={4}>{formatIdr(pbjt.totals.service_charge)}</Table.Summary.Cell>
+                        <Table.Summary.Cell index={5}>{formatIdr(pbjt.totals.tax)}</Table.Summary.Cell>
+                    </Table.Summary.Row>
+                )}
             />
             <ProTable
                 rowKey="id"

@@ -66,10 +66,6 @@ class GuestInvoiceController extends Controller
         $folio->loadMissing(['guest', 'reservation', 'company']);
         $invoice->loadMissing(['lines', 'preparedBy:id,name', 'approvedBy:id,name', 'releasedBy:id,name']);
 
-        $showTaxColumns = $invoice->lines->contains(
-            fn (GuestInvoiceLine $line) => (float) $line->tax_amount > 0 || (float) $line->service_charge_amount > 0,
-        );
-
         return [
             'company' => [
                 'name' => config('invoice.company_name'),
@@ -107,8 +103,6 @@ class GuestInvoiceController extends Controller
                     'nights' => $line->nights,
                     'unit_price' => (float) $line->unit_price,
                     'amount' => (float) $line->amount,
-                    'tax_amount' => (float) $line->tax_amount,
-                    'service_charge_amount' => (float) $line->service_charge_amount,
                     'line_total' => (float) $line->line_total,
                 ])->all(),
             ],
@@ -118,7 +112,6 @@ class GuestInvoiceController extends Controller
                 'items' => config('invoice.terms'),
             ],
             'signatures' => config('invoice.signatures'),
-            'show_tax_columns' => $showTaxColumns,
         ];
     }
 }

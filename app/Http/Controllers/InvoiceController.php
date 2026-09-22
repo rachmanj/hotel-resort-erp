@@ -34,10 +34,6 @@ class InvoiceController extends Controller
     {
         $folio->load(['guest', 'reservation', 'company', 'items', 'payments']);
 
-        $showTaxColumns = $folio->items->contains(
-            fn ($item) => (float) $item->tax_amount > 0 || (float) $item->service_charge_amount > 0,
-        );
-
         return [
             'folio' => [
                 'id' => $folio->id,
@@ -53,8 +49,6 @@ class InvoiceController extends Controller
                     'quantity' => $item->quantity,
                     'unit_price' => $item->unit_price,
                     'amount' => $item->amount,
-                    'tax_amount' => $item->tax_amount,
-                    'service_charge_amount' => $item->service_charge_amount,
                     'line_total' => $item->line_total,
                 ]),
                 'payments' => $folio->payments->map(fn ($payment) => [
@@ -66,7 +60,6 @@ class InvoiceController extends Controller
             ],
             'balance' => $folioPostingService->getBalance($folio),
             'charges_total' => $folioPostingService->getChargesTotal($folio),
-            'show_tax_columns' => $showTaxColumns,
         ];
     }
 }

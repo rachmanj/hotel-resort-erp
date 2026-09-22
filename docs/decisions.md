@@ -30,6 +30,29 @@ Decision: [Title] - [YYYY-MM-DD]
 
 ## Recent Decisions
 
+Decision: Room and F&B price lists are tax inclusive — service charge 10% and PBJT 10% are carved out of the price, never added on top - 2026-09-22
+
+**Context**: The client confirmed in writing that hotel and restaurant sales in their regency are not subject to PPN 11% but to Pajak Barang dan Jasa Tertentu (PBJT) at 10%, and that every price in their price list already includes the service charge and the tax. The app was posting `amount = price` and then adding SC 10% and PPN 11% on top, so a room quoted at 1.690.000 billed 2.044.900 — about 21% too much on all room and F&B revenue. Their worked split is DPP 1.396.694,21 + SC 139.669,42 + PBJT 153.636,36, and the sample invoices they sent carry no service charge or tax columns at all.
+
+**Options Considered**:
+
+1. **Keep the on-top model and reduce the price list to the DPP**: store the net price and let the existing arithmetic gross it up to the quoted figure.
+   - ✅ Pros: no schema change, no new arithmetic, the existing invoice breakdown stays meaningful.
+   - ❌ Cons: every rate plan, menu item, contract rate and imported price would have to be divided by 1,21 and would no longer match the paper price list anybody in the hotel actually reads; rounding makes the grossed-up figure land a cent off the quoted price, so the guest gets billed 1.689.999,99.
+2. **Extract the split from the price and flag the line as inclusive (chosen)**: `amount` and `unit_price` stay exactly the price list figure, `service_charge_amount` and `tax_amount` hold the carved-out parts, and a new `folio_items.is_tax_inclusive` flag makes the line total `amount` rather than the sum of the three.
+   - ✅ Pros: every stored price still matches the paper price list; the guest-facing total is the quoted price by construction and cannot drift with rounding; the split stays available for the PBJT report and the GL without appearing on any guest document.
+   - ❌ Cons: one more column, and every read path that summed `amount + tax_amount + service_charge_amount` had to learn the flag.
+
+**Decision**: Replace the `ppn` tax rule with `pbjt` at 10% compounding (service charge 10% non-compounding still runs first), add `folio_items.is_tax_inclusive`, and split inclusive prices in `TaxAmountCalculator::extractInclusive()` — DPP is the price divided by `inclusiveFactor()` (1,21 for the current rules), then the existing forward arithmetic produces the SC and tax parts so both code paths share one implementation. Taxable item types (room, F&B) post inclusive; misc, spa, dive, trips, rentals and laundry keep amount only with zero SC and zero tax. Guest-facing documents print description / qty / nights / price / total and never break the price down. The GL credits revenue as the residual `total − SC − tax`.
+
+**Rationale**: Deriving the DPP from the price rather than the other way round is the only version where the number the guest is quoted and the number the guest is billed are the same object, which is what the client actually asked for. Making the split rounding and the GL rounding deliberately different — the split reproduces the client's figures, the GL uses the residual — keeps the tax return matching their spreadsheet while double-entry still balances to the cent. The flag rather than a config switch means legacy rows stay readable as what they were, which is what makes the backfill command idempotent and reviewable.
+
+**Implementation**: `app/Support/TaxAmountCalculator.php` (`extractInclusive()`, `inclusiveFactor()`), `app/Services/TaxCalculator.php`, `app/Services/FolioPostingService.php` (+ `LINE_TOTAL_SUM_SQL`), `app/Models/FolioItem.php` (`line_total`, `dpp_amount`), `app/Listeners/PostFolioChargeToGl.php`, `app/Services/Reports/{RevenueReport,DailyRevenueReport,AdrRevParReport}.php`, `app/Services/AgentCommissionService.php`, new `app/Services/Reports/PbjtReport.php` wired into `app/Http/Controllers/Accounting/TaxReportController.php`, `app/Console/Commands/ResplitInclusiveTaxCommand.php` (`billing:resplit-inclusive-tax --dry-run --folio=`), migrations `2026_09_22_065011`–`065013` (flag, PPN→PBJT rule, CoA `2-2110 PBJT Terutang`), `database/seeders/{BillingDemoSeeder,ChartOfAccountsSeeder}.php`, guest documents `resources/views/invoices/{folio,guest}.blade.php` and `resources/js/Pages/Folios/{Invoice,GuestInvoice,Show}.tsx`, `resources/js/lib/taxCalculator.ts`, `tests/Feature/{InclusiveTaxTest,ResplitInclusiveTaxCommandTest}.php`, `tests/Unit/TaxCalculationParityTest.php`.
+
+**Review Date**: When the first PBJT return is filed against the new report — confirm the regency accepts the DPP / SC / PBJT recap as computed, and decide whether historical folios need the reversing journal entry the re-split command deliberately does not post.
+
+---
+
 Decision: Bookings are created Tentative with a hold limit and auto-cancelled by a scheduled command; a single ConfirmReservationAction is the only promotion path - 2026-09-22
 
 **Context**: The client's booking flow is that a booking is given a limit and is automatically cancelled when its status does not change to Confirm Reservation in time, and that guests who pay no down payment must still be confirmed by marketing staff. The codebase only satisfied half of that: `VerifyProformaPaymentAction` promoted Tentative → Confirmed when finance verified a down payment, but `CreateReservationAction` wrote Confirmed on creation, so no booking was ever actually held and marketing had no confirm action of its own.

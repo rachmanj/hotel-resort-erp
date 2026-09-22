@@ -53,7 +53,7 @@ class AdrRevParReport
                 $startDate->copy()->startOfDay(),
                 $endDate->copy()->endOfDay(),
             ])
-            ->selectRaw('SUM(folio_items.amount + folio_items.tax_amount + folio_items.service_charge_amount) as total')
+            ->selectRaw('SUM(CASE WHEN folio_items.is_tax_inclusive = 1 THEN folio_items.amount ELSE folio_items.amount + folio_items.tax_amount + folio_items.service_charge_amount END) as total')
             ->value('total');
 
         $roomRevenue = round($roomRevenue, 2);

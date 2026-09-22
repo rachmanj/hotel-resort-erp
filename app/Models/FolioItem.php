@@ -20,6 +20,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
     'amount',
     'tax_amount',
     'service_charge_amount',
+    'is_tax_inclusive',
     'original_currency_code',
     'original_amount',
     'exchange_rate_id',
@@ -37,6 +38,7 @@ class FolioItem extends Model
             'amount' => 'decimal:2',
             'tax_amount' => 'decimal:2',
             'service_charge_amount' => 'decimal:2',
+            'is_tax_inclusive' => 'boolean',
             'original_amount' => 'decimal:2',
             'posted_at' => 'datetime',
         ];
@@ -67,8 +69,26 @@ class FolioItem extends Model
         return $this->belongsTo(ExchangeRate::class);
     }
 
+    /**
+     * Room and F&B prices already include service charge and PBJT, so the amount is
+     * the whole guest-facing line; the split columns are reporting detail carved out
+     * of it. Everything else is billed flat and has no split at all.
+     */
     public function getLineTotalAttribute(): float
     {
+        if ($this->is_tax_inclusive) {
+            return (float) $this->amount;
+        }
+
         return (float) $this->amount + (float) $this->tax_amount + (float) $this->service_charge_amount;
+    }
+
+    public function getDppAmountAttribute(): float
+    {
+        if (! $this->is_tax_inclusive) {
+            return (float) $this->amount;
+        }
+
+        return round((float) $this->amount - (float) $this->service_charge_amount - (float) $this->tax_amount, 2);
     }
 }

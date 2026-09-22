@@ -9,8 +9,6 @@ interface GuestInvoiceLine {
     nights: number | null;
     unit_price: number;
     amount: number;
-    tax_amount: number;
-    service_charge_amount: number;
     line_total: number;
 }
 
@@ -42,7 +40,6 @@ interface GuestInvoiceProps {
         items: string[];
     };
     signatures: { prepared_by: string; approved_by: string; received_by: string };
-    show_tax_columns: boolean;
     canRelease: boolean;
 }
 
@@ -55,7 +52,6 @@ export default function GuestInvoice({
     invoice,
     terms,
     signatures,
-    show_tax_columns,
     canRelease,
 }: GuestInvoiceProps) {
     const { token } = theme.useToken();
@@ -161,12 +157,6 @@ export default function GuestInvoice({
                         { title: 'QTY', dataIndex: 'quantity', align: 'right', render: (value: number) => Number(value) },
                         { title: 'Ns', dataIndex: 'nights', align: 'right', render: (value: number | null) => value ?? '' },
                         { title: 'Harga', dataIndex: 'unit_price', align: 'right', render: formatIdr },
-                        ...(show_tax_columns
-                            ? [
-                                  { title: 'SC', dataIndex: 'service_charge_amount', align: 'right' as const, render: formatIdr },
-                                  { title: 'Tax', dataIndex: 'tax_amount', align: 'right' as const, render: formatIdr },
-                              ]
-                            : []),
                         { title: 'Total', dataIndex: 'line_total', align: 'right', render: formatIdr },
                     ]}
                 />

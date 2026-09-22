@@ -22,11 +22,13 @@ class BillingDemoSeeder extends Seeder
             ],
         );
 
+        TaxRule::query()->where('code', 'ppn')->delete();
+
         TaxRule::query()->updateOrCreate(
-            ['code' => 'ppn'],
+            ['code' => 'pbjt'],
             [
-                'name' => 'PPN',
-                'rate_percent' => 11.00,
+                'name' => 'PBJT',
+                'rate_percent' => 10.00,
                 'applies_to' => 'all',
                 'is_compounding' => true,
                 'is_active' => true,

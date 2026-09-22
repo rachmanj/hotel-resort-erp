@@ -71,10 +71,6 @@
         </ol>
     </div>
 
-    @php
-        $columnCount = $show_tax_columns ? 7 : 5;
-    @endphp
-
     <table class="lines">
         <thead>
             <tr>
@@ -82,10 +78,6 @@
                 <th class="num">QTY</th>
                 <th class="num">Ns</th>
                 <th class="num">Harga</th>
-                @if ($show_tax_columns)
-                <th class="num">SC</th>
-                <th class="num">Tax</th>
-                @endif
                 <th class="num">Total</th>
             </tr>
         </thead>
@@ -96,19 +88,15 @@
                 <td class="num">{{ number_format($line['quantity'], 0) }}</td>
                 <td class="num">{{ $line['nights'] ?? '' }}</td>
                 <td class="num">{{ number_format($line['unit_price'], 0, ',', '.') }}</td>
-                @if ($show_tax_columns)
-                <td class="num">{{ number_format($line['service_charge_amount'], 0, ',', '.') }}</td>
-                <td class="num">{{ number_format($line['tax_amount'], 0, ',', '.') }}</td>
-                @endif
                 <td class="num">{{ number_format($line['line_total'], 0, ',', '.') }}</td>
             </tr>
             @empty
             <tr>
-                <td colspan="{{ $columnCount }}">No charges recorded yet.</td>
+                <td colspan="5">No charges recorded yet.</td>
             </tr>
             @endforelse
             <tr class="grand">
-                <td colspan="{{ $columnCount - 1 }}">Grand Total</td>
+                <td colspan="4">Grand Total</td>
                 <td class="num">Rp {{ number_format($invoice['total'], 0, ',', '.') }}</td>
             </tr>
         </tbody>

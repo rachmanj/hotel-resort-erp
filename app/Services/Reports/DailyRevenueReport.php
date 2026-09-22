@@ -41,6 +41,7 @@ class DailyRevenueReport
                 'folio_items.amount',
                 'folio_items.tax_amount',
                 'folio_items.service_charge_amount',
+                'folio_items.is_tax_inclusive',
                 'folio_items.posted_at',
             ])
             ->get();
@@ -112,8 +113,8 @@ class DailyRevenueReport
         ];
     }
 
-    private function lineTotal(object $item): float
+    private function lineTotal(FolioItem $item): float
     {
-        return (float) $item->amount + (float) $item->tax_amount + (float) $item->service_charge_amount;
+        return $item->line_total;
     }
 }

@@ -23,7 +23,7 @@ class PostFolioChargeToGl
         }
 
         $hotelId = (int) $folio->hotel_id;
-        $total = round((float) $item->amount + (float) $item->tax_amount + (float) $item->service_charge_amount, 2);
+        $total = round($item->line_total, 2);
 
         if ($total <= 0) {
             return;
@@ -35,7 +35,6 @@ class PostFolioChargeToGl
         $sourceId = $item->id;
 
         $guestLedger = $this->glPostingService->findAccountByCode($hotelId, '1-1300');
-        $ppnPayable = $this->glPostingService->findAccountByCode($hotelId, '2-2100');
         $serviceChargeRevenue = $this->glPostingService->findAccountByCode($hotelId, '4-1500');
 
         $lines = [];
@@ -56,9 +55,12 @@ class PostFolioChargeToGl
         }
 
         $revenueAccount = $this->resolveRevenueAccount($hotelId, $itemType);
-        $revenueAmount = round((float) $item->amount, 2);
         $taxAmount = round((float) $item->tax_amount, 2);
         $serviceChargeAmount = round((float) $item->service_charge_amount, 2);
+
+        // Keeping revenue as the residual guarantees the entry balances even though the
+        // three split parts are each rounded to the cent independently.
+        $revenueAmount = round($total - $taxAmount - $serviceChargeAmount, 2);
 
         $lines[] = $this->line($hotelId, $guestLedger->id, $transactionDate, $total, 0, $item->description, $reference, $sourceType, $sourceId, $item->department_id);
 
@@ -71,7 +73,8 @@ class PostFolioChargeToGl
         }
 
         if ($taxAmount > 0) {
-            $lines[] = $this->line($hotelId, $ppnPayable->id, $transactionDate, 0, $taxAmount, "PPN: {$item->description}", $reference, $sourceType, $sourceId, $item->department_id);
+            $taxPayable = $this->glPostingService->findAccountByCode($hotelId, '2-2110');
+            $lines[] = $this->line($hotelId, $taxPayable->id, $transactionDate, 0, $taxAmount, "PBJT: {$item->description}", $reference, $sourceType, $sourceId, $item->department_id);
         }
 
         $this->glPostingService->post($lines);

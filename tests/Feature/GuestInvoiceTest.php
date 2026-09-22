@@ -221,7 +221,7 @@ class GuestInvoiceTest extends TestCase
         $this->assertStringStartsWith('%PDF', $response->getContent());
     }
 
-    public function test_invoice_omits_service_charge_and_tax_columns_when_folio_has_only_non_taxable_charges(): void
+    public function test_invoice_omits_service_charge_and_tax_columns_for_non_taxable_charges(): void
     {
         $this->postMiscCharge();
 
@@ -231,17 +231,17 @@ class GuestInvoiceTest extends TestCase
             ->assertOk()
             ->assertInertia(fn ($page) => $page
                 ->component('Folios/GuestInvoice')
-                ->where('show_tax_columns', false)
+                ->missing('show_tax_columns')
                 ->etc()
             );
 
-        $html = View::make('invoices.guest', $this->documentViewData(showTaxColumns: false))->render();
+        $html = View::make('invoices.guest', $this->documentViewData())->render();
 
         $this->assertStringNotContainsString('>SC<', $html);
         $this->assertStringNotContainsString('>Tax<', $html);
     }
 
-    public function test_invoice_shows_service_charge_and_tax_columns_when_folio_has_taxable_charges(): void
+    public function test_invoice_omits_service_charge_and_tax_columns_for_tax_inclusive_charges_too(): void
     {
         $this->postRoomCharge();
 
@@ -251,14 +251,12 @@ class GuestInvoiceTest extends TestCase
             ->assertOk()
             ->assertInertia(fn ($page) => $page
                 ->component('Folios/GuestInvoice')
-                ->where('show_tax_columns', true)
+                ->missing('show_tax_columns')
+                ->missing('invoice.lines.0.tax_amount')
+                ->missing('invoice.lines.0.service_charge_amount')
+                ->where('invoice.total', 3_000_000)
                 ->etc()
             );
-
-        $html = View::make('invoices.guest', $this->documentViewData(showTaxColumns: true))->render();
-
-        $this->assertStringContainsString('>SC<', $html);
-        $this->assertStringContainsString('>Tax<', $html);
     }
 
     private function postMiscCharge(): void
@@ -304,7 +302,7 @@ class GuestInvoiceTest extends TestCase
     /**
      * @return array<string, mixed>
      */
-    private function documentViewData(bool $showTaxColumns): array
+    private function documentViewData(): array
     {
         return [
             'company' => ['name' => 'PRATASABA RESORT', 'title' => 'INVOICE'],
@@ -327,8 +325,6 @@ class GuestInvoiceTest extends TestCase
                         'nights' => null,
                         'unit_price' => 1_200_000,
                         'amount' => 1_200_000,
-                        'tax_amount' => 0,
-                        'service_charge_amount' => 0,
                         'line_total' => 1_200_000,
                     ],
                 ],
@@ -339,7 +335,6 @@ class GuestInvoiceTest extends TestCase
                 'items' => config('invoice.terms'),
             ],
             'signatures' => config('invoice.signatures'),
-            'show_tax_columns' => $showTaxColumns,
         ];
     }
 }

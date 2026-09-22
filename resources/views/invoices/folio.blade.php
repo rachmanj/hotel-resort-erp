@@ -32,10 +32,6 @@
                 <th class="text-right">Qty</th>
                 <th class="text-right">Unit Price</th>
                 <th class="text-right">Amount</th>
-                @if ($show_tax_columns)
-                <th class="text-right">SC</th>
-                <th class="text-right">Tax</th>
-                @endif
                 <th class="text-right">Total</th>
             </tr>
         </thead>
@@ -46,10 +42,6 @@
                 <td class="text-right">{{ number_format($item['quantity'], 0) }}</td>
                 <td class="text-right">{{ number_format($item['unit_price'], 0, ',', '.') }}</td>
                 <td class="text-right">{{ number_format($item['amount'], 0, ',', '.') }}</td>
-                @if ($show_tax_columns)
-                <td class="text-right">{{ number_format($item['service_charge_amount'], 0, ',', '.') }}</td>
-                <td class="text-right">{{ number_format($item['tax_amount'], 0, ',', '.') }}</td>
-                @endif
                 <td class="text-right">{{ number_format($item['line_total'], 0, ',', '.') }}</td>
             </tr>
             @endforeach

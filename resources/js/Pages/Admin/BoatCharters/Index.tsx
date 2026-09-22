@@ -6,7 +6,7 @@ import dayjs from 'dayjs';
 import { useState } from 'react';
 import FolioChargeTotalsPreview from '@/components/FolioChargeTotalsPreview';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { calculateTaxAmount, type TaxRuleForCalculation } from '@/lib/taxCalculator';
+import { extractInclusiveTax, type TaxRuleForCalculation } from '@/lib/taxCalculator';
 import type { Paginated } from '@/types';
 
 const formatIdr = (v: number) => `Rp ${v.toLocaleString('id-ID')}`;
@@ -173,7 +173,7 @@ export default function BoatChartersIndex({
     };
 
     const billCharter = (record: BoatCharterRow) => {
-        const totals = calculateTaxAmount(record.price, record.quantity, miscChargeTaxRules);
+        const totals = extractInclusiveTax(record.price, record.quantity, miscChargeTaxRules);
         Modal.confirm({
             title: 'Bill to folio?',
             content: (
@@ -182,7 +182,6 @@ export default function BoatChartersIndex({
                         Post charge for &quot;{record.destination}&quot; ({record.quantity} pax) to guest
                         folio?
                     </p>
-                    <p>Subtotal: {formatIdr(totals.subtotal)}</p>
                     <p>
                         <strong>Total to folio: {formatIdr(totals.total)}</strong>
                     </p>

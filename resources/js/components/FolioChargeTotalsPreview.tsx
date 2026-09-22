@@ -1,5 +1,5 @@
 import { theme, Typography } from 'antd';
-import { calculateTaxAmount, type TaxRuleForCalculation } from '@/lib/taxCalculator';
+import { extractInclusiveTax, type TaxRuleForCalculation } from '@/lib/taxCalculator';
 
 const formatIdr = (v: number) => `Rp ${v.toLocaleString('id-ID')}`;
 
@@ -15,14 +15,17 @@ export default function FolioChargeTotalsPreview({
     taxRules,
 }: FolioChargeTotalsPreviewProps) {
     const { token } = theme.useToken();
-    const totals = calculateTaxAmount(unitPrice, quantity, taxRules);
+    const split = extractInclusiveTax(unitPrice, quantity, taxRules);
+    const isInclusive = taxRules.length > 0;
 
-    const rows = [
-        { label: 'Subtotal (price x pax)', value: totals.subtotal },
-        { label: 'Service charge', value: totals.service_charge },
-        { label: 'Tax', value: totals.tax },
-        { label: 'Total to folio', value: totals.total, strong: true },
-    ];
+    const rows = isInclusive
+        ? [
+              { label: 'DPP (excl. SC & PBJT)', value: split.dpp },
+              { label: 'Service charge (included)', value: split.service_charge },
+              { label: 'PBJT (included)', value: split.tax },
+              { label: 'Total to folio', value: split.total, strong: true },
+          ]
+        : [{ label: 'Total to folio', value: split.total, strong: true }];
 
     return (
         <div

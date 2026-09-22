@@ -165,13 +165,13 @@ class AgentCommissionService
         $items = FolioItem::query()->where('folio_id', $folio->id)->get();
 
         return match ($basis) {
-            CommissionBasis::Gross => (float) $items->sum(fn (FolioItem $item) => (float) $item->amount + (float) $item->tax_amount + (float) $item->service_charge_amount),
-            CommissionBasis::NetRoom => (float) $items
+            CommissionBasis::Gross => round((float) $items->sum(fn (FolioItem $item) => $item->line_total), 2),
+            CommissionBasis::NetRoom => round((float) $items
                 ->where('item_type', FolioItemType::Room->value)
-                ->sum('amount'),
-            CommissionBasis::NetRoomNoTax => (float) $items
+                ->sum(fn (FolioItem $item) => $item->dpp_amount), 2),
+            CommissionBasis::NetRoomNoTax => round((float) $items
                 ->where('item_type', FolioItemType::Room->value)
-                ->sum('amount'),
+                ->sum(fn (FolioItem $item) => $item->line_total), 2),
         };
     }
 }

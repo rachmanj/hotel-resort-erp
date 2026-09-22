@@ -100,6 +100,7 @@ class ChartOfAccountsSeeder extends Seeder
             $this->postable('2-1500', 'Hutang Pajak Lainnya', AccountType::Liability, NormalBalance::Credit, '2-0000'),
             $this->postable('2-1600', 'Beban Terutang', AccountType::Liability, NormalBalance::Credit, '2-0000'),
             $this->postable('2-2100', 'PPN Keluaran', AccountType::Liability, NormalBalance::Credit, '2-0000'),
+            $this->postable('2-2110', 'PBJT Terutang', AccountType::Liability, NormalBalance::Credit, '2-0000'),
             $this->postable('2-2200', 'PPh 23 Terutang', AccountType::Liability, NormalBalance::Credit, '2-0000'),
             $this->postable('2-2300', 'Gaji Terutang', AccountType::Liability, NormalBalance::Credit, '2-0000'),
             $this->postable('2-2400', 'Pendapatan Diterima Dimuka', AccountType::Liability, NormalBalance::Credit, '2-0000'),
@@ -236,6 +237,7 @@ class ChartOfAccountsSeeder extends Seeder
     {
         $additionalAccounts = [
             $this->postable('2-1410', 'Utang Fee OTA', AccountType::Liability, NormalBalance::Credit, '2-0000'),
+            $this->postable('2-2110', 'PBJT Terutang', AccountType::Liability, NormalBalance::Credit, '2-0000'),
             $this->postable('6-3400', 'OTA Booking Fee', AccountType::Expense, NormalBalance::Debit, '6-3000'),
             $this->postable('4-1400', 'Room Revenue - Grand Deluxe', AccountType::Revenue, NormalBalance::Credit, '4-1000'),
             $this->postable('4-2500', 'Prata Coffee Revenue', AccountType::Revenue, NormalBalance::Credit, '4-2000'),

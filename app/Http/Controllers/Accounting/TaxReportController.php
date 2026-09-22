@@ -6,6 +6,7 @@ use App\Enums\TaxTransactionStatus;
 use App\Enums\TaxType;
 use App\Http\Controllers\Controller;
 use App\Models\TaxTransaction;
+use App\Services\Reports\PbjtReport;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -13,6 +14,10 @@ use Inertia\Response;
 
 class TaxReportController extends Controller
 {
+    public function __construct(
+        private PbjtReport $pbjtReport,
+    ) {}
+
     public function index(Request $request): Response
     {
         $period = $request->string('period')->toString() ?: now()->format('Y-m');
@@ -57,6 +62,7 @@ class TaxReportController extends Controller
         return Inertia::render('Accounting/Tax/Index', [
             'transactions' => $transactions,
             'summary' => $summary,
+            'pbjt' => $this->pbjtReport->generate((int) session('current_hotel_id'), $period),
             'filters' => [
                 'period' => $period,
                 'tax_type' => $taxType,

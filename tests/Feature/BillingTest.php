@@ -88,15 +88,15 @@ class BillingTest extends TestCase
         (new AccountingDemoSeeder)->run();
     }
 
-    public function test_tax_calculator_applies_service_charge_then_ppn(): void
+    public function test_tax_calculator_extracts_service_charge_then_pbjt_from_the_price_list_amount(): void
     {
         $calculator = app(TaxCalculator::class);
-        $result = $calculator->calculate(1000000, 'room');
+        $result = $calculator->extractInclusive(1000000, 'room');
 
-        $this->assertEquals(1000000, $result['subtotal']);
-        $this->assertEquals(100000, $result['service_charge']);
-        $this->assertEquals(121000, $result['tax']);
-        $this->assertEquals(1221000, $result['total']);
+        $this->assertEquals(826446.28, $result['dpp']);
+        $this->assertEquals(82644.63, $result['service_charge']);
+        $this->assertEquals(90909.09, $result['tax']);
+        $this->assertEquals(1000000, $result['total']);
     }
 
     public function test_check_in_creates_folio_and_posts_room_charges(): void
@@ -118,7 +118,7 @@ class BillingTest extends TestCase
 
         $folioPostingService = app(FolioPostingService::class);
         $charges = $folioPostingService->getChargesTotal($folio);
-        $this->assertEquals(1221000, $charges);
+        $this->assertEquals(1000000, $charges);
     }
 
     public function test_payment_reduces_folio_balance(): void
@@ -133,7 +133,7 @@ class BillingTest extends TestCase
         $folioPostingService->postPayment($folio, 500000, 'cash', null, $this->user);
 
         $balance = $folioPostingService->getBalance($folio);
-        $this->assertEquals(721000, $balance);
+        $this->assertEquals(500000, $balance);
     }
 
     public function test_checkout_creates_guest_stay_and_closes_folio(): void
@@ -195,7 +195,7 @@ class BillingTest extends TestCase
     public function test_tax_rules_seeded(): void
     {
         $this->assertEquals(2, TaxRule::query()->count());
-        $this->assertDatabaseHas('tax_rules', ['code' => 'ppn', 'rate_percent' => 11.00]);
+        $this->assertDatabaseHas('tax_rules', ['code' => 'pbjt', 'rate_percent' => 10.00]);
         $this->assertDatabaseHas('tax_rules', ['code' => 'service_charge', 'rate_percent' => 10.00]);
     }
 

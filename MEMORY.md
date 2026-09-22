@@ -83,4 +83,12 @@
 
 ---
 
+### [M008] Room and F&B are PBJT 10% tax inclusive, not PPN 11% on top (2026-09-22) ✅ COMPLETE
+
+- **Challenge/Decision**: The client confirmed in writing that hotel and restaurant sales are not subject to PPN 11% — the tax is Pajak Barang dan Jasa Tertentu (PBJT) 10% — and that every price in their price list already includes both service charge and tax. The app was adding service charge 10% and PPN 11% on top of the price list amount, overcharging room and F&B revenue by 21%.
+- **Solution**: `TaxAmountCalculator::extractInclusive()` divides the price by `inclusiveFactor()` (1.21 for SC 10% + compounding PBJT 10%) to get the DPP, then runs the existing forward arithmetic for the SC and tax parts; `FolioPostingService::postCharge()` uses it for taxable item types and sets the new `folio_items.is_tax_inclusive` flag. `FolioItem::line_total` returns `amount` untouched for inclusive rows and `dpp_amount` returns `amount − SC − tax`. Guest-facing documents (folio invoice, guest invoice, proforma) print description / qty / nights / price / total with no SC or tax columns at all; the split survives for reporting only. `billing:resplit-inclusive-tax` (with `--dry-run` and `--folio=`) backfills legacy rows. Tax rule `ppn` replaced by `pbjt` 10% compounding, new CoA account `2-2110 PBJT Terutang`.
+- **Key Learning**: Splitting an inclusive price into three parts rounded independently to the cent does not always re-add to the price (1.690.000 splits to 1.689.999,99), which is why the guest total must be the stored `amount` and never `SUM(amount + tax + SC)`, and why the GL credits revenue as the residual `total − SC − tax` so double-entry still balances. The client's own worked example carries that same cent, so matching their figures and balancing the ledger are two different roundings and both are needed.
+
+---
+
 [Add new memory entries below, following the format above]
