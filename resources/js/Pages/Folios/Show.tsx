@@ -192,6 +192,7 @@ export default function FolioShow({
         const pkg = packageId !== null ? divePackages.find((p) => p.id === packageId) : undefined;
 
         chargeForm.setData({
+            ...chargeForm.data,
             dive_package_id: packageId,
             dive_route_label: null,
             dive_boat_rate_item_id: null,
@@ -208,6 +209,7 @@ export default function FolioShow({
 
     const onChargeDiveRouteChange = (routeLabel: string | null) => {
         chargeForm.setData({
+            ...chargeForm.data,
             dive_route_label: routeLabel,
             dive_boat_rate_item_id: null,
         });
