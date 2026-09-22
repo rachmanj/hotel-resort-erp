@@ -19,7 +19,6 @@ use App\Models\Reservation;
 use App\Models\RevenueCategory;
 use App\Services\FolioPostingService;
 use App\Services\TaxCalculator;
-use App\Support\FolioItemAppliesTo;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -91,9 +90,7 @@ class BoatCharterController extends Controller
                     'code' => $package->code,
                     'price_per_person' => (float) $package->price_per_person,
                 ]),
-            'miscChargeTaxRules' => $taxCalculator->activeRulesPayload(
-                FolioItemAppliesTo::forItemType(FolioItemType::Misc->value),
-            ),
+            'miscChargeTaxRules' => $taxCalculator->activeRulesPayloadForItemType(FolioItemType::Misc->value),
             'reservations' => Reservation::query()
                 ->with('guest:id,full_name')
                 ->whereIn('status', [

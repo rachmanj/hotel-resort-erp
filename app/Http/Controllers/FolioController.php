@@ -12,7 +12,6 @@ use App\Models\Folio;
 use App\Models\RevenueCategory;
 use App\Services\FolioPostingService;
 use App\Services\TaxCalculator;
-use App\Support\FolioItemAppliesTo;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -93,9 +92,7 @@ class FolioController extends Controller
             'canPostPayment' => request()->user()?->can('billing.payment') && $folio->status === FolioStatus::Open,
             'canPostCharge' => request()->user()?->can('billing.post') && $folio->status === FolioStatus::Open,
             'canViewInvoice' => request()->user()?->can('billing.invoice') ?? false,
-            'miscChargeTaxRules' => $taxCalculator->activeRulesPayload(
-                FolioItemAppliesTo::forItemType(FolioItemType::Misc->value),
-            ),
+            'miscChargeTaxRules' => $taxCalculator->activeRulesPayloadForItemType(FolioItemType::Misc->value),
             'divePackages' => DivePackage::query()
                 ->where('is_active', true)
                 ->orderBy('name')

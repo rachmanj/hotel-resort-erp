@@ -13,6 +13,7 @@ use App\Models\Guest;
 use App\Models\Hotel;
 use App\Models\RevenueCategory;
 use App\Models\User;
+use App\Services\TaxCalculator;
 use Database\Seeders\AccountingDemoSeeder;
 use Database\Seeders\BillingDemoSeeder;
 use Database\Seeders\ChartOfAccountsSeeder;
@@ -155,5 +156,25 @@ class FolioChargeTest extends TestCase
         ]);
 
         $response->assertForbidden();
+    }
+
+    public function test_show_page_passes_no_tax_rules_for_non_taxable_misc_charge_preview(): void
+    {
+        $response = $this->actingAs($this->cashier)->get(route('folios.show', $this->folio));
+
+        $response->assertOk();
+        $response->assertInertia(fn ($page) => $page
+            ->component('Folios/Show')
+            ->has('miscChargeTaxRules', 0)
+        );
+    }
+
+    public function test_active_rules_payload_for_item_type_still_returns_rules_for_taxable_room_charges(): void
+    {
+        $taxCalculator = app(TaxCalculator::class);
+
+        $rules = $taxCalculator->activeRulesPayloadForItemType(FolioItemType::Room->value);
+
+        $this->assertNotEmpty($rules);
     }
 }

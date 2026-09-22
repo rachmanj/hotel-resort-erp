@@ -14,6 +14,7 @@ use App\Models\FolioItem;
 use App\Models\Guest;
 use App\Models\Hotel;
 use App\Models\User;
+use App\Services\TaxCalculator;
 use Database\Seeders\AccountingDemoSeeder;
 use Database\Seeders\BillingDemoSeeder;
 use Database\Seeders\ChartOfAccountsSeeder;
@@ -99,5 +100,25 @@ class BoatCharterBillingTest extends TestCase
         $this->assertEquals(0, (float) $item->tax_amount);
         $this->assertEquals(0, (float) $item->service_charge_amount);
         $this->assertEquals(3_000_000, $item->line_total);
+    }
+
+    public function test_index_page_passes_no_tax_rules_for_non_taxable_misc_charge_preview(): void
+    {
+        $response = $this->actingAs($this->admin)->get(route('admin.boat-charters.index'));
+
+        $response->assertOk();
+        $response->assertInertia(fn ($page) => $page
+            ->component('Admin/BoatCharters/Index')
+            ->has('miscChargeTaxRules', 0)
+        );
+    }
+
+    public function test_active_rules_payload_for_item_type_still_returns_rules_for_taxable_fb_charges(): void
+    {
+        $taxCalculator = app(TaxCalculator::class);
+
+        $rules = $taxCalculator->activeRulesPayloadForItemType(FolioItemType::Fb->value);
+
+        $this->assertNotEmpty($rules);
     }
 }

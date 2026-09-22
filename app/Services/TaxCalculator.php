@@ -2,8 +2,10 @@
 
 namespace App\Services;
 
+use App\Enums\FolioItemType;
 use App\Models\FolioItem;
 use App\Models\TaxRule;
+use App\Support\FolioItemAppliesTo;
 use App\Support\TaxAmountCalculator;
 use Illuminate\Support\Collection;
 
@@ -30,6 +32,23 @@ class TaxCalculator
             ])
             ->values()
             ->all();
+    }
+
+    /**
+     * Rules payload for previewing a folio item entry form. Returns an empty
+     * array for non-taxable item types (everything except room and F&B) so
+     * previews never show a tax/service charge breakdown that postCharge()
+     * will not actually apply.
+     *
+     * @return array<int, array{code: string, rate_percent: float, is_compounding: bool}>
+     */
+    public function activeRulesPayloadForItemType(string $itemType): array
+    {
+        if (! FolioItemType::from($itemType)->isTaxable()) {
+            return [];
+        }
+
+        return $this->activeRulesPayload(FolioItemAppliesTo::forItemType($itemType));
     }
 
     /**
