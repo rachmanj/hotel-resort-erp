@@ -4,7 +4,7 @@ import { useState } from 'react';
 import FolioChargeTotalsPreview from '@/components/FolioChargeTotalsPreview';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { newIdempotencyKey } from '@/lib/idempotency';
-import type { TaxRuleForCalculation } from '@/lib/taxCalculator';
+import { coerceFiniteNumber, type TaxRuleForCalculation } from '@/lib/taxCalculator';
 
 interface FolioShowProps {
     folio: {
@@ -85,19 +85,24 @@ interface FolioShowProps {
 function computeDiveUnitPrice(
     pkg: FolioShowProps['divePackages'][number] | undefined,
     boatPrice: number | null,
-    quantity: number,
+    quantity: number | null | undefined,
 ): number {
+    const qty = coerceFiniteNumber(quantity);
+    const perPerson = coerceFiniteNumber(pkg?.price_per_person);
+    const safeBoatPrice =
+        boatPrice !== null && Number.isFinite(boatPrice) ? boatPrice : null;
+
     if (!pkg) {
         return 0;
     }
 
-    if (pkg.type !== 'dive_package' || boatPrice === null) {
-        return pkg.price_per_person;
+    if (pkg.type !== 'dive_package' || safeBoatPrice === null) {
+        return perPerson;
     }
 
-    const packageLine = pkg.price_per_person * quantity;
+    const packageLine = perPerson * qty;
 
-    return quantity > 0 ? (packageLine + boatPrice) / quantity : pkg.price_per_person;
+    return qty > 0 ? (packageLine + safeBoatPrice) / qty : perPerson;
 }
 
 const formatIdr = (v: number | string) => `Rp ${Number(v).toLocaleString('id-ID')}`;

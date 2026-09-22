@@ -20,8 +20,18 @@ export interface InclusiveTaxSplit {
     total: number;
 }
 
+export function coerceFiniteNumber(value: unknown): number {
+    if (value === null || value === undefined || value === '') {
+        return 0;
+    }
+
+    const n = typeof value === 'number' ? value : Number(value);
+
+    return Number.isFinite(n) ? n : 0;
+}
+
 function round2(value: number): number {
-    return Math.round(value * 100) / 100;
+    return Math.round(coerceFiniteNumber(value) * 100) / 100;
 }
 
 export function calculateTaxAmount(
@@ -29,7 +39,7 @@ export function calculateTaxAmount(
     quantity: number,
     rules: TaxRuleForCalculation[],
 ): TaxCalculationResult {
-    const lineSubtotal = round2(unitPrice * quantity);
+    const lineSubtotal = round2(coerceFiniteNumber(unitPrice) * coerceFiniteNumber(quantity));
 
     return calculateTaxFromSubtotal(lineSubtotal, rules);
 }
@@ -44,7 +54,7 @@ export function calculateTaxFromSubtotal(
     let runningBase = roundedSubtotal;
 
     for (const rule of rules) {
-        const rate = rule.rate_percent / 100;
+        const rate = coerceFiniteNumber(rule.rate_percent) / 100;
 
         if (rule.code === SERVICE_CHARGE_CODE) {
             serviceCharge = round2(roundedSubtotal * rate);
@@ -74,7 +84,7 @@ export function inclusiveTaxFactor(rules: TaxRuleForCalculation[]): number {
     let runningFactor = 1;
 
     for (const rule of rules) {
-        const rate = rule.rate_percent / 100;
+        const rate = coerceFiniteNumber(rule.rate_percent) / 100;
 
         if (rule.code === SERVICE_CHARGE_CODE) {
             serviceChargeFactor = rate;
@@ -98,7 +108,7 @@ export function extractInclusiveTax(
     quantity: number,
     rules: TaxRuleForCalculation[],
 ): InclusiveTaxSplit {
-    const total = round2(unitPrice * quantity);
+    const total = round2(coerceFiniteNumber(unitPrice) * coerceFiniteNumber(quantity));
     const dpp = round2(total / inclusiveTaxFactor(rules));
     const forward = calculateTaxFromSubtotal(dpp, rules);
 

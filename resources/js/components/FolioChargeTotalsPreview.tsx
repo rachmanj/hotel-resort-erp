@@ -1,11 +1,19 @@
 import { theme, Typography } from 'antd';
-import { extractInclusiveTax, type TaxRuleForCalculation } from '@/lib/taxCalculator';
+import {
+    coerceFiniteNumber,
+    extractInclusiveTax,
+    type TaxRuleForCalculation,
+} from '@/lib/taxCalculator';
 
-const formatIdr = (v: number) => `Rp ${v.toLocaleString('id-ID')}`;
+const formatIdr = (v: number) => {
+    const amount = coerceFiniteNumber(v);
+
+    return `Rp ${amount.toLocaleString('id-ID')}`;
+};
 
 interface FolioChargeTotalsPreviewProps {
-    unitPrice: number;
-    quantity: number;
+    unitPrice: number | null | undefined;
+    quantity: number | null | undefined;
     taxRules: TaxRuleForCalculation[];
 }
 
