@@ -16,6 +16,7 @@ class VerifyProformaPaymentAction
     public function __construct(
         private ProformaPaymentReceiptNumberService $receiptNumberService,
         private RefreshProformaInvoiceTotalsAction $refreshTotals,
+        private ConfirmReservationAction $confirmReservation,
     ) {}
 
     /**
@@ -48,7 +49,7 @@ class VerifyProformaPaymentAction
 
             if ($reservation !== null) {
                 if ($reservation->status === ReservationStatus::Tentative) {
-                    $reservation->update(['status' => ReservationStatus::Confirmed->value]);
+                    ($this->confirmReservation)($reservation, $verifiedBy);
                 }
 
                 ActivityLogObserver::logCustom(

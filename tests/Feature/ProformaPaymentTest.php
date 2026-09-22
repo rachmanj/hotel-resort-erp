@@ -157,6 +157,7 @@ class ProformaPaymentTest extends TestCase
         $this->assertEquals(2_000_000, (float) $invoice->received_total);
         $this->assertEquals(2_500_000, (float) $invoice->outstanding_total);
         $this->assertSame(ReservationStatus::Confirmed, $reservation->refresh()->status);
+        $this->assertNull($reservation->hold_expires_at);
     }
 
     public function test_second_receipt_against_the_same_invoice_is_suffixed(): void
@@ -289,7 +290,8 @@ class ProformaPaymentTest extends TestCase
             'phone' => '081234567890',
         ]);
 
-        $reservation = app(CreateReservationAction::class)([
+        // A booking held by marketing stays tentative until the down payment clears.
+        return app(CreateReservationAction::class)([
             'hotel_id' => $this->hotel->id,
             'guest_id' => $guest->id,
             'arrival_date' => '2026-06-20',
@@ -301,10 +303,5 @@ class ProformaPaymentTest extends TestCase
             'created_by' => $this->marketingUser->id,
             'created_via' => 'web',
         ]);
-
-        // A booking held by marketing stays tentative until the down payment clears.
-        $reservation->update(['status' => ReservationStatus::Tentative->value]);
-
-        return $reservation;
     }
 }

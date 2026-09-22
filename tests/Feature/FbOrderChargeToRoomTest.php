@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Actions\Reservations\CheckInGuestAction;
+use App\Actions\Reservations\ConfirmReservationAction;
 use App\Actions\Reservations\CreateReservationAction;
 use App\Enums\FolioItemType;
 use App\Enums\OrderType;
@@ -127,7 +128,9 @@ class FbOrderChargeToRoomTest extends TestCase
             'created_via' => 'web',
         ]);
 
-        app(CheckInGuestAction::class)($this->reservation, $this->user);
+        app(ConfirmReservationAction::class)($this->reservation, $this->user);
+
+        app(CheckInGuestAction::class)($this->reservation->refresh(), $this->user);
     }
 
     public function test_create_order_with_charge_to_room_posts_folio_charge(): void

@@ -34,6 +34,10 @@ class CheckInGuestAction
             $reservation = Reservation::query()->lockForUpdate()->findOrFail($reservation->id);
             $reservation->load(['guest', 'reservationRooms.room.roomType', 'reservationGroup']);
 
+            if ($reservation->status === ReservationStatus::Tentative) {
+                throw new InvalidArgumentException('This booking is still tentative. Confirm the reservation before checking the guest in.');
+            }
+
             if (! in_array($reservation->status, [ReservationStatus::Confirmed, ReservationStatus::CheckedIn], true)) {
                 throw new InvalidArgumentException('Reservation must be in confirmed or partially checked-in status to check in.');
             }

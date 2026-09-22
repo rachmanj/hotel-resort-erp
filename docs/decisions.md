@@ -30,6 +30,29 @@ Decision: [Title] - [YYYY-MM-DD]
 
 ## Recent Decisions
 
+Decision: Bookings are created Tentative with a hold limit and auto-cancelled by a scheduled command; a single ConfirmReservationAction is the only promotion path - 2026-09-22
+
+**Context**: The client's booking flow is that a booking is given a limit and is automatically cancelled when its status does not change to Confirm Reservation in time, and that guests who pay no down payment must still be confirmed by marketing staff. The codebase only satisfied half of that: `VerifyProformaPaymentAction` promoted Tentative → Confirmed when finance verified a down payment, but `CreateReservationAction` wrote Confirmed on creation, so no booking was ever actually held and marketing had no confirm action of its own.
+
+**Options Considered**:
+
+1. **Derive the expiry from `created_at` plus a config value at read time**: no new column, the cutoff is computed wherever it is needed.
+   - ✅ Pros: no migration; changing the config retroactively re-times every open hold.
+   - ❌ Cons: the limit becomes invisible to staff and unqueryable; a hold can never be extended per booking; changing the config silently expires bookings the guest was already told about.
+2. **Store an explicit nullable `hold_expires_at` on the reservation (chosen)**: stamped at creation from `config('reservations.hold_days')`, cleared on confirmation, `NULL` meaning "no hold".
+   - ✅ Pros: the limit is visible on the reservation and to the guest-facing page, indexable for the expiry sweep, per-booking extendable later, and a booking with no hold is expressed by simply leaving it `NULL`.
+   - ❌ Cons: one more column and the discipline of clearing it wherever a booking becomes firm.
+
+**Decision**: Add nullable `reservations.hold_expires_at` (indexed with `status`), default `CreateReservationAction` to `ReservationStatus::Tentative` while accepting an explicit `status` for sources that book something already firm (the OTA webhook passes Confirmed), and route every Tentative → Confirmed transition through `ConfirmReservationAction`, which clears the hold, logs a `confirmed` activity and refuses a non-Tentative reservation with an `InvalidArgumentException` the controller turns into a flash error. `reservations:expire-holds`, scheduled daily at 01:00, cancels overdue holds via `CancelReservationAction`. Check-in keeps requiring Confirmed and now says so specifically for Tentative bookings.
+
+**Rationale**: Making the creation default Tentative is what makes the down-payment verification meaningful — it is now what confirms a booking rather than a no-op on a row that was already Confirmed. Keeping the promotion in one Action means the web confirm route, the finance verification path and the tests all clear the hold the same way; the alternative (inline `update(['status' => ...])`) is how the hold would get left behind and a confirmed booking silently cancelled overnight. Cancelling through `CancelReservationAction` rather than a bare status update keeps room and reservation-room release identical to a manual cancellation.
+
+**Implementation**: `database/migrations/2026_09_22_062702_add_hold_expires_at_to_reservations_table.php`, `config/reservations.php` (`hold_days`, `RESERVATION_HOLD_DAYS`, default 3), `app/Actions/Reservations/CreateReservationAction.php`, new `app/Actions/Reservations/ConfirmReservationAction.php`, `app/Actions/Reservations/VerifyProformaPaymentAction.php`, `app/Console/Commands/ExpireReservationHolds.php` + `routes/console.php`, `POST /reservations/{reservation}/confirm` behind the new `reservations.manage` permission (admin, manager, front office), `app/Http/Controllers/CheckInController.php`, `app/Actions/Reservations/CheckInGuestAction.php`, `app/Telegram/Commands/CheckInCommand.php`, `resources/js/Pages/Reservations/Show.tsx` (Confirm button + hold row), `tests/Feature/ReservationHoldTest.php`.
+
+**Review Date**: Once marketing has used the hold for a season — revisit whether three days is the right default, whether the hold should be shortened as the arrival date approaches, and whether the guest should get an automatic WhatsApp reminder before the hold expires.
+
+---
+
 Decision: The guest Invoice is derived from folio items and release-gated by Finance; its number is a per-month counter - 2026-09-22
 
 **Context**: Front office records guest activities and charges onto the folio throughout the stay. Pratasaba's paper Invoice (`Rincian / QTY / Ns / Harga / Total` with three signature lines and an invoice number like `2607003` = year 26, month 07, running number 003) may not be used or sent to the guest until Finance releases it. Phase 1 and 2 already ship the pre-arrival Proforma Invoice and its payment receipts; this is the arrival-to-departure document and must not duplicate either.

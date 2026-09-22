@@ -12,6 +12,10 @@ class CheckInController extends Controller
 {
     public function store(Reservation $reservation, CheckInGuestAction $checkIn): RedirectResponse
     {
+        if ($reservation->status === ReservationStatus::Tentative) {
+            return back()->with('error', 'This booking is still tentative. Confirm the reservation before checking the guest in.');
+        }
+
         if ($reservation->status !== ReservationStatus::Confirmed) {
             return back()->with('error', 'Only confirmed reservations can be checked in.');
         }

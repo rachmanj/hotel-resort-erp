@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Actions\Reservations\ConfirmReservationAction;
 use App\Actions\Reservations\CreateReservationAction;
 use App\Enums\ReservationStatus;
 use App\Enums\RoomStatus;
@@ -137,7 +138,7 @@ class ReservationShowTest extends TestCase
     {
         $guest = Guest::query()->create(['full_name' => 'Show Page Guest']);
 
-        return app(CreateReservationAction::class)([
+        $reservation = app(CreateReservationAction::class)([
             'hotel_id' => $this->hotel->id,
             'guest_id' => $guest->id,
             'arrival_date' => now()->toDateString(),
@@ -149,5 +150,7 @@ class ReservationShowTest extends TestCase
             'created_by' => $this->user->id,
             'created_via' => 'web',
         ]);
+
+        return app(ConfirmReservationAction::class)($reservation, $this->user);
     }
 }

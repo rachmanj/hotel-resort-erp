@@ -9,5 +9,6 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 Schedule::command('hotel:check-no-shows')->hourly();
+Schedule::command('reservations:expire-holds')->dailyAt('01:00');
 Schedule::command('housekeeping:generate-assignments')->dailyAt('06:00');
 Schedule::command('inventory:check-low-stock')->hourly();

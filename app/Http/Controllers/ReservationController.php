@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Actions\Reservations\CancelReservationAction;
+use App\Actions\Reservations\ConfirmReservationAction;
 use App\Actions\Reservations\CreateReservationAction;
 use App\Enums\FolioType;
 use App\Enums\ReservationSource;
@@ -31,6 +32,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
+use InvalidArgumentException;
 
 class ReservationController extends Controller
 {
@@ -333,6 +335,7 @@ class ReservationController extends Controller
                 'status' => $reservation->status->value,
                 'status_label' => $reservation->status->label(),
                 'status_color' => $reservation->status->color(),
+                'hold_expires_at' => $reservation->hold_expires_at?->toDateTimeString(),
                 'source' => $reservation->source->value,
                 'source_label' => $reservation->source->label(),
                 'agent' => $reservation->agent?->only(['id', 'name', 'code']),
@@ -390,12 +393,27 @@ class ReservationController extends Controller
                 'charges_total' => $folioChargesTotal,
                 'payments_total' => $folioPaymentsTotal,
             ] : null,
+            'canConfirm' => request()->user()?->can('reservations.manage') ?? false,
             'canCancel' => request()->user()?->can('reservations.cancel') ?? false,
             'canCheckIn' => request()->user()?->can('reservations.checkin') ?? false,
             'canCheckOut' => request()->user()?->can('reservations.checkout') ?? false,
             'canViewFolio' => request()->user()?->can('folios.view') ?? false,
             'canSendWhatsApp' => request()->user()?->can('reservations.send-whatsapp') ?? false,
         ]);
+    }
+
+    public function confirm(
+        Request $request,
+        Reservation $reservation,
+        ConfirmReservationAction $confirmReservation,
+    ): RedirectResponse {
+        try {
+            $confirmReservation($reservation, $request->user());
+        } catch (InvalidArgumentException $e) {
+            return back()->with('error', $e->getMessage());
+        }
+
+        return back()->with('success', 'Reservation confirmed successfully.');
     }
 
     public function cancel(

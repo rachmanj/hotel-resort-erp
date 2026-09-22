@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Actions\Reservations\CheckInGuestAction;
 use App\Actions\Reservations\CheckOutGuestAction;
+use App\Actions\Reservations\ConfirmReservationAction;
 use App\Actions\Reservations\CreateReservationAction;
 use App\Enums\ReservationRoomStatus;
 use App\Enums\ReservationStatus;
@@ -176,7 +177,9 @@ class CheckoutSettlementTest extends TestCase
             'created_via' => 'web',
         ]);
 
-        app(CheckInGuestAction::class)($reservation, $this->user);
+        app(ConfirmReservationAction::class)($reservation, $this->user);
+
+        app(CheckInGuestAction::class)($reservation->refresh(), $this->user);
 
         return $reservation->reservationRooms()->firstOrFail();
     }

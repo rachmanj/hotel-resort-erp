@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Ota;
 use App\Actions\Reservations\CreateReservationAction;
 use App\Enums\CreatedVia;
 use App\Enums\ReservationSource;
+use App\Enums\ReservationStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Ota\StoreOtaBookingRequest;
 use App\Models\Agent;
@@ -97,6 +98,7 @@ class BookingWebhookController extends Controller
             'children' => $validated['children'] ?? 0,
             'special_requests' => $validated['special_requests'] ?? null,
             'source' => ReservationSource::Ota->value,
+            'status' => ReservationStatus::Confirmed->value,
             'created_via' => CreatedVia::OtaWebhook->value,
             'agent_id' => $agent->id,
             'external_booking_id' => $validated['external_booking_id'],

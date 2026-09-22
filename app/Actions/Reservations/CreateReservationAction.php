@@ -50,6 +50,7 @@ class CreateReservationAction
      *     external_booking_id?: string|null,
      *     created_by?: int|null,
      *     created_via?: string,
+     *     status?: string,
      * }  $data
      */
     public function __invoke(array $data, ?User $performedBy = null): Reservation
@@ -81,6 +82,10 @@ class CreateReservationAction
 
             $resolvedRooms = $this->resolveRoomSelections($roomSelections, $checkin, $checkout, $data['hotel_id'], $data);
 
+            $status = isset($data['status'])
+                ? ReservationStatus::from($data['status'])
+                : ReservationStatus::Tentative;
+
             $reservation = Reservation::query()->create([
                 'hotel_id' => $data['hotel_id'],
                 'reservation_code' => $this->generateReservationCode(),
@@ -90,7 +95,10 @@ class CreateReservationAction
                 'ota_fee_id' => $data['ota_fee_id'] ?? null,
                 'reservation_group_id' => $data['reservation_group_id'] ?? null,
                 'source' => $data['source'] ?? ReservationSource::Walkin->value,
-                'status' => ReservationStatus::Confirmed->value,
+                'status' => $status->value,
+                'hold_expires_at' => $status === ReservationStatus::Tentative
+                    ? now()->addDays((int) config('reservations.hold_days'))
+                    : null,
                 'arrival_date' => $checkin->toDateString(),
                 'departure_date' => $checkout->toDateString(),
                 'adults' => $data['adults'] ?? 1,

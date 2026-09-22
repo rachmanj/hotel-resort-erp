@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Actions\Reservations\CheckInGuestAction;
 use App\Actions\Reservations\CheckOutGuestAction;
+use App\Actions\Reservations\ConfirmReservationAction;
 use App\Actions\Reservations\CreateReservationAction;
 use App\Enums\ReservationStatus;
 use App\Enums\RoomStatus;
@@ -200,7 +201,7 @@ class BillingTest extends TestCase
 
     private function createReservation(Guest $guest): Reservation
     {
-        return app(CreateReservationAction::class)([
+        $reservation = app(CreateReservationAction::class)([
             'hotel_id' => $this->hotel->id,
             'guest_id' => $guest->id,
             'arrival_date' => now()->toDateString(),
@@ -211,5 +212,7 @@ class BillingTest extends TestCase
             'created_by' => $this->user->id,
             'created_via' => 'web',
         ]);
+
+        return app(ConfirmReservationAction::class)($reservation, $this->user);
     }
 }

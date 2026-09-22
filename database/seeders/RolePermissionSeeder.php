@@ -16,7 +16,7 @@ class RolePermissionSeeder extends Seeder
         'admin' => [
             'telegram.link', 'profile.telegram.view',
             'rooms.view', 'rooms.manage',
-            'reservations.view', 'reservations.create', 'reservations.edit', 'reservations.cancel', 'reservations.checkin', 'reservations.checkout', 'reservations.send-whatsapp',
+            'reservations.view', 'reservations.create', 'reservations.edit', 'reservations.manage', 'reservations.cancel', 'reservations.checkin', 'reservations.checkout', 'reservations.send-whatsapp',
             'groups.view', 'groups.manage', 'groups.checkin', 'groups.checkout',
             'housekeeping.view', 'housekeeping.manage', 'housekeeping.update_status',
             'maintenance.view', 'maintenance.manage', 'maintenance.create', 'maintenance.escalate',
@@ -43,7 +43,7 @@ class RolePermissionSeeder extends Seeder
         'manager' => [
             'telegram.link', 'profile.telegram.view',
             'rooms.view',
-            'reservations.view', 'reservations.cancel',
+            'reservations.view', 'reservations.manage', 'reservations.cancel',
             'groups.view', 'groups.checkin', 'groups.checkout',
             'housekeeping.view', 'housekeeping.manage',
             'maintenance.view', 'maintenance.escalate',
@@ -60,7 +60,7 @@ class RolePermissionSeeder extends Seeder
         'front_office' => [
             'telegram.link', 'profile.telegram.view',
             'rooms.view',
-            'reservations.view', 'reservations.create', 'reservations.edit', 'reservations.cancel', 'reservations.checkin', 'reservations.checkout', 'reservations.send-whatsapp',
+            'reservations.view', 'reservations.create', 'reservations.edit', 'reservations.manage', 'reservations.cancel', 'reservations.checkin', 'reservations.checkout', 'reservations.send-whatsapp',
             'groups.view', 'groups.manage', 'groups.checkin', 'groups.checkout',
             'housekeeping.view', 'housekeeping.update_status',
             'maintenance.create',

@@ -14,6 +14,7 @@ interface ReservationShowProps {
         status: string;
         status_label: string;
         status_color: string;
+        hold_expires_at?: string | null;
         source: string;
         source_label: string;
         agent?: { id: number; name: string; code?: string } | null;
@@ -63,6 +64,7 @@ interface ReservationShowProps {
         charges_total?: number;
         payments_total?: number;
     } | null;
+    canConfirm: boolean;
     canCancel: boolean;
     canCheckIn: boolean;
     canCheckOut: boolean;
@@ -73,6 +75,7 @@ interface ReservationShowProps {
 export default function ReservationShow({
     reservation,
     folio,
+    canConfirm,
     canCancel,
     canCheckIn,
     canCheckOut,
@@ -83,7 +86,14 @@ export default function ReservationShow({
     const [checkInOpen, setCheckInOpen] = useState(false);
     const [checkOutRoom, setCheckOutRoom] = useState<ReservationShowProps['reservation']['reservation_rooms'][0] | null>(null);
     const cancelForm = useForm({ cancelled_reason: '' });
+    const confirmForm = useForm({});
     const sendWhatsAppForm = useForm({});
+
+    const submitConfirm = () => {
+        confirmForm.post(`/reservations/${reservation.id}/confirm`, {
+            headers: { 'X-Idempotency-Key': newIdempotencyKey() },
+        });
+    };
 
     const submitCancel = () => {
         cancelForm.post(`/reservations/${reservation.id}/cancel`, {
@@ -132,6 +142,11 @@ export default function ReservationShow({
                 <Link href="/reservations">
                     <Button>Back to list</Button>
                 </Link>
+                {canConfirm && reservation.status === 'tentative' && (
+                    <Button type="primary" loading={confirmForm.processing} onClick={submitConfirm}>
+                        Confirm Reservation
+                    </Button>
+                )}
                 {canCheckIn && reservation.status === 'confirmed' && (
                     <Button type="primary" onClick={() => setCheckInOpen(true)}>
                         Check In
@@ -169,6 +184,11 @@ export default function ReservationShow({
                     <Tag color={reservation.status_color}>{reservation.status_label}</Tag>
                 </Descriptions.Item>
                 <Descriptions.Item label="Source">{reservation.source_label}</Descriptions.Item>
+                {reservation.status === 'tentative' && reservation.hold_expires_at && (
+                    <Descriptions.Item label="Hold expires" span={2}>
+                        <Tag color="orange">{reservation.hold_expires_at}</Tag>
+                    </Descriptions.Item>
+                )}
                 <Descriptions.Item label="Arrival">{reservation.arrival_date}</Descriptions.Item>
                 <Descriptions.Item label="Departure">{reservation.departure_date}</Descriptions.Item>
                 <Descriptions.Item label="Adults">{reservation.adults}</Descriptions.Item>

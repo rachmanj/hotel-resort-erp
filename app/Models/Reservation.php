@@ -23,6 +23,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
     'promotion_id',
     'source',
     'status',
+    'hold_expires_at',
     'arrival_date',
     'departure_date',
     'adults',
@@ -41,6 +42,7 @@ class Reservation extends Model
         return [
             'source' => ReservationSource::class,
             'status' => ReservationStatus::class,
+            'hold_expires_at' => 'datetime',
             'arrival_date' => 'date',
             'departure_date' => 'date',
             'created_via' => CreatedVia::class,

@@ -45,6 +45,12 @@ class CheckInCommand extends BaseCommand
             return;
         }
 
+        if ($reservation->status === ReservationStatus::Tentative) {
+            $this->reply($tgUser, "❌ Reservation {$code} is still tentative. Confirm the booking before checking the guest in.");
+
+            return;
+        }
+
         if ($reservation->status !== ReservationStatus::Confirmed) {
             $this->reply($tgUser, "❌ Reservation {$code} is not in confirmed status.");
 

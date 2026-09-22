@@ -75,4 +75,12 @@
 
 ---
 
+### [M007] Booking hold state: reservations start Tentative and auto-cancel when the hold limit passes (2026-09-22) ✅ COMPLETE
+
+- **Challenge/Decision**: Pratasaba's booking flow gives every new booking a limit and cancels it automatically if it is not turned into a Confirm Reservation in time. Finance verifying a down payment already promoted Tentative → Confirmed, but `CreateReservationAction` still wrote Confirmed on creation, so nothing was ever held and guests who pay no down payment had no way to be confirmed by marketing.
+- **Solution**: `CreateReservationAction` now defaults to `ReservationStatus::Tentative` and stamps `reservations.hold_expires_at` with `now()->addDays(config('reservations.hold_days'))` (default 3, `RESERVATION_HOLD_DAYS`); callers that book on behalf of an already-firm channel pass an explicit `status` (the OTA webhook passes Confirmed). `ConfirmReservationAction` is the single promotion path — it sets Confirmed, clears the hold and logs a `confirmed` activity — and is used by both `VerifyProformaPaymentAction` (down payment cleared) and the new `POST /reservations/{reservation}/confirm` route behind `reservations.manage` (marketing confirming a no-deposit guest). `reservations:expire-holds` (scheduled daily 01:00) cancels overdue Tentative rows through `CancelReservationAction` with a "Hold expired on ..." reason and logs each one. Check-in refuses a Tentative booking with an explicit "confirm the reservation first" message in `CheckInController`, `CheckInGuestAction` and the Telegram `/checkin` command.
+- **Key Learning**: Flipping the creation default is a cross-cutting change — every test that booked and immediately checked in (Billing, Checkout settlement, F&B charge-to-room, reservation show page, WhatsApp) had to confirm first, which is exactly the signal that the promotion step belongs in one reusable Action rather than inline `update(['status' => ...])` calls. Idempotency of the expiry command comes for free from the status filter: `CancelReservationAction` moves the row out of Tentative, so a second run finds nothing even though `hold_expires_at` is deliberately left in place as an audit trail of why it was cancelled.
+
+---
+
 [Add new memory entries below, following the format above]

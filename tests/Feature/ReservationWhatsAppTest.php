@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Actions\Reservations\ConfirmReservationAction;
 use App\Actions\Reservations\CreateReservationAction;
 use App\Enums\ReservationStatus;
 use App\Enums\RoomStatus;
@@ -189,7 +190,7 @@ class ReservationWhatsAppTest extends TestCase
             'phone' => $phone,
         ]);
 
-        return app(CreateReservationAction::class)([
+        $reservation = app(CreateReservationAction::class)([
             'hotel_id' => $this->hotel->id,
             'guest_id' => $guest->id,
             'arrival_date' => now()->addDay()->toDateString(),
@@ -201,5 +202,7 @@ class ReservationWhatsAppTest extends TestCase
             'created_by' => $this->user->id,
             'created_via' => 'web',
         ]);
+
+        return app(ConfirmReservationAction::class)($reservation, $this->user);
     }
 }
