@@ -35,10 +35,10 @@ class ProformaInvoiceLine extends Model
     }
 
     /**
-     * Price column on the printed document: the per-room price for the whole stay.
+     * Price column on the printed document: the nightly rate for one room, one night.
      */
     public function stayPrice(): float
     {
-        return round((float) $this->unit_price * $this->nights, 2);
+        return round((float) $this->unit_price, 2);
     }
 }

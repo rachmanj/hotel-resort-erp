@@ -5,7 +5,7 @@ return [
 
     'company_name' => env('PROFORMA_COMPANY_NAME', 'PRATASABA RESORT'),
 
-    'room_line_note' => 'Room Include Breakfast 2 pax',
+    'room_line_note' => '*Room Include Breakfast 2 pax',
 
     'prepared_by' => env('PROFORMA_PREPARED_BY', 'Marketing'),
 

@@ -112,17 +112,20 @@ class ProformaInvoiceTest extends TestCase
         $this->assertSame(1, $invoice->revision);
         $this->assertNull($invoice->issued_at);
         $this->assertSame('Marketing Staff', $invoice->prepared_by);
-        $this->assertEquals(6_000_000, (float) $invoice->total);
-        $this->assertEquals(6_000_000, (float) $invoice->subtotal);
+        $this->assertEquals(9_000_000, (float) $invoice->total);
+        $this->assertEquals(9_000_000, (float) $invoice->subtotal);
 
         $lines = $invoice->lines;
         $this->assertCount(1, $lines);
         $this->assertSame('Seroja', $lines[0]->description);
-        $this->assertSame('Room Include Breakfast 2 pax', $lines[0]->note);
+        $this->assertSame('*Room Include Breakfast 2 pax', $lines[0]->note);
         $this->assertSame(2, $lines[0]->quantity);
-        $this->assertSame(2, $lines[0]->nights);
+        $this->assertSame(3, $lines[0]->nights);
         $this->assertEquals(1_500_000, (float) $lines[0]->unit_price);
-        $this->assertEquals(6_000_000, (float) $lines[0]->amount);
+
+        // Price is the nightly rate for one room, one night; Amount is Price x Qty x Ns.
+        $this->assertEquals(1_500_000, $lines[0]->stayPrice());
+        $this->assertEquals(9_000_000, (float) $lines[0]->amount);
     }
 
     public function test_draft_proforma_invoice_is_regenerated_when_rate_changes(): void
@@ -135,7 +138,7 @@ class ProformaInvoiceTest extends TestCase
 
         $this->assertCount(1, $invoices);
         $this->assertSame(1, $invoices[0]->revision);
-        $this->assertEquals(7_000_000, (float) $invoices[0]->total);
+        $this->assertEquals(10_500_000, (float) $invoices[0]->total);
         $this->assertCount(2, $invoices[0]->lines);
     }
 
@@ -201,7 +204,7 @@ class ProformaInvoiceTest extends TestCase
 
         $this->assertSame(ProformaInvoiceStatus::Released, $released->status);
         $this->assertSame('001/PI/PRATA/VIII/2026', $released->number);
-        $this->assertEquals(6_000_000, (float) $released->total);
+        $this->assertEquals(9_000_000, (float) $released->total);
         $this->assertCount(1, $released->lines);
 
         $revisions = ProformaInvoice::query()
@@ -213,7 +216,7 @@ class ProformaInvoiceTest extends TestCase
         $this->assertSame(2, $revisions[1]->revision);
         $this->assertSame('002/PI/PRATA/VIII/2026', $revisions[1]->number);
         $this->assertSame(ProformaInvoiceStatus::Draft, $revisions[1]->status);
-        $this->assertEquals(7_000_000, (float) $revisions[1]->total);
+        $this->assertEquals(10_500_000, (float) $revisions[1]->total);
     }
 
     public function test_proforma_invoice_pdf_download_succeeds(): void
@@ -240,7 +243,7 @@ class ProformaInvoiceTest extends TestCase
             'hotel_id' => $this->hotel->id,
             'guest_id' => $guest->id,
             'arrival_date' => '2026-08-20',
-            'departure_date' => '2026-08-22',
+            'departure_date' => '2026-08-23',
             'room_selections' => [
                 ['room_type_id' => $this->roomType->id, 'room_id' => $this->firstRoom->id],
                 ['room_type_id' => $this->roomType->id, 'room_id' => $this->secondRoom->id],
