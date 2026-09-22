@@ -30,6 +30,32 @@ Decision: [Title] - [YYYY-MM-DD]
 
 ## Recent Decisions
 
+Decision: The guest Invoice is derived from folio items and release-gated by Finance; its number is a per-month counter - 2026-09-22
+
+**Context**: Front office records guest activities and charges onto the folio throughout the stay. Pratasaba's paper Invoice (`Rincian / QTY / Ns / Harga / Total` with three signature lines and an invoice number like `2607003` = year 26, month 07, running number 003) may not be used or sent to the guest until Finance releases it. Phase 1 and 2 already ship the pre-arrival Proforma Invoice and its payment receipts; this is the arrival-to-departure document and must not duplicate either.
+
+**Options Considered**:
+
+1. **Store invoice lines as a snapshot copied from folio items on release only**: no lines exist until Finance releases.
+   - ✅ Pros: nothing to keep in sync, no wasted numbers.
+   - ❌ Cons: nobody can see or check the invoice before releasing it, which is exactly what Finance needs in order to decide.
+2. **Render the invoice straight from folio items every time, with release only stamping a flag**: no `guest_invoice_lines` table.
+   - ✅ Pros: no duplication of charge data at all.
+   - ❌ Cons: a released invoice would silently change whenever a late charge is posted — the guest's copy and the system disagree, and there is no evidence of what was billed.
+3. **Live draft rewritten from folio items, frozen on release, changes issue the next revision (chosen)**: same shape as the proforma decision below.
+   - ✅ Pros: Finance reviews the real document before releasing; a released invoice is immutable evidence; late charges are visible as a new draft revision instead of a silent edit.
+   - ❌ Cons: charge data is stored twice, and a folio whose charges keep moving burns sequence numbers.
+
+**Decision**: Option 3. `guest_invoice_lines` mirror folio items (description, quantity, nights, unit price, amount, plus the tax and service charge actually posted) while the invoice is draft; a `FolioItemGuestInvoiceObserver` re-derives them on every folio item change so the draft always matches the folio. Release stamps `issued_at`, `released_at`, `released_by` and `approved_by`, after which the row is never written again — a later folio change issues `revision + 1` as a fresh draft with a new number.
+
+**Rationale**: The invoice is the document the guest signs for ("Invoice Received by"), so it has to be frozen at the moment Finance approves it, while still being reviewable before that moment. Copying the posted tax and service charge amounts onto the line — rather than recomputing them at print time — means a later tax rule change cannot retroactively alter a released invoice.
+
+**Implementation**: `guest_invoices` + `guest_invoice_lines`; `GuestInvoiceNumberService::reserveNext()` formats `YYMM` + 3-digit sequence from a counter keyed on `(hotel_id, year, month)`, called inside the inserting transaction so its `lockForUpdate` range lock still holds, with `unique(hotel_id, year, month, sequence)` and `unique(hotel_id, number)` as the backstop against a concurrent claim. `SyncGuestInvoiceAction` decides create/regenerate/revise; `ReleaseGuestInvoiceAction` refuses an already-released invoice with an `InvalidArgumentException` the controller turns into a flash error. Permission `invoice.release` (admin, finance only, mirroring `proforma.release`) gates release; `billing.view` opens and prints. The PDF at `resources/views/invoices/guest.blade.php` hides the SC and Tax columns when no line carries either, since dive, boat and other misc charges are sold tax-inclusive.
+
+**Review Date**: When check-out and city ledger billing are built - decide whether release should also close the folio, and whether a split-billing folio needs one invoice per payer.
+
+---
+
 Decision: Down payments live on the proforma invoice, not the folio, and only count as received once Finance verifies them - 2026-09-22
 
 **Context**: Pratasaba takes a down payment at booking time to secure a reservation. Marketing collects the transfer slip, Finance checks the bank account, and the guest gets a paper `Tanda Terima Pembayaran` whose number mirrors the proforma invoice (`PR-045/PI/PRATA/VI/2026`). The existing `payments` table hangs off a folio, and a folio does not exist until check-in, so there is nowhere to post the money at the moment it arrives.

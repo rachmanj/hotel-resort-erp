@@ -2,9 +2,11 @@
 
 namespace App\Providers;
 
+use App\Models\FolioItem;
 use App\Models\HousekeepingLog;
 use App\Models\Reservation;
 use App\Models\ReservationRoom;
+use App\Observers\FolioItemGuestInvoiceObserver;
 use App\Observers\HousekeepingLogObserver;
 use App\Observers\ReservationProformaObserver;
 use App\Observers\ReservationRoomProformaObserver;
@@ -25,6 +27,7 @@ class AppServiceProvider extends ServiceProvider
         HousekeepingLog::observe(HousekeepingLogObserver::class);
         Reservation::observe(ReservationProformaObserver::class);
         ReservationRoom::observe(ReservationRoomProformaObserver::class);
+        FolioItem::observe(FolioItemGuestInvoiceObserver::class);
 
         Notification::extend('telegram', fn () => app(TelegramChannel::class));
 

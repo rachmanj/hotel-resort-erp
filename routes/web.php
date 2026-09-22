@@ -48,6 +48,7 @@ use App\Http\Controllers\FloorController;
 use App\Http\Controllers\FolioController;
 use App\Http\Controllers\GroupController;
 use App\Http\Controllers\GuestController;
+use App\Http\Controllers\GuestInvoiceController;
 use App\Http\Controllers\HotelContextController;
 use App\Http\Controllers\HousekeepingAssignmentController;
 use App\Http\Controllers\HousekeepingController;
@@ -140,6 +141,9 @@ Route::middleware(['auth', 'hotel.context'])->group(function (): void {
     Route::post('/folios/{folio}/charges', [FolioController::class, 'postCharge'])->name('folios.charges.store')->middleware(['can:billing.post', 'idempotency']);
     Route::get('/folios/{folio}/invoice', [InvoiceController::class, 'show'])->name('folios.invoice')->middleware('can:billing.invoice');
     Route::get('/folios/{folio}/invoice/download', [InvoiceController::class, 'download'])->name('folios.invoice.download')->middleware('can:billing.invoice');
+    Route::get('/folios/{folio}/guest-invoice', [GuestInvoiceController::class, 'show'])->name('folios.guest-invoice')->middleware('can:billing.view');
+    Route::get('/folios/{folio}/guest-invoice/download', [GuestInvoiceController::class, 'download'])->name('folios.guest-invoice.download')->middleware('can:billing.view');
+    Route::post('/folios/{folio}/guest-invoice/release', [GuestInvoiceController::class, 'release'])->name('folios.guest-invoice.release')->middleware('can:invoice.release');
 
     Route::get('/housekeeping', [HousekeepingController::class, 'index'])->name('housekeeping.index')->middleware('can:housekeeping.view');
     Route::get('/housekeeping/assignments', [HousekeepingAssignmentController::class, 'index'])->name('housekeeping.assignments')->middleware('can:housekeeping.view');

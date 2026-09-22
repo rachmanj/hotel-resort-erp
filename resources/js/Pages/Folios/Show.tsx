@@ -57,6 +57,7 @@ interface FolioShowProps {
     canPostPayment: boolean;
     canPostCharge: boolean;
     canViewInvoice: boolean;
+    canViewGuestInvoice: boolean;
     miscChargeTaxRules: TaxRuleForCalculation[];
     divePackages: Array<{
         id: number;
@@ -78,6 +79,7 @@ export default function FolioShow({
     canPostPayment,
     canPostCharge,
     canViewInvoice,
+    canViewGuestInvoice,
     miscChargeTaxRules,
     divePackages,
     revenueCategories,
@@ -159,6 +161,11 @@ export default function FolioShow({
                             <Button>Download PDF</Button>
                         </a>
                     </>
+                )}
+                {canViewGuestInvoice && (
+                    <Link href={`/folios/${folio.id}/guest-invoice`}>
+                        <Button>Guest Invoice</Button>
+                    </Link>
                 )}
             </Space>
 

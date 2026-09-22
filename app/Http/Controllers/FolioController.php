@@ -92,6 +92,7 @@ class FolioController extends Controller
             'canPostPayment' => request()->user()?->can('billing.payment') && $folio->status === FolioStatus::Open,
             'canPostCharge' => request()->user()?->can('billing.post') && $folio->status === FolioStatus::Open,
             'canViewInvoice' => request()->user()?->can('billing.invoice') ?? false,
+            'canViewGuestInvoice' => request()->user()?->can('billing.view') ?? false,
             'miscChargeTaxRules' => $taxCalculator->activeRulesPayloadForItemType(FolioItemType::Misc->value),
             'divePackages' => DivePackage::query()
                 ->where('is_active', true)

@@ -67,4 +67,12 @@
 
 ---
 
+### [M006] Release-gated guest Invoice derived from folio items (billing document flow, phase 3) implemented (2026-09-22) ✅ COMPLETE
+
+- **Challenge/Decision**: Front office posts guest charges to the folio all stay long and the Invoice must keep updating itself, but it cannot be used or sent until Finance releases it. The paper document is `Rincian / QTY / Ns / Harga / Total` with three signature lines (Prepared / Approved / Received by) and a number like `2607003` — year 26, month 07, running number 003, so the counter restarts monthly, unlike the proforma's yearly one.
+- **Solution**: `guest_invoices` + `guest_invoice_lines` (`BelongsToHotel`), `GuestInvoiceNumberService::reserveNext()` (counter keyed on `(hotel_id, year, month)`, `lockForUpdate` range lock, refuses to run outside a transaction), `SyncGuestInvoiceAction` driven by `FolioItemGuestInvoiceObserver` so any charge path (web, Telegram, F&B charge-to-room, night audit) rewrites the draft, `ReleaseGuestInvoiceAction` behind the new `invoice.release` permission (admin + finance), `GuestInvoiceController` (show/download/release) on `billing.view`, DomPDF view `invoices.guest`, Inertia page `Folios/GuestInvoice`, terms and bank accounts in `config/invoice.php`.
+- **Key Learning**: The `Ns` (nights) column has no folio column behind it — room charges are posted with `quantity` holding the nights and `unit_price` holding the nightly rate, so the invoice line has to reinterpret that as `QTY 1 / Ns 3` while every other charge type keeps its own quantity and leaves `Ns` blank. Also, the posted `tax_amount`/`service_charge_amount` must be copied onto the invoice line rather than recomputed at print time, otherwise a later tax rule change would silently restate an already-released invoice.
+
+---
+
 [Add new memory entries below, following the format above]
