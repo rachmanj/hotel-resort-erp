@@ -4,6 +4,7 @@ import { Carousel, Grid, theme, Typography } from 'antd';
 export interface ResortSlide {
     src: string;
     alt?: string;
+    scale?: number;
 }
 
 interface GuestLayoutProps {
@@ -104,6 +105,17 @@ export default function GuestLayout({ children, slides = [] }: GuestLayoutProps)
                     object-fit: cover;
                     display: block;
                 }
+                .guest-carousel__slide-frame {
+                    width: 100%;
+                    height: 100vh;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+                .guest-carousel__image--scaled {
+                    object-fit: contain;
+                    display: block;
+                }
             `}</style>
             <div
                 className="guest-layout"
@@ -120,15 +132,37 @@ export default function GuestLayout({ children, slides = [] }: GuestLayoutProps)
                             autoplaySpeed={6000}
                             style={{ height: '100vh' }}
                         >
-                            {slides.map((slide) => (
-                                <div key={slide.src}>
-                                    <img
-                                        className="guest-carousel__image"
-                                        src={slide.src}
-                                        alt={slide.alt ?? 'Pratasaba Resort'}
-                                    />
-                                </div>
-                            ))}
+                            {slides.map((slide) => {
+                                const scale = slide.scale ?? 1;
+                                const useScaledFrame = scale < 1;
+
+                                return (
+                                    <div key={slide.src}>
+                                        {useScaledFrame ? (
+                                            <div
+                                                className="guest-carousel__slide-frame"
+                                                style={{ background: token.colorBgLayout }}
+                                            >
+                                                <img
+                                                    className="guest-carousel__image--scaled"
+                                                    style={{
+                                                        width: `${scale * 100}%`,
+                                                        height: `${scale * 100}%`,
+                                                    }}
+                                                    src={slide.src}
+                                                    alt={slide.alt ?? 'Pratasaba Resort'}
+                                                />
+                                            </div>
+                                        ) : (
+                                            <img
+                                                className="guest-carousel__image"
+                                                src={slide.src}
+                                                alt={slide.alt ?? 'Pratasaba Resort'}
+                                            />
+                                        )}
+                                    </div>
+                                );
+                            })}
                         </Carousel>
                     </div>
                 )}

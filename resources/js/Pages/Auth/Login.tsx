@@ -9,7 +9,7 @@ import GuestLayout from '@/Layouts/GuestLayout';
 
 const resortSlides = [
     { src: resortOne, alt: 'Pratasaba Resort over the water' },
-    { src: resortTwo, alt: 'Pratasaba Resort room interior' },
+    { src: resortTwo, alt: 'Pratasaba Resort room interior', scale: 0.8 },
     { src: resortThree, alt: 'Pratasaba Resort beach' },
     { src: resortFour, alt: 'Pratasaba Resort over-water jetty' },
 ];
