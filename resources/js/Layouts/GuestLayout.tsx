@@ -106,14 +106,27 @@ export default function GuestLayout({ children, slides = [] }: GuestLayoutProps)
                     display: block;
                 }
                 .guest-carousel__slide-frame {
+                    position: relative;
                     width: 100%;
                     height: 100vh;
                     display: flex;
                     align-items: center;
                     justify-content: center;
+                    overflow: hidden;
                 }
-                .guest-carousel__image--scaled {
-                    object-fit: contain;
+                .guest-carousel__image--bg {
+                    position: absolute;
+                    inset: 0;
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                    filter: blur(24px) brightness(0.75);
+                    transform: scale(1.08);
+                }
+                .guest-carousel__image--fg {
+                    position: relative;
+                    z-index: 1;
+                    object-fit: cover;
                     display: block;
                 }
             `}</style>
@@ -139,12 +152,15 @@ export default function GuestLayout({ children, slides = [] }: GuestLayoutProps)
                                 return (
                                     <div key={slide.src}>
                                         {useScaledFrame ? (
-                                            <div
-                                                className="guest-carousel__slide-frame"
-                                                style={{ background: token.colorBgLayout }}
-                                            >
+                                            <div className="guest-carousel__slide-frame">
                                                 <img
-                                                    className="guest-carousel__image--scaled"
+                                                    className="guest-carousel__image guest-carousel__image--bg"
+                                                    src={slide.src}
+                                                    alt=""
+                                                    aria-hidden
+                                                />
+                                                <img
+                                                    className="guest-carousel__image guest-carousel__image--fg"
                                                     style={{
                                                         width: `${scale * 100}%`,
                                                         height: `${scale * 100}%`,
