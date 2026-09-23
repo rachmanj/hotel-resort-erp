@@ -1,66 +1,92 @@
-# Inertia `setData({ ... })` audit (partial object calls)
+# Audit `setData({ ... })` — Inertia v3 (Pratasaba ERP)
 
-In Inertia v3 React, `form.setData({ key: value })` **replaces** the entire form data object. Only `setData('key', value)` or `setData({ ...form.data, key: value })` preserves other keys.
+Status audit: **selesai, tidak ada sisa pemakaian yang berpotensi kehilangan data** (diverifikasi ulang 23 Sep 2026 dengan skrip pemeriksa, bukan pembacaan manual).
 
-Scope: `resources/js` — object-form `setData` / destructured `setData` calls found via search for `setData({`.
+## 1. Kenapa ini penting
 
-**Legend**
+Di Inertia v3 React, `form.setData({ key: value })` **mengganti seluruh isi data form** dengan objek yang dikirim. Hanya bentuk dua argumen `form.setData('key', value)` yang menimpa satu field. Ini terkonfirmasi dari kode paketnya: `node_modules/@inertiajs/react/dist/index.js` cabang objek langsung memanggil `commitData(keyOrData)` tanpa merge.
 
-- **No loss** — every key in `useForm` initial state is set in the object (intentional full replace, e.g. open create/edit).
-- **Would lose fields** — partial object during an in-progress form / chained handlers; unrelated keys are dropped.
+Insiden nyata (22 Sep 2026, modal Add Charge folio): handler `onChargeDivePackageChange` dan `onChargeDiveRouteChange` mengirim objek parsial, sehingga:
 
-| File | Line | Would lose unrelated fields? | Notes |
-|------|------|------------------------------|-------|
-| `Pages/Folios/Show.tsx` | 157 | No | `openChargeModal`: full charge form reset (all 7 fields). |
-| `Pages/Folios/Show.tsx` | 194 | **Yes (fixed)** | `onChargeDivePackageChange`: was partial; cleared quantity, description, revenue, unit_price, etc. |
-| `Pages/Folios/Show.tsx` | 210 | **Yes (fixed)** | `onChargeDiveRouteChange`: was partial; cleared dive package and other charge fields. |
-| `Pages/Admin/BoatCharters/Index.tsx` | 113 | No | `openCreate`: all form keys set. |
-| `Pages/Admin/BoatCharters/Index.tsx` | 135 | No | `openEdit`: all form keys set. |
-| `Pages/FB/Menu/Index.tsx` | 60 | No | `openEdit`: all `editForm` keys set. |
-| `Pages/Admin/OtaFees/Index.tsx` | 48 | No | `openCreate`: all form keys set. |
-| `Pages/Admin/OtaFees/Index.tsx` | 62 | No | `openEdit`: all form keys set. |
-| `Pages/Admin/DivePackages/Index.tsx` | 53 | No | `openCreate`: all form keys set. |
-| `Pages/Admin/DivePackages/Index.tsx` | 67 | No | `openEdit`: all form keys set. |
-| `Pages/Admin/BoatUnits/Index.tsx` | 40 | No | `openCreate`: all form keys set. |
-| `Pages/Admin/BoatUnits/Index.tsx` | 53 | No | `openEdit`: all form keys set. |
-| `Pages/Admin/RevenueCategories/Index.tsx` | 41 | No | `openCreate`: all form keys set. |
-| `Pages/Admin/RevenueCategories/Index.tsx` | 53 | No | `openEdit`: all form keys set. |
-| `Pages/Admin/Users/Index.tsx` | 41 | No | `openCreate`: all form keys set. |
-| `Pages/Admin/Users/Index.tsx` | 53 | No | `openEdit`: all form keys set. |
-| `Pages/Admin/Roles/Index.tsx` | 55 | No | `openCreate`: both form keys set. |
-| `Pages/Admin/Roles/Index.tsx` | 61 | No | `openEdit`: both form keys set. |
-| `Pages/Admin/Agents/Rates.tsx` | 49 | No | `openCreate`: all form keys set. |
-| `Pages/Admin/Agents/Rates.tsx` | 64 | No | `openEdit`: all form keys set. |
-| `Pages/Admin/AgentTierRates/Index.tsx` | 73 | No | `openCreate`: all form keys set. |
-| `Pages/Admin/AgentTierRates/Index.tsx` | 86 | No | `openEdit`: all form keys set. |
-| `Pages/Admin/Promotions/Index.tsx` | 105 | No | `openCreate`: spreads `defaultForm` (full shape). |
-| `Pages/Admin/Promotions/Index.tsx` | 114 | No | `openEdit`: all keys from `defaultForm` set from API. |
-| `Pages/Admin/RatePlans/Index.tsx` | 52 | No | `openCreate`: all form keys set. |
-| `Pages/Admin/RatePlans/Index.tsx` | 65 | No | `openEdit`: all form keys set. |
-| `Pages/Admin/Agents/Index.tsx` | 78 | No | `openCreate`: all form keys set. |
-| `Pages/Admin/Agents/Index.tsx` | 101 | No | `openEdit`: all form keys set. |
-| `Pages/Reservations/Create.tsx` | 197 | No | `onNewGuest`: already merges `...form.data`. |
-| `Pages/Reservations/Edit.tsx` | 202 | No | `onNewGuest`: already merges `...form.data`. |
-| `Pages/Accounting/Departments/Index.tsx` | 48 | No | `editForm` only has `name` and `is_active`; both set. |
-| `Pages/RoomTypes/Index.tsx` | 60 | No | `openCreate`: all form keys set. |
-| `Pages/RoomTypes/Index.tsx` | 75 | No | `openEdit`: all form keys set. |
-| `Pages/Rooms/Index.tsx` | 60 | No | `openCreate`: all form keys set. |
-| `Pages/Rooms/Index.tsx` | 71 | No | `openEdit`: all form keys set. |
-| `Pages/Accounting/FixedAssets/Index.tsx` | 54 | No | `openEdit`: replaces with all keys on the edit form (same count as `useForm`; `residual_value` forced to `0` by design). |
-| `Pages/Floors/Index.tsx` | 31 | No | `openCreate`: both form keys set. |
-| `Pages/Floors/Index.tsx` | 37 | No | `openEdit`: both form keys set. |
-| `Pages/Spa/Therapists/Index.tsx` | 40 | No | `openEdit`: all `editForm` keys set. |
-| `Pages/Spa/Treatments/Index.tsx` | 42 | No | `openEdit`: all `editForm` keys set. |
-| `Pages/Admin/TaxRules/Index.tsx` | 42 | No | `openEdit`: all form keys set (edit-only form). |
-| `Pages/Admin/Seasons/Index.tsx` | 35 | No | `openCreate`: all form keys set. |
-| `Pages/Admin/Seasons/Index.tsx` | 41 | No | `openEdit`: all form keys set. |
-| `Pages/Admin/Currencies/Index.tsx` | 41 | No | `openRateModal`: both form keys set. |
+- memilih **Boat Route** menghapus **Dive Package** yang sudah dipilih, kolom route/boat ikut hilang;
+- **Quantity** dan **Description** ikut terhapus saat memilih paket, dan efek lanjutannya tampil sebagai total **"Rp NaN"** di pratinjau (nilainya kosong, bukan salah rumus).
 
-## Modules with no object-form `setData`
+Kedua handler sudah diperbaiki (commit `b2b3062`) dan alurnya sudah diverifikasi ulang di produksi: pilih paket -> pilih rute -> pilih boat -> ubah qty, semua pilihan tetap utuh.
 
-Searched under `Pages/Folios` (other than `Show.tsx`), `Inventory`, `Purchasing`, and related Accounting pages: no additional `setData({` calls. Purchasing uses single-key `setData('items', ...)`.
+## 2. Aturan
 
-## Follow-up ideas
+Benar untuk update sebagian field:
 
-- Prefer single-key `setData` for incremental updates to avoid accidental full replace.
-- Optional: extract shared `mergeFormData(form, partial)` helper if this pattern repeats.
+```tsx
+/** satu field */
+form.setData('quantity', 2);
+
+/** beberapa field, sisanya dipertahankan */
+form.setData({ ...form.data, dive_package_id: id, dive_route_label: null });
+```
+
+Hindari (kecuali memang reset penuh yang disengaja, mis. `openCreate`/`openEdit`):
+
+```tsx
+form.setData({ dive_route_label: label }); // field lain hilang
+```
+
+## 3. Hasil audit
+
+Total **43 panggilan** `setData({ ... })` di `resources/js`:
+
+- **4 panggilan merge aman** (memakai spread `...form.data`) — daftar di bagian 4;
+- **39 panggilan reset penuh** yang disengaja (`openCreate`/`openEdit`/buka modal: seluruh key form dikirim ulang sehingga tidak ada yang hilang) — daftar di bagian 5;
+- **0 panggilan yang kehilangan field**.
+
+Cara memeriksa ulang cepat: cari `setData({` lalu pastikan objeknya memuat **semua** key `useForm` pada berkas itu, atau memakai `...form.data`.
+
+## 4. Merge aman (pola yang benar)
+
+| Berkas | Baris | Handler | Isi objek |
+|--------|-------|---------|-----------|
+| `Pages/Folios/Show.tsx` | 194 | `onChargeDivePackageChange` | 3 key + spread `...chargeForm.data` |
+| `Pages/Folios/Show.tsx` | 211 | `onChargeDiveRouteChange` | 2 key + spread `...chargeForm.data` |
+| `Pages/Reservations/Create.tsx` | 197 | `submit` | 3 key + spread `...form.data` |
+| `Pages/Reservations/Edit.tsx` | 202 | `submit` | 3 key + spread `...form.data` |
+
+## 5. Reset penuh (disengaja, aman)
+
+Angka di kolom terakhir = jumlah key yang dikirim pada panggilan itu; semuanya sama dengan jumlah key `useForm`, jadi tidak ada field yang tersisa kosong.
+
+| Berkas | Panggilan | Baris dan handler (jumlah key) |
+|--------|-----------|--------------------------------|
+| `Pages/Accounting/Departments/Index.tsx` | 1 | 48 `DepartmentsIndex` (2 key) |
+| `Pages/Admin/AgentTierRates/Index.tsx` | 2 | 73 `openCreate` (6 key); 86 `openEdit` (6 key) |
+| `Pages/Admin/Agents/Index.tsx` | 2 | 78 `openCreate` (16 key); 101 `openEdit` (16 key) |
+| `Pages/Admin/Agents/Rates.tsx` | 2 | 49 `openCreate` (8 key); 64 `openEdit` (8 key) |
+| `Pages/Admin/BoatCharters/Index.tsx` | 2 | 113 `openCreate` (15 key); 135 `openEdit` (15 key) |
+| `Pages/Admin/BoatUnits/Index.tsx` | 2 | 40 `openCreate` (6 key); 53 `openEdit` (6 key) |
+| `Pages/Admin/Currencies/Index.tsx` | 1 | 41 `openRateModal` (2 key) |
+| `Pages/Admin/DivePackages/Index.tsx` | 2 | 53 `openCreate` (7 key); 67 `openEdit` (7 key) |
+| `Pages/Admin/OtaFees/Index.tsx` | 2 | 48 `openCreate` (7 key); 62 `openEdit` (7 key) |
+| `Pages/Admin/Promotions/Index.tsx` | 2 | 105 `openCreate` (0 key); 114 `openCreate` (17 key) |
+| `Pages/Admin/RatePlans/Index.tsx` | 2 | 52 `openCreate` (6 key); 65 `openEdit` (6 key) |
+| `Pages/Admin/RevenueCategories/Index.tsx` | 2 | 41 `openCreate` (5 key); 53 `openEdit` (5 key) |
+| `Pages/Admin/Roles/Index.tsx` | 2 | 55 `openCreate` (2 key); 61 `openEdit` (2 key) |
+| `Pages/Admin/Seasons/Index.tsx` | 2 | 35 `openCreate` (3 key); 41 `openEdit` (3 key) |
+| `Pages/Admin/TaxRules/Index.tsx` | 1 | 42 `openEdit` (5 key) |
+| `Pages/Admin/Users/Index.tsx` | 2 | 41 `openCreate` (5 key); 53 `openEdit` (5 key) |
+| `Pages/FB/Menu/Index.tsx` | 1 | 60 `openEdit` (5 key) |
+| `Pages/Floors/Index.tsx` | 2 | 31 `openCreate` (2 key); 37 `openEdit` (2 key) |
+| `Pages/Folios/Show.tsx` | 1 | 157 `openChargeModal` (7 key) |
+| `Pages/RoomTypes/Index.tsx` | 2 | 60 `openCreate` (8 key); 75 `openEdit` (8 key) |
+| `Pages/Rooms/Index.tsx` | 2 | 60 `openCreate` (4 key); 71 `openEdit` (4 key) |
+| `Pages/Spa/Therapists/Index.tsx` | 1 | 40 `openEdit` (3 key) |
+| `Pages/Spa/Treatments/Index.tsx` | 1 | 42 `openEdit` (4 key) |
+
+## 6. Rekomendasi lanjutan
+
+1. Untuk update bertahap, biasakan `setData('field', value)` (satu field) atau spread `...form.data` (beberapa field). Pola objek parsial tanpa spread hanya untuk reset penuh.
+2. Opsional: tambahkan helper bersama, mis. `mergeFormData(form, partial)` di `resources/js/lib`, supaya polanya konsisten dan mudah ditinjau.
+3. Checklist saat meninjau form baru: (a) apakah handler bertingkat (pilih A -> pilih B) yang memanggil `setData`? (b) kalau ya, pastikan spread; (c) uji alur **sampai langkah terakhir**, karena bug kelas ini baru muncul di langkah kedua, bukan di langkah pertama.
+4. Saat menguji form di produksi, periksa juga bahwa field lain (quantity, deskripsi, kategori) tidak ikut kosong setelah memilih opsi bertingkat.
+
+## 7. Skrip pemeriksa
+
+Pemeriksaan dilakukan dengan skrip Python yang membaca setiap `*.tsx` di `resources/js`, mengambil key dari `useForm({...})`, mengambil key dari objek `setData`, lalu melaporkan key yang hilang. Skrip ada di `docs/audit-setdata.py` (jalankan dari root repo: `python3 docs/audit-setdata.py`); ia mencetak ringkasan dan menyimpan detail per panggilan ke `/tmp/setdata_audit.json`. Perbarui daftar di dokumen ini bila ada form baru.
