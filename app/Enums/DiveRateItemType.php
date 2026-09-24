@@ -9,6 +9,9 @@ enum DiveRateItemType: string
     case NightDive = 'night_dive';
     case DiscoveryScuba = 'discovery_scuba';
     case EquipmentRental = 'equipment_rental';
+    case DailyTrip = 'daily_trip';
+    case DailyTripRental = 'daily_trip_rental';
+    case Guide = 'guide';
 
     public function divePackageType(): ?DivePackageType
     {

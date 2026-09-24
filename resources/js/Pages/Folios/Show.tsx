@@ -79,8 +79,30 @@ interface FolioShowProps {
             price: number;
         }>;
     }>;
+    dailyTripDestinations: Array<{
+        destination: string;
+        label: string;
+        boat_prices: Array<{
+            id: number;
+            boat_class: string;
+            boat_class_label: string;
+            price: number;
+        }>;
+    }>;
+    dailyTripRentals: Array<{ id: number; code: string; name: string; price: number }>;
+    dailyTripGuide: { id: number; code: string; name: string; price: number } | null;
     revenueCategories: Array<{ id: number; code: string; name: string }>;
 }
+
+type ChargeItemGroup = 'manual' | 'dive_package' | 'daily_trip' | 'daily_trip_rental' | 'guide';
+
+const CHARGE_ITEM_GROUPS: Array<{ value: ChargeItemGroup; label: string }> = [
+    { value: 'manual', label: 'Manual charge' },
+    { value: 'dive_package', label: 'Dive package' },
+    { value: 'daily_trip', label: 'Daily trip (speedboat)' },
+    { value: 'daily_trip_rental', label: 'Daily trip rental' },
+    { value: 'guide', label: 'Guide (additional)' },
+];
 
 function computeDiveUnitPrice(
     pkg: FolioShowProps['divePackages'][number] | undefined,
@@ -120,6 +142,9 @@ export default function FolioShow({
     miscChargeTaxRules,
     divePackages,
     diveBoatRoutes,
+    dailyTripDestinations,
+    dailyTripRentals,
+    dailyTripGuide,
     revenueCategories,
 }: FolioShowProps) {
     const [chargeModalOpen, setChargeModalOpen] = useState(false);
@@ -131,9 +156,12 @@ export default function FolioShow({
     });
 
     const chargeForm = useForm({
+        charge_item_group: 'manual' as ChargeItemGroup,
         dive_package_id: null as number | null,
         dive_route_label: null as string | null,
         dive_boat_rate_item_id: null as number | null,
+        daily_trip_destination_label: null as string | null,
+        rate_item_id: null as number | null,
         revenue_category_id: null as number | null,
         description: '',
         quantity: 1,
@@ -143,6 +171,10 @@ export default function FolioShow({
     const selectedDivePackage = divePackages.find((p) => p.id === chargeForm.data.dive_package_id);
     const requiresBoatRoute = selectedDivePackage?.type === 'dive_package';
     const selectedRoute = diveBoatRoutes.find((route) => route.label === chargeForm.data.dive_route_label);
+    const selectedDailyTripDestination = dailyTripDestinations.find(
+        (destination) => destination.label === chargeForm.data.daily_trip_destination_label,
+    );
+    const chargeItemGroup = chargeForm.data.charge_item_group;
 
     const submitPayment = () => {
         paymentForm.post(`/folios/${folio.id}/payments`, {
@@ -155,15 +187,91 @@ export default function FolioShow({
     const openChargeModal = () => {
         chargeForm.reset();
         chargeForm.setData({
+            charge_item_group: 'manual',
             dive_package_id: null,
             dive_route_label: null,
             dive_boat_rate_item_id: null,
+            daily_trip_destination_label: null,
+            rate_item_id: null,
             revenue_category_id: null,
             description: '',
             quantity: 1,
             unit_price: 0,
         });
         setChargeModalOpen(true);
+    };
+
+    const applyRateItemPricing = (rateItemId: number | null, quantity: number) => {
+        if (rateItemId === null) {
+            return;
+        }
+
+        const fromDestination = selectedDailyTripDestination?.boat_prices.find((price) => price.id === rateItemId);
+        const fromRental = dailyTripRentals.find((rental) => rental.id === rateItemId);
+        const fromGuide = dailyTripGuide?.id === rateItemId ? dailyTripGuide : undefined;
+        const rate = fromDestination ?? fromRental ?? fromGuide;
+
+        if (rate) {
+            const description =
+                'name' in rate && typeof rate.name === 'string'
+                    ? rate.name
+                    : chargeForm.data.description;
+
+            chargeForm.setData({
+                description,
+                unit_price: rate.price,
+                quantity,
+                rate_item_id: rateItemId,
+            });
+        }
+    };
+
+    const onChargeItemGroupChange = (group: ChargeItemGroup) => {
+        chargeForm.setData({
+            charge_item_group: group,
+            dive_package_id: null,
+            dive_route_label: null,
+            dive_boat_rate_item_id: null,
+            daily_trip_destination_label: null,
+            rate_item_id: null,
+            description: '',
+            quantity: 1,
+            unit_price: 0,
+        });
+
+        if (group === 'guide' && dailyTripGuide) {
+            applyRateItemPricing(dailyTripGuide.id, 1);
+        }
+    };
+
+    const onDailyTripDestinationChange = (destinationLabel: string | null) => {
+        chargeForm.setData({
+            ...chargeForm.data,
+            daily_trip_destination_label: destinationLabel,
+            rate_item_id: null,
+            unit_price: 0,
+            description: '',
+        });
+    };
+
+    const onDailyTripBoatClassChange = (rateItemId: number | null) => {
+        chargeForm.setData('rate_item_id', rateItemId);
+        applyRateItemPricing(rateItemId, chargeForm.data.quantity);
+        const destination = dailyTripDestinations.find(
+            (item) => item.label === chargeForm.data.daily_trip_destination_label,
+        );
+        const boatPrice = destination?.boat_prices.find((price) => price.id === rateItemId);
+        if (destination && boatPrice) {
+            chargeForm.setData(
+                'description',
+                `Daily Trip: ${destination.destination} · ${boatPrice.boat_class_label}`,
+            );
+        }
+    };
+
+    const onDailyTripRentalChange = (rateItemId: number | null) => {
+        chargeForm.setData('rate_item_id', rateItemId);
+        applyRateItemPricing(rateItemId, chargeForm.data.quantity);
     };
 
     const applyDiveChargePricing = (
@@ -193,9 +301,12 @@ export default function FolioShow({
 
         chargeForm.setData({
             ...chargeForm.data,
+            charge_item_group: 'dive_package',
             dive_package_id: packageId,
             dive_route_label: null,
             dive_boat_rate_item_id: null,
+            daily_trip_destination_label: null,
+            rate_item_id: null,
         });
 
         if (pkg) {
@@ -228,12 +339,20 @@ export default function FolioShow({
 
     const onChargeQuantityChange = (quantity: number) => {
         chargeForm.setData('quantity', quantity);
-        applyDiveChargePricing(
-            selectedDivePackage,
-            chargeForm.data.dive_route_label,
-            chargeForm.data.dive_boat_rate_item_id,
-            quantity,
-        );
+        if (chargeItemGroup === 'dive_package') {
+            applyDiveChargePricing(
+                selectedDivePackage,
+                chargeForm.data.dive_route_label,
+                chargeForm.data.dive_boat_rate_item_id,
+                quantity,
+            );
+        } else if (
+            chargeItemGroup === 'daily_trip' ||
+            chargeItemGroup === 'daily_trip_rental' ||
+            chargeItemGroup === 'guide'
+        ) {
+            applyRateItemPricing(chargeForm.data.rate_item_id, quantity);
+        }
     };
 
     const submitCharge = () => {
@@ -405,12 +524,19 @@ export default function FolioShow({
                 width={560}
             >
                 <Form layout="vertical">
-                    <Form.Item label="Dive Package">
+                    <Form.Item label="Charge type">
                         <Select
-                            allowClear
+                            value={chargeForm.data.charge_item_group}
+                            options={CHARGE_ITEM_GROUPS}
+                            onChange={(value) => onChargeItemGroupChange(value as ChargeItemGroup)}
+                        />
+                    </Form.Item>
+                    {chargeItemGroup === 'dive_package' && (
+                    <Form.Item label="Dive Package" required>
+                        <Select
                             showSearch
                             optionFilterProp="label"
-                            placeholder="Optional dive package"
+                            placeholder="Select dive package"
                             value={chargeForm.data.dive_package_id ?? undefined}
                             options={divePackages.map((pkg) => ({
                                 value: pkg.id,
@@ -419,7 +545,8 @@ export default function FolioShow({
                             onChange={(value) => onChargeDivePackageChange(value ?? null)}
                         />
                     </Form.Item>
-                    {requiresBoatRoute && (
+                    )}
+                    {chargeItemGroup === 'dive_package' && requiresBoatRoute && (
                         <>
                             <Form.Item label="Boat Route" required>
                                 <Select
@@ -448,6 +575,58 @@ export default function FolioShow({
                                 </Form.Item>
                             )}
                         </>
+                    )}
+                    {chargeItemGroup === 'daily_trip' && (
+                        <>
+                            <Form.Item label="Destination" required>
+                                <Select
+                                    showSearch
+                                    optionFilterProp="label"
+                                    placeholder="Select trip destination"
+                                    value={chargeForm.data.daily_trip_destination_label ?? undefined}
+                                    options={dailyTripDestinations.map((destination) => ({
+                                        value: destination.label,
+                                        label: destination.label,
+                                    }))}
+                                    onChange={(value) => onDailyTripDestinationChange(value ?? null)}
+                                />
+                            </Form.Item>
+                            {selectedDailyTripDestination && (
+                                <Form.Item label="Boat class" required>
+                                    <Select
+                                        placeholder="Select boat class"
+                                        value={chargeForm.data.rate_item_id ?? undefined}
+                                        options={selectedDailyTripDestination.boat_prices.map((price) => ({
+                                            value: price.id,
+                                            label: `${price.boat_class_label} · ${formatIdr(price.price)}`,
+                                        }))}
+                                        onChange={(value) => onDailyTripBoatClassChange(value ?? null)}
+                                    />
+                                </Form.Item>
+                            )}
+                        </>
+                    )}
+                    {chargeItemGroup === 'daily_trip_rental' && (
+                        <Form.Item label="Rental item" required>
+                            <Select
+                                showSearch
+                                optionFilterProp="label"
+                                placeholder="Select rental equipment"
+                                value={chargeForm.data.rate_item_id ?? undefined}
+                                options={dailyTripRentals.map((rental) => ({
+                                    value: rental.id,
+                                    label: `${rental.name} · ${formatIdr(rental.price)}`,
+                                }))}
+                                onChange={(value) => onDailyTripRentalChange(value ?? null)}
+                            />
+                        </Form.Item>
+                    )}
+                    {chargeItemGroup === 'guide' && dailyTripGuide && (
+                        <Form.Item label="Guide">
+                            <Typography.Text>
+                                {dailyTripGuide.name} · {formatIdr(dailyTripGuide.price)}
+                            </Typography.Text>
+                        </Form.Item>
                     )}
                     <Form.Item label="Revenue Category">
                         <Select

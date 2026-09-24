@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\DivePackageType;
+use App\Enums\DiveRateItemType;
 use App\Enums\FolioItemType;
 use App\Enums\FolioStatus;
 use App\Enums\PaymentMethod;
@@ -110,6 +111,9 @@ class FolioController extends Controller
                     'price_per_person' => (float) $package->price_per_person,
                 ]),
             'diveBoatRoutes' => DiveRateItem::boatRoutesPayload(),
+            'dailyTripDestinations' => DiveRateItem::dailyTripDestinationsPayload(),
+            'dailyTripRentals' => DiveRateItem::dailyTripRentalsPayload(),
+            'dailyTripGuide' => DiveRateItem::dailyTripGuidePayload(),
             'revenueCategories' => RevenueCategory::query()
                 ->where('is_active', true)
                 ->orderBy('sort_order')
@@ -133,6 +137,21 @@ class FolioController extends Controller
         $revenueCategoryId = $validated['revenue_category_id'] ?? null;
 
         $unitPrice = (float) $validated['unit_price'];
+
+        if ($validated['rate_item_id'] ?? null) {
+            $rateItem = DiveRateItem::query()->findOrFail($validated['rate_item_id']);
+
+            if (! in_array($rateItem->item_type, [
+                DiveRateItemType::DailyTrip,
+                DiveRateItemType::DailyTripRental,
+                DiveRateItemType::Guide,
+            ], true)) {
+                return back()->with('error', 'Selected rate item cannot be posted as a daily trip charge.');
+            }
+
+            $description = $rateItem->name;
+            $unitPrice = (float) $rateItem->price;
+        }
 
         if ($validated['dive_package_id'] ?? null) {
             $divePackage = DivePackage::query()->findOrFail($validated['dive_package_id']);

@@ -1,0 +1,22 @@
+code,name,item_type,destination,boat_class,price,valid_from,valid_to
+DT-KAKABAN-SMALL,"Daily Trip — Kakaban (Small Boat)",daily_trip,Kakaban,small_40pk,2000000,2026-01-01,2026-12-31
+DT-KAKABAN-MEDIUM,"Daily Trip — Kakaban (Medium Boat)",daily_trip,Kakaban,medium_200pk,2500000,2026-01-01,2026-12-31
+DT-SANGALAKI-SMALL,"Daily Trip — Sangalaki (Small Boat)",daily_trip,Sangalaki,small_40pk,2500000,2026-01-01,2026-12-31
+DT-SANGALAKI-MEDIUM,"Daily Trip — Sangalaki (Medium Boat)",daily_trip,Sangalaki,medium_200pk,3500000,2026-01-01,2026-12-31
+DT-KAKABAN-SANGALAKI-SMALL,"Daily Trip — Kakaban, Sangalaki (Small Boat)",daily_trip,"Kakaban, Sangalaki",small_40pk,2500000,2026-01-01,2026-12-31
+DT-KAKABAN-SANGALAKI-MEDIUM,"Daily Trip — Kakaban, Sangalaki (Medium Boat)",daily_trip,"Kakaban, Sangalaki",medium_200pk,3500000,2026-01-01,2026-12-31
+DT-KAKABAN-SANGALAKI-DERAWAN-SMALL,"Daily Trip — Kakaban, Sangalaki, Derawan (Small Boat)",daily_trip,"Kakaban, Sangalaki, Derawan",small_40pk,3200000,2026-01-01,2026-12-31
+DT-KAKABAN-SANGALAKI-DERAWAN-MEDIUM,"Daily Trip — Kakaban, Sangalaki, Derawan (Medium Boat)",daily_trip,"Kakaban, Sangalaki, Derawan",medium_200pk,4500000,2026-01-01,2026-12-31
+DT-BERAU-MARATUA-MEDIUM,"Daily Trip — Berau–Maratua (Medium Boat)",daily_trip,Berau-Maratua,medium_200pk,4500000,2026-01-01,2026-12-31
+DT-MARATUA-BERAU-MEDIUM,"Daily Trip — Maratua–Berau (Medium Boat)",daily_trip,Maratua-Berau,medium_200pk,4500000,2026-01-01,2026-12-31
+DT-MARATUA-TANJUNG-BATU-SMALL,"Daily Trip — Maratua–Tanjung Batu (Small Boat)",daily_trip,Maratua-Tanjung Batu,small_40pk,3200000,2026-01-01,2026-12-31
+DT-MARATUA-TANJUNG-BATU-MEDIUM,"Daily Trip — Maratua–Tanjung Batu (Medium Boat)",daily_trip,Maratua-Tanjung Batu,medium_200pk,3500000,2026-01-01,2026-12-31
+DT-TANJUNG-BATU-MARATUA-SMALL,"Daily Trip — Tanjung Batu–Maratua (Small Boat)",daily_trip,Tanjung Batu-Maratua,small_40pk,3200000,2026-01-01,2026-12-31
+DT-TANJUNG-BATU-MARATUA-MEDIUM,"Daily Trip — Tanjung Batu–Maratua (Medium Boat)",daily_trip,Tanjung Batu-Maratua,medium_200pk,3500000,2026-01-01,2026-12-31
+DT-TALISAYAN-MEDIUM,"Daily Trip — Talisayan (Whaleshark) (Medium Boat)",daily_trip,"Talisayan (whaleshark)",medium_200pk,7500000,2026-01-01,2026-12-31
+DT-TALISAYAN-MANIMBORA-MEDIUM,"Daily Trip — Talisayan (Whaleshark), Manimbora (Medium Boat)",daily_trip,"Talisayan (whaleshark), Manimbora",medium_200pk,9000000,2026-01-01,2026-12-31
+DT-TALISAYAN-LABUHAN-CERMIN-MEDIUM,"Daily Trip — Talisayan (Whaleshark) and Labuhan Cermin (Medium Boat)",daily_trip,"Talisayan (whaleshark) and Labuhan Cermin",medium_200pk,10500000,2026-01-01,2026-12-31
+DT-RENT-MASK-SNORKEL,"Rental — Mask and Snorkel (per day)",daily_trip_rental,,,50000,2026-01-01,2026-12-31
+DT-RENT-FINS,"Rental — Fins (per day)",daily_trip_rental,,,50000,2026-01-01,2026-12-31
+DT-RENT-WETSUIT,"Rental — Wetsuit (per day)",daily_trip_rental,,,100000,2026-01-01,2026-12-31
+DT-GUIDE,"Guide (additional cost)",guide,,,600000,2026-01-01,2026-12-31

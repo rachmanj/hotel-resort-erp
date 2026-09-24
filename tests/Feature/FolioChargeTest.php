@@ -217,6 +217,66 @@ class FolioChargeTest extends TestCase
         $this->assertEquals(5_000_000, $item->line_total);
     }
 
+    public function test_show_page_exposes_daily_trip_rate_items_after_import(): void
+    {
+        $this->artisan('pratasaba:import-dive-price-list')->assertSuccessful();
+
+        $response = $this->actingAs($this->cashier)->get(route('folios.show', $this->folio));
+
+        $response->assertOk();
+        $response->assertInertia(fn ($page) => $page
+            ->component('Folios/Show')
+            ->has('dailyTripDestinations', 11)
+            ->where('dailyTripDestinations.0.destination', 'Berau-Maratua')
+            ->has('dailyTripRentals', 3)
+            ->where('dailyTripGuide.code', 'DT-GUIDE')
+            ->where('dailyTripGuide.price', 600_000)
+        );
+    }
+
+    public function test_daily_trip_and_rental_charges_have_no_tax_or_service_charge(): void
+    {
+        $this->artisan('pratasaba:import-dive-price-list')->assertSuccessful();
+
+        $tripRate = DiveRateItem::query()->where('code', 'DT-KAKABAN-MEDIUM')->firstOrFail();
+        $rentalRate = DiveRateItem::query()->where('code', 'DT-RENT-WETSUIT')->firstOrFail();
+
+        $tripResponse = $this->actingAs($this->cashier)->post(route('folios.charges.store', $this->folio), [
+            'description' => 'ignored',
+            'quantity' => 1,
+            'unit_price' => 1,
+            'rate_item_id' => $tripRate->id,
+        ]);
+        $tripResponse->assertRedirect();
+        $tripResponse->assertSessionHas('success');
+
+        $tripItem = FolioItem::query()->where('folio_id', $this->folio->id)->firstOrFail();
+        $this->assertSame($tripRate->name, $tripItem->description);
+        $this->assertEquals(2_500_000, (float) $tripItem->amount);
+        $this->assertEquals(0, (float) $tripItem->service_charge_amount);
+        $this->assertEquals(0, (float) $tripItem->tax_amount);
+        $this->assertEquals(2_500_000, $tripItem->line_total);
+
+        $rentalResponse = $this->actingAs($this->cashier)->post(route('folios.charges.store', $this->folio), [
+            'description' => 'ignored',
+            'quantity' => 3,
+            'unit_price' => 1,
+            'rate_item_id' => $rentalRate->id,
+        ]);
+        $rentalResponse->assertRedirect();
+        $rentalResponse->assertSessionHas('success');
+
+        $rentalItem = FolioItem::query()
+            ->where('folio_id', $this->folio->id)
+            ->orderByDesc('id')
+            ->firstOrFail();
+        $this->assertSame($rentalRate->name, $rentalItem->description);
+        $this->assertEquals(300_000, (float) $rentalItem->amount);
+        $this->assertEquals(0, (float) $rentalItem->service_charge_amount);
+        $this->assertEquals(0, (float) $rentalItem->tax_amount);
+        $this->assertEquals(300_000, $rentalItem->line_total);
+    }
+
     public function test_active_rules_payload_for_item_type_still_returns_rules_for_taxable_room_charges(): void
     {
         $taxCalculator = app(TaxCalculator::class);

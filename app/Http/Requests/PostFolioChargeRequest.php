@@ -34,12 +34,39 @@ class PostFolioChargeRequest extends FormRequest
                 'integer',
                 'exists:dive_rate_items,id',
             ],
+            'rate_item_id' => [
+                'nullable',
+                'integer',
+                'exists:dive_rate_items,id',
+            ],
         ];
     }
 
     public function withValidator(Validator $validator): void
     {
         $validator->after(function (Validator $validator): void {
+            if ($this->filled('rate_item_id') && $this->filled('dive_package_id')) {
+                $validator->errors()->add(
+                    'rate_item_id',
+                    'Choose either a dive package or a daily trip rate item, not both.',
+                );
+            }
+
+            $rateItemId = $this->integer('rate_item_id');
+            if ($rateItemId !== 0) {
+                $rateItem = DiveRateItem::query()->find($rateItemId);
+                if ($rateItem !== null && ! in_array($rateItem->item_type, [
+                    DiveRateItemType::DailyTrip,
+                    DiveRateItemType::DailyTripRental,
+                    DiveRateItemType::Guide,
+                ], true)) {
+                    $validator->errors()->add(
+                        'rate_item_id',
+                        'Selected rate item is not a daily trip, rental, or guide charge.',
+                    );
+                }
+            }
+
             if (! $this->requiresBoatRoute()) {
                 return;
             }

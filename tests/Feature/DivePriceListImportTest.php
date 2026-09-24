@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Enums\BoatEngineOption;
+use App\Enums\DailyTripBoatClass;
 use App\Enums\DiveRateItemType;
 use App\Models\DivePackage;
 use App\Models\DiveRateItem;
@@ -79,5 +80,30 @@ class DivePriceListImportTest extends TestCase
         $nightDive = DiveRateItem::query()->where('code', 'DV-NIGHT')->first();
         $this->assertNotNull($nightDive);
         $this->assertSame('600000.00', $nightDive->price);
+
+        $kakabanSmall = DiveRateItem::query()->where('code', 'DT-KAKABAN-SMALL')->first();
+        $this->assertNotNull($kakabanSmall);
+        $this->assertSame(DiveRateItemType::DailyTrip, $kakabanSmall->item_type);
+        $this->assertSame('Kakaban', $kakabanSmall->route);
+        $this->assertSame(DailyTripBoatClass::Small40Pk, $kakabanSmall->boat_class);
+        $this->assertSame('2000000.00', $kakabanSmall->price);
+
+        $sangalakiMedium = DiveRateItem::query()->where('code', 'DT-SANGALAKI-MEDIUM')->first();
+        $this->assertNotNull($sangalakiMedium);
+        $this->assertSame('3500000.00', $sangalakiMedium->price);
+
+        $talisayan = DiveRateItem::query()->where('code', 'DT-TALISAYAN-MEDIUM')->first();
+        $this->assertNotNull($talisayan);
+        $this->assertSame('7500000.00', $talisayan->price);
+
+        $maskSnorkel = DiveRateItem::query()->where('code', 'DT-RENT-MASK-SNORKEL')->first();
+        $this->assertNotNull($maskSnorkel);
+        $this->assertSame(DiveRateItemType::DailyTripRental, $maskSnorkel->item_type);
+        $this->assertSame('50000.00', $maskSnorkel->price);
+
+        $guide = DiveRateItem::query()->where('code', 'DT-GUIDE')->first();
+        $this->assertNotNull($guide);
+        $this->assertSame(DiveRateItemType::Guide, $guide->item_type);
+        $this->assertSame('600000.00', $guide->price);
     }
 }

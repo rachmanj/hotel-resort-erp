@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\BoatEngineOption;
+use App\Enums\DailyTripBoatClass;
 use App\Enums\DiveRateItemType;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Collection;
@@ -15,6 +16,7 @@ use Illuminate\Database\Eloquent\Model;
     'route',
     'dive_spots',
     'boat_engine_option',
+    'boat_class',
     'price',
     'min_pax',
     'valid_from',
@@ -27,6 +29,7 @@ class DiveRateItem extends Model
         return [
             'item_type' => DiveRateItemType::class,
             'boat_engine_option' => BoatEngineOption::class,
+            'boat_class' => DailyTripBoatClass::class,
             'price' => 'decimal:2',
             'min_pax' => 'integer',
             'valid_from' => 'date',
@@ -78,5 +81,89 @@ class DiveRateItem extends Model
             })
             ->values()
             ->all();
+    }
+
+    /**
+     * @return list<array{
+     *     destination: string,
+     *     label: string,
+     *     boat_prices: list<array{
+     *         id: int,
+     *         boat_class: string,
+     *         boat_class_label: string,
+     *         price: float
+     *     }>
+     * }>
+     */
+    public static function dailyTripDestinationsPayload(): array
+    {
+        /** @var Collection<int, DiveRateItem> $items */
+        $items = self::query()
+            ->where('item_type', DiveRateItemType::DailyTrip)
+            ->orderBy('route')
+            ->orderBy('boat_class')
+            ->get();
+
+        return $items
+            ->groupBy(fn (DiveRateItem $item): string => (string) $item->route)
+            ->map(function (Collection $rates): array {
+                $first = $rates->first();
+
+                return [
+                    'destination' => (string) $first->route,
+                    'label' => (string) $first->route,
+                    'boat_prices' => $rates
+                        ->map(fn (DiveRateItem $rate): array => [
+                            'id' => $rate->id,
+                            'boat_class' => $rate->boat_class->value,
+                            'boat_class_label' => $rate->boat_class->label(),
+                            'price' => (float) $rate->price,
+                        ])
+                        ->values()
+                        ->all(),
+                ];
+            })
+            ->values()
+            ->all();
+    }
+
+    /**
+     * @return list<array{id: int, code: string, name: string, price: float}>
+     */
+    public static function dailyTripRentalsPayload(): array
+    {
+        return self::query()
+            ->where('item_type', DiveRateItemType::DailyTripRental)
+            ->orderBy('name')
+            ->get()
+            ->map(fn (DiveRateItem $rate): array => [
+                'id' => $rate->id,
+                'code' => $rate->code,
+                'name' => $rate->name,
+                'price' => (float) $rate->price,
+            ])
+            ->all();
+    }
+
+    /**
+     * @return array{id: int, code: string, name: string, price: float}|null
+     */
+    public static function dailyTripGuidePayload(): ?array
+    {
+        $guide = self::query()
+            ->where('item_type', DiveRateItemType::Guide)
+            ->orderBy('id')
+            ->first();
+
+        if ($guide === null) {
+            return null;
+        }
+
+        return [
+            'id' => $guide->id,
+            'code' => $guide->code,
+            'name' => $guide->name,
+            'price' => (float) $guide->price,
+        ];
     }
 }
