@@ -154,6 +154,84 @@ function buildGuideChargeDescription(rateItemName: string, unit: GuideChargeUnit
     return `${base} (${GUIDE_UNIT_PHRASES[unit]})`;
 }
 
+type DailyTripGuideRate = NonNullable<FolioShowProps['dailyTripGuide']>;
+
+function guideChargeFieldsForUnit(
+    dailyTripGuide: DailyTripGuideRate,
+    unit: GuideChargeUnitValue,
+): {
+    guide_unit: GuideChargeUnitValue;
+    rate_item_id: number;
+    description: string;
+    unit_price: number;
+} {
+    return {
+        guide_unit: unit,
+        rate_item_id: dailyTripGuide.id,
+        description: buildGuideChargeDescription(dailyTripGuide.name, unit),
+        unit_price: unit === 'per_day' ? dailyTripGuide.price : 0,
+    };
+}
+
+function rateItemPricingFields(
+    rateItemId: number | null,
+    quantity: number,
+    selectedDailyTripDestination: FolioShowProps['dailyTripDestinations'][number] | undefined,
+    dailyTripRentals: FolioShowProps['dailyTripRentals'],
+    dailyTripGuide: FolioShowProps['dailyTripGuide'],
+    fallbackDescription: string,
+): { description: string; unit_price: number; quantity: number; rate_item_id: number } | null {
+    if (rateItemId === null) {
+        return null;
+    }
+
+    const fromDestination = selectedDailyTripDestination?.boat_prices.find((price) => price.id === rateItemId);
+    const fromRental = dailyTripRentals.find((rental) => rental.id === rateItemId);
+    const fromGuide = dailyTripGuide?.id === rateItemId ? dailyTripGuide : undefined;
+    const rate = fromDestination ?? fromRental ?? fromGuide;
+
+    if (!rate) {
+        return null;
+    }
+
+    const description =
+        'name' in rate && typeof rate.name === 'string' ? rate.name : fallbackDescription;
+
+    return {
+        description,
+        unit_price: rate.price,
+        quantity,
+        rate_item_id: rateItemId,
+    };
+}
+
+function diveChargePricingFields(
+    pkg: FolioShowProps['divePackages'][number] | undefined,
+    routeLabel: string | null,
+    boatRateId: number | null,
+    quantity: number,
+    diveBoatRoutes: FolioShowProps['diveBoatRoutes'],
+): { description: string; unit_price: number } | null {
+    if (!pkg) {
+        return null;
+    }
+
+    const route = diveBoatRoutes.find((item) => item.label === routeLabel);
+    const boatPrice =
+        boatRateId !== null
+            ? route?.boat_prices.find((price) => price.id === boatRateId)?.price ?? null
+            : null;
+    const description =
+        pkg.type === 'dive_package' && route
+            ? `Dive: ${pkg.name} · ${route.route}`
+            : `Dive: ${pkg.name}`;
+
+    return {
+        description,
+        unit_price: computeDiveUnitPrice(pkg, boatPrice, quantity),
+    };
+}
+
 export default function FolioShow({
     folio,
     balance,
@@ -229,86 +307,56 @@ export default function FolioShow({
         setChargeModalOpen(true);
     };
 
-    const applyGuideChargePricing = (unit: GuideChargeUnitValue) => {
-        if (!dailyTripGuide) {
-            return;
-        }
-
-        const description = buildGuideChargeDescription(dailyTripGuide.name, unit);
-
-        if (unit === 'per_day') {
-            chargeForm.setData({
-                ...chargeForm.data,
-                guide_unit: unit,
-                rate_item_id: dailyTripGuide.id,
-                description,
-                unit_price: dailyTripGuide.price,
-            });
-        } else {
-            chargeForm.setData({
-                ...chargeForm.data,
-                guide_unit: unit,
-                rate_item_id: dailyTripGuide.id,
-                description,
-                unit_price: 0,
-            });
-        }
-    };
-
-    const applyRateItemPricing = (rateItemId: number | null, quantity: number) => {
-        if (rateItemId === null) {
-            return;
-        }
-
-        const fromDestination = selectedDailyTripDestination?.boat_prices.find((price) => price.id === rateItemId);
-        const fromRental = dailyTripRentals.find((rental) => rental.id === rateItemId);
-        const fromGuide = dailyTripGuide?.id === rateItemId ? dailyTripGuide : undefined;
-        const rate = fromDestination ?? fromRental ?? fromGuide;
-
-        if (rate) {
-            const description =
-                'name' in rate && typeof rate.name === 'string'
-                    ? rate.name
-                    : chargeForm.data.description;
-
-            chargeForm.setData({
-                ...chargeForm.data,
-                description,
-                unit_price: rate.price,
-                quantity,
-                rate_item_id: rateItemId,
-            });
-        }
-    };
+    const chargeGroupResetFields = (group: ChargeItemGroup) => ({
+        charge_item_group: group,
+        dive_package_id: null,
+        dive_route_label: null,
+        dive_boat_rate_item_id: null,
+        daily_trip_destination_label: null,
+        rate_item_id: null,
+        guide_unit: 'per_day' as GuideChargeUnitValue,
+        revenue_category_id: null,
+        description: '',
+        quantity: 1,
+        unit_price: 0,
+    });
 
     const onChargeItemGroupChange = (group: ChargeItemGroup) => {
-        chargeForm.setData({
-            charge_item_group: group,
-            dive_package_id: null,
-            dive_route_label: null,
-            dive_boat_rate_item_id: null,
-            daily_trip_destination_label: null,
-            rate_item_id: null,
-            guide_unit: 'per_day',
-            revenue_category_id: null,
-            description: '',
-            quantity: 1,
-            unit_price: 0,
-        });
+        const reset = chargeGroupResetFields(group);
 
         if (group === 'guide' && dailyTripGuide) {
-            applyGuideChargePricing('per_day');
+            chargeForm.setData({
+                ...reset,
+                ...guideChargeFieldsForUnit(dailyTripGuide, 'per_day'),
+            });
+
+            return;
         }
 
         if (group === 'car_rental') {
             const transportCar = revenueCategories.find((category) => category.code === 'transport_car');
             chargeForm.setData({
-                ...chargeForm.data,
+                ...reset,
                 revenue_category_id: transportCar?.id ?? null,
                 description: '',
                 unit_price: 0,
             });
+
+            return;
         }
+
+        chargeForm.setData(reset);
+    };
+
+    const onGuideUnitChange = (unit: GuideChargeUnitValue) => {
+        if (!dailyTripGuide) {
+            return;
+        }
+
+        chargeForm.setData({
+            ...chargeForm.data,
+            ...guideChargeFieldsForUnit(dailyTripGuide, unit),
+        });
     };
 
     const onDailyTripDestinationChange = (destinationLabel: string | null) => {
@@ -322,49 +370,52 @@ export default function FolioShow({
     };
 
     const onDailyTripBoatClassChange = (rateItemId: number | null) => {
-        chargeForm.setData('rate_item_id', rateItemId);
-        applyRateItemPricing(rateItemId, chargeForm.data.quantity);
         const destination = dailyTripDestinations.find(
             (item) => item.label === chargeForm.data.daily_trip_destination_label,
         );
         const boatPrice = destination?.boat_prices.find((price) => price.id === rateItemId);
-        if (destination && boatPrice) {
-            chargeForm.setData(
-                'description',
-                `Daily Trip: ${destination.destination} · ${boatPrice.boat_class_label}`,
-            );
-        }
+        const pricing = rateItemPricingFields(
+            rateItemId,
+            chargeForm.data.quantity,
+            destination,
+            dailyTripRentals,
+            dailyTripGuide,
+            chargeForm.data.description,
+        );
+        const description =
+            destination && boatPrice
+                ? `Daily Trip: ${destination.destination} · ${boatPrice.boat_class_label}`
+                : (pricing?.description ?? chargeForm.data.description);
+
+        chargeForm.setData({
+            ...chargeForm.data,
+            rate_item_id: rateItemId,
+            ...(pricing ?? {}),
+            description,
+        });
     };
 
     const onDailyTripRentalChange = (rateItemId: number | null) => {
-        chargeForm.setData('rate_item_id', rateItemId);
-        applyRateItemPricing(rateItemId, chargeForm.data.quantity);
-    };
+        const pricing = rateItemPricingFields(
+            rateItemId,
+            chargeForm.data.quantity,
+            selectedDailyTripDestination,
+            dailyTripRentals,
+            dailyTripGuide,
+            chargeForm.data.description,
+        );
 
-    const applyDiveChargePricing = (
-        pkg: FolioShowProps['divePackages'][number] | undefined,
-        routeLabel: string | null,
-        boatRateId: number | null,
-        quantity: number,
-    ) => {
-        const route = diveBoatRoutes.find((item) => item.label === routeLabel);
-        const boatPrice =
-            boatRateId !== null
-                ? route?.boat_prices.find((price) => price.id === boatRateId)?.price ?? null
-                : null;
-
-        if (pkg) {
-            const description =
-                pkg.type === 'dive_package' && route
-                    ? `Dive: ${pkg.name} · ${route.route}`
-                    : `Dive: ${pkg.name}`;
-            chargeForm.setData('description', description);
-            chargeForm.setData('unit_price', computeDiveUnitPrice(pkg, boatPrice, quantity));
-        }
+        chargeForm.setData({
+            ...chargeForm.data,
+            rate_item_id: rateItemId,
+            ...(pricing ?? {}),
+        });
     };
 
     const onChargeDivePackageChange = (packageId: number | null) => {
         const pkg = packageId !== null ? divePackages.find((p) => p.id === packageId) : undefined;
+        const diveCategory = pkg ? revenueCategories.find((c) => c.code === 'dive_center') : undefined;
+        const pricing = diveChargePricingFields(pkg, null, null, chargeForm.data.quantity, diveBoatRoutes);
 
         chargeForm.setData({
             ...chargeForm.data,
@@ -374,51 +425,93 @@ export default function FolioShow({
             dive_boat_rate_item_id: null,
             daily_trip_destination_label: null,
             rate_item_id: null,
+            revenue_category_id: diveCategory?.id ?? chargeForm.data.revenue_category_id,
+            ...(pricing ?? {}),
         });
-
-        if (pkg) {
-            const diveCategory = revenueCategories.find((c) => c.code === 'dive_center');
-            if (diveCategory) {
-                chargeForm.setData('revenue_category_id', diveCategory.id);
-            }
-            applyDiveChargePricing(pkg, null, null, chargeForm.data.quantity);
-        }
     };
 
     const onChargeDiveRouteChange = (routeLabel: string | null) => {
+        const pricing = diveChargePricingFields(
+            selectedDivePackage,
+            routeLabel,
+            null,
+            chargeForm.data.quantity,
+            diveBoatRoutes,
+        );
+
         chargeForm.setData({
             ...chargeForm.data,
             dive_route_label: routeLabel,
             dive_boat_rate_item_id: null,
+            ...(pricing ?? {}),
         });
-        applyDiveChargePricing(selectedDivePackage, routeLabel, null, chargeForm.data.quantity);
     };
 
     const onChargeBoatEngineChange = (boatRateId: number | null) => {
-        chargeForm.setData('dive_boat_rate_item_id', boatRateId);
-        applyDiveChargePricing(
+        const pricing = diveChargePricingFields(
             selectedDivePackage,
             chargeForm.data.dive_route_label,
             boatRateId,
             chargeForm.data.quantity,
+            diveBoatRoutes,
         );
+
+        chargeForm.setData({
+            ...chargeForm.data,
+            dive_boat_rate_item_id: boatRateId,
+            ...(pricing ?? {}),
+        });
     };
 
     const onChargeQuantityChange = (quantity: number) => {
-        chargeForm.setData('quantity', quantity);
         if (chargeItemGroup === 'dive_package') {
-            applyDiveChargePricing(
+            const pricing = diveChargePricingFields(
                 selectedDivePackage,
                 chargeForm.data.dive_route_label,
                 chargeForm.data.dive_boat_rate_item_id,
                 quantity,
+                diveBoatRoutes,
             );
-        } else if (chargeItemGroup === 'daily_trip' || chargeItemGroup === 'daily_trip_rental') {
-            applyRateItemPricing(chargeForm.data.rate_item_id, quantity);
-        } else if (chargeItemGroup === 'guide') {
-            applyGuideChargePricing(chargeForm.data.guide_unit);
-            chargeForm.setData('quantity', quantity);
+
+            chargeForm.setData({
+                ...chargeForm.data,
+                quantity,
+                ...(pricing ?? {}),
+            });
+
+            return;
         }
+
+        if (chargeItemGroup === 'daily_trip' || chargeItemGroup === 'daily_trip_rental') {
+            const pricing = rateItemPricingFields(
+                chargeForm.data.rate_item_id,
+                quantity,
+                selectedDailyTripDestination,
+                dailyTripRentals,
+                dailyTripGuide,
+                chargeForm.data.description,
+            );
+
+            chargeForm.setData({
+                ...chargeForm.data,
+                quantity,
+                ...(pricing ?? {}),
+            });
+
+            return;
+        }
+
+        if (chargeItemGroup === 'guide' && dailyTripGuide) {
+            chargeForm.setData({
+                ...chargeForm.data,
+                quantity,
+                ...guideChargeFieldsForUnit(dailyTripGuide, chargeForm.data.guide_unit),
+            });
+
+            return;
+        }
+
+        chargeForm.setData('quantity', quantity);
     };
 
     const guideUnit = chargeForm.data.guide_unit;
@@ -704,7 +797,7 @@ export default function FolioShow({
                                     value={chargeForm.data.guide_unit}
                                     options={guideChargeUnits}
                                     onChange={(value) =>
-                                        applyGuideChargePricing(value as GuideChargeUnitValue)
+                                        onGuideUnitChange(value as GuideChargeUnitValue)
                                     }
                                 />
                             </Form.Item>

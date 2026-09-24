@@ -15,6 +15,8 @@ Kedua handler sudah diperbaiki (commit `b2b3062`) dan alurnya sudah diverifikasi
 
 Insiden serupa (24 Sep 2026, modal Add Charge folio): `applyGuideChargePricing` dan `applyRateItemPricing` mengirim objek parsial tanpa spread, sehingga memilih **Guide (additional)** mengosongkan **Charge type**, selector **Billing unit** tidak muncul, dan harga **Per day** tidak terkunci; pemilihan rental/boat class/qty juga menghapus `charge_item_group` dan field guide. Keduanya diperbaiki dengan `...chargeForm.data` (sama seperti handler dive).
 
+Insiden lanjutan (24 Sep 2026, modal Add Charge folio): dalam **satu handler**, `onChargeItemGroupChange` memanggil `setData` reset penuh (termasuk `charge_item_group: 'guide'`), lalu helper `applyGuideChargePricing` memanggil `setData` lagi dengan `...chargeForm.data`. React belum re-render, jadi spread membaca snapshot lama (`charge_item_group` masih `manual`) dan menimpa nilai dari panggilan pertama. Perbaikan: **satu `setData` per handler** — gabungkan reset + field guide/car rental dalam satu objek; helper hanya mengembalikan objek field, tidak memanggil `setData`.
+
 ## 2. Aturan
 
 Benar untuk update sebagian field:
@@ -26,6 +28,8 @@ form.setData('quantity', 2);
 /** beberapa field, sisanya dipertahankan */
 form.setData({ ...form.data, dive_package_id: id, dive_route_label: null });
 ```
+
+**Satu handler, satu tulis:** jangan panggil `setData` dua kali dalam fungsi yang sama jika panggilan kedua (atau helper yang dipanggil dari handler itu) memakai `...form.data` — snapshot belum berisi perubahan dari panggilan pertama. Gabungkan semua field ke satu objek lalu satu `setData`, atau hitung field turunan dari nilai lokal/parameter, bukan dari `form.data` yang baru saja Anda ubah di handler yang sama.
 
 Hindari (kecuali memang reset penuh yang disengaja, mis. `openChargeModal` / ganti tipe charge di `onChargeItemGroupChange`):
 
@@ -92,9 +96,9 @@ Angka di kolom terakhir = jumlah key yang dikirim pada panggilan itu; semuanya s
 
 1. Untuk update bertahap, biasakan `setData('field', value)` (satu field) atau spread `...form.data` (beberapa field). Pola objek parsial tanpa spread hanya untuk reset penuh.
 2. Opsional: tambahkan helper bersama, mis. `mergeFormData(form, partial)` di `resources/js/lib`, supaya polanya konsisten dan mudah ditinjau.
-3. Checklist saat meninjau form baru: (a) apakah handler bertingkat (pilih A -> pilih B) yang memanggil `setData`? (b) kalau ya, pastikan spread; (c) uji alur **sampai langkah terakhir**, karena bug kelas ini baru muncul di langkah kedua, bukan di langkah pertama.
+3. Checklist saat meninjau form baru: (a) apakah handler bertingkat (pilih A -> pilih B) yang memanggil `setData`? (b) kalau ya, pastikan spread; (c) uji alur **sampai langkah terakhir**, karena bug kelas ini baru muncul di langkah kedua, bukan di langkah pertama; (d) apakah **satu handler** memanggil `setData` lebih dari sekali dan panggilan lanjutan membaca `form.data`? Gabungkan ke satu objek — skrip pemeriksa **tidak** mendeteksi pola ini.
 4. Saat menguji form di produksi, periksa juga bahwa field lain (quantity, deskripsi, kategori) tidak ikut kosong setelah memilih opsi bertingkat.
 
 ## 7. Skrip pemeriksa
 
-Pemeriksaan dilakukan dengan skrip Python yang membaca setiap `*.tsx` di `resources/js`, mengambil key dari `useForm({...})`, mengambil key dari objek `setData`, lalu melaporkan key yang hilang. Skrip ada di `docs/audit-setdata.py` (jalankan dari root repo: `python3 docs/audit-setdata.py`); ia mencetak ringkasan dan menyimpan detail per panggilan ke `/tmp/setdata_audit.json`. Perbarui daftar di dokumen ini bila ada form baru.
+Pemeriksaan dilakukan dengan skrip Python yang membaca setiap `*.tsx` di `resources/js`, mengambil key dari `useForm({...})`, mengambil key dari objek `setData`, lalu melaporkan key yang hilang. Skrip ada di `docs/audit-setdata.py` (jalankan dari root repo: `python3 docs/audit-setdata.py`); ia mencetak ringkasan dan menyimpan detail per panggilan ke `/tmp/setdata_audit.json`. Perbarui daftar di dokumen ini bila ada form baru. **Batasan:** skrip tidak mendeteksi beberapa `setData` dalam satu handler yang saling menimpa lewat snapshot `form.data` stale (lihat insiden guide charge 24 Sep 2026).
