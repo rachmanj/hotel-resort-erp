@@ -1,6 +1,6 @@
 # Audit `setData({ ... })` — Inertia v3 (Pratasaba ERP)
 
-Status audit: **selesai, tidak ada sisa pemakaian yang berpotensi kehilangan data** (diverifikasi ulang 23 Sep 2026 dengan skrip pemeriksa, bukan pembacaan manual).
+Status audit: **selesai, tidak ada sisa pemakaian yang berpotensi kehilangan data** (diverifikasi ulang 24 Sep 2026 dengan skrip pemeriksa, bukan pembacaan manual).
 
 ## 1. Kenapa ini penting
 
@@ -12,6 +12,8 @@ Insiden nyata (22 Sep 2026, modal Add Charge folio): handler `onChargeDivePackag
 - **Quantity** dan **Description** ikut terhapus saat memilih paket, dan efek lanjutannya tampil sebagai total **"Rp NaN"** di pratinjau (nilainya kosong, bukan salah rumus).
 
 Kedua handler sudah diperbaiki (commit `b2b3062`) dan alurnya sudah diverifikasi ulang di produksi: pilih paket -> pilih rute -> pilih boat -> ubah qty, semua pilihan tetap utuh.
+
+Insiden serupa (24 Sep 2026, modal Add Charge folio): `applyGuideChargePricing` dan `applyRateItemPricing` mengirim objek parsial tanpa spread, sehingga memilih **Guide (additional)** mengosongkan **Charge type**, selector **Billing unit** tidak muncul, dan harga **Per day** tidak terkunci; pemilihan rental/boat class/qty juga menghapus `charge_item_group` dan field guide. Keduanya diperbaiki dengan `...chargeForm.data` (sama seperti handler dive).
 
 ## 2. Aturan
 
@@ -25,7 +27,7 @@ form.setData('quantity', 2);
 form.setData({ ...form.data, dive_package_id: id, dive_route_label: null });
 ```
 
-Hindari (kecuali memang reset penuh yang disengaja, mis. `openCreate`/`openEdit`):
+Hindari (kecuali memang reset penuh yang disengaja, mis. `openChargeModal` / ganti tipe charge di `onChargeItemGroupChange`):
 
 ```tsx
 form.setData({ dive_route_label: label }); // field lain hilang
@@ -33,10 +35,10 @@ form.setData({ dive_route_label: label }); // field lain hilang
 
 ## 3. Hasil audit
 
-Total **43 panggilan** `setData({ ... })` di `resources/js`:
+Total **49 panggilan** `setData({ ... })` di `resources/js`:
 
-- **4 panggilan merge aman** (memakai spread `...form.data`) — daftar di bagian 4;
-- **39 panggilan reset penuh** yang disengaja (`openCreate`/`openEdit`/buka modal: seluruh key form dikirim ulang sehingga tidak ada yang hilang) — daftar di bagian 5;
+- **9 panggilan merge aman** (memakai spread `...form.data`) — daftar di bagian 4;
+- **40 panggilan reset penuh** yang disengaja (`openCreate`/`openEdit`/buka modal / ganti tipe charge: seluruh key form `useForm` dikirim ulang) — daftar di bagian 5;
 - **0 panggilan yang kehilangan field**.
 
 Cara memeriksa ulang cepat: cari `setData({` lalu pastikan objeknya memuat **semua** key `useForm` pada berkas itu, atau memakai `...form.data`.
@@ -45,10 +47,16 @@ Cara memeriksa ulang cepat: cari `setData({` lalu pastikan objeknya memuat **sem
 
 | Berkas | Baris | Handler | Isi objek |
 |--------|-------|---------|-----------|
-| `Pages/Folios/Show.tsx` | 194 | `onChargeDivePackageChange` | 3 key + spread `...chargeForm.data` |
-| `Pages/Folios/Show.tsx` | 211 | `onChargeDiveRouteChange` | 2 key + spread `...chargeForm.data` |
+| `Pages/Folios/Show.tsx` | 240, 248 | `applyGuideChargePricing` | 4 key + spread `...chargeForm.data` |
+| `Pages/Folios/Show.tsx` | 274 | `applyRateItemPricing` | 4 key + spread `...chargeForm.data` |
+| `Pages/Folios/Show.tsx` | 305 | `onChargeItemGroupChange` (cabang `car_rental`) | 3 key + spread `...chargeForm.data` |
+| `Pages/Folios/Show.tsx` | 315 | `onDailyTripDestinationChange` | 4 key + spread `...chargeForm.data` |
+| `Pages/Folios/Show.tsx` | 369 | `onChargeDivePackageChange` | 6 key + spread `...chargeForm.data` |
+| `Pages/Folios/Show.tsx` | 389 | `onChargeDiveRouteChange` | 2 key + spread `...chargeForm.data` |
 | `Pages/Reservations/Create.tsx` | 197 | `submit` | 3 key + spread `...form.data` |
 | `Pages/Reservations/Edit.tsx` | 202 | `submit` | 3 key + spread `...form.data` |
+
+Panggilan `setData('field', value)` satu argumen (mis. qty, `rate_item_id`, deskripsi dive) tidak masuk tabel ini; mereka aman secara definisi.
 
 ## 5. Reset penuh (disengaja, aman)
 
@@ -74,7 +82,7 @@ Angka di kolom terakhir = jumlah key yang dikirim pada panggilan itu; semuanya s
 | `Pages/Admin/Users/Index.tsx` | 2 | 41 `openCreate` (5 key); 53 `openEdit` (5 key) |
 | `Pages/FB/Menu/Index.tsx` | 1 | 60 `openEdit` (5 key) |
 | `Pages/Floors/Index.tsx` | 2 | 31 `openCreate` (2 key); 37 `openEdit` (2 key) |
-| `Pages/Folios/Show.tsx` | 1 | 157 `openChargeModal` (7 key) |
+| `Pages/Folios/Show.tsx` | 2 | 216 `openChargeModal` (11 key); 285 `onChargeItemGroupChange` (11 key, reset awal saat ganti tipe charge) |
 | `Pages/RoomTypes/Index.tsx` | 2 | 60 `openCreate` (8 key); 75 `openEdit` (8 key) |
 | `Pages/Rooms/Index.tsx` | 2 | 60 `openCreate` (4 key); 71 `openEdit` (4 key) |
 | `Pages/Spa/Therapists/Index.tsx` | 1 | 40 `openEdit` (3 key) |

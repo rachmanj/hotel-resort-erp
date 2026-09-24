@@ -238,6 +238,7 @@ export default function FolioShow({
 
         if (unit === 'per_day') {
             chargeForm.setData({
+                ...chargeForm.data,
                 guide_unit: unit,
                 rate_item_id: dailyTripGuide.id,
                 description,
@@ -245,6 +246,7 @@ export default function FolioShow({
             });
         } else {
             chargeForm.setData({
+                ...chargeForm.data,
                 guide_unit: unit,
                 rate_item_id: dailyTripGuide.id,
                 description,
@@ -270,6 +272,7 @@ export default function FolioShow({
                     : chargeForm.data.description;
 
             chargeForm.setData({
+                ...chargeForm.data,
                 description,
                 unit_price: rate.price,
                 quantity,
@@ -287,6 +290,7 @@ export default function FolioShow({
             daily_trip_destination_label: null,
             rate_item_id: null,
             guide_unit: 'per_day',
+            revenue_category_id: null,
             description: '',
             quantity: 1,
             unit_price: 0,
