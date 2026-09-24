@@ -94,7 +94,13 @@ interface FolioShowProps {
     revenueCategories: Array<{ id: number; code: string; name: string }>;
 }
 
-type ChargeItemGroup = 'manual' | 'dive_package' | 'daily_trip' | 'daily_trip_rental' | 'guide';
+type ChargeItemGroup =
+    | 'manual'
+    | 'dive_package'
+    | 'daily_trip'
+    | 'daily_trip_rental'
+    | 'guide'
+    | 'car_rental';
 
 const CHARGE_ITEM_GROUPS: Array<{ value: ChargeItemGroup; label: string }> = [
     { value: 'manual', label: 'Manual charge' },
@@ -102,6 +108,10 @@ const CHARGE_ITEM_GROUPS: Array<{ value: ChargeItemGroup; label: string }> = [
     { value: 'daily_trip', label: 'Daily trip (speedboat)' },
     { value: 'daily_trip_rental', label: 'Daily trip rental' },
     { value: 'guide', label: 'Guide (additional)' },
+    {
+        value: 'car_rental',
+        label: 'Car rental (price on agreement)',
+    },
 ];
 
 function computeDiveUnitPrice(
@@ -241,6 +251,16 @@ export default function FolioShow({
 
         if (group === 'guide' && dailyTripGuide) {
             applyRateItemPricing(dailyTripGuide.id, 1);
+        }
+
+        if (group === 'car_rental') {
+            const transportCar = revenueCategories.find((category) => category.code === 'transport_car');
+            chargeForm.setData({
+                ...chargeForm.data,
+                revenue_category_id: transportCar?.id ?? null,
+                description: '',
+                unit_price: 0,
+            });
         }
     };
 
@@ -628,6 +648,12 @@ export default function FolioShow({
                             </Typography.Text>
                         </Form.Item>
                     )}
+                    {chargeItemGroup === 'car_rental' && (
+                        <Typography.Paragraph type="secondary" style={{ marginBottom: 16 }}>
+                            No fixed price list — enter the agreed amount and describe the car type, route, and
+                            duration.
+                        </Typography.Paragraph>
+                    )}
                     <Form.Item label="Revenue Category">
                         <Select
                             allowClear
@@ -647,6 +673,11 @@ export default function FolioShow({
                     <Form.Item label="Description" required>
                         <Input
                             value={chargeForm.data.description}
+                            placeholder={
+                                chargeItemGroup === 'car_rental'
+                                    ? 'e.g. Avanza, Tanjung Batu–Berau, 1 day'
+                                    : undefined
+                            }
                             onChange={(e) => chargeForm.setData('description', e.target.value)}
                         />
                     </Form.Item>
@@ -660,7 +691,7 @@ export default function FolioShow({
                     </Form.Item>
                     <Form.Item label="Unit Price" required>
                         <InputNumber
-                            min={0}
+                            min={chargeItemGroup === 'car_rental' ? 0.01 : 0}
                             style={{ width: '100%' }}
                             value={chargeForm.data.unit_price}
                             onChange={(v) => chargeForm.setData('unit_price', v ?? 0)}

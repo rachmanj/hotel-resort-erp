@@ -105,5 +105,29 @@ class DivePriceListImportTest extends TestCase
         $this->assertNotNull($guide);
         $this->assertSame(DiveRateItemType::Guide, $guide->item_type);
         $this->assertSame('600000.00', $guide->price);
+        $this->assertSame(1, DiveRateItem::query()->where('item_type', DiveRateItemType::Guide)->count());
+
+        $motor = DiveRateItem::query()->where('code', 'DT-RENT-MOTOR')->first();
+        $this->assertNotNull($motor);
+        $this->assertSame(DiveRateItemType::DailyTripRental, $motor->item_type);
+        $this->assertSame('200000.00', $motor->price);
+
+        $camera = DiveRateItem::query()->where('code', 'DT-RENT-UNDERWATER-CAMERA')->first();
+        $this->assertNotNull($camera);
+        $this->assertSame(DiveRateItemType::DailyTripRental, $camera->item_type);
+        $this->assertSame('350000.00', $camera->price);
+    }
+
+    public function test_new_rental_rates_import_idempotently(): void
+    {
+        $this->artisan('pratasaba:import-dive-price-list')->assertSuccessful();
+        $countAfterFirst = DiveRateItem::query()->count();
+
+        $this->artisan('pratasaba:import-dive-price-list')->assertSuccessful();
+
+        $this->assertSame($countAfterFirst, DiveRateItem::query()->count());
+        $this->assertSame('200000.00', DiveRateItem::query()->where('code', 'DT-RENT-MOTOR')->value('price'));
+        $this->assertSame('350000.00', DiveRateItem::query()->where('code', 'DT-RENT-UNDERWATER-CAMERA')->value('price'));
+        $this->assertSame(1, DiveRateItem::query()->where('code', 'DT-GUIDE')->count());
     }
 }

@@ -19,4 +19,6 @@ DT-TALISAYAN-LABUHAN-CERMIN-MEDIUM,"Daily Trip — Talisayan (Whaleshark) and La
 DT-RENT-MASK-SNORKEL,"Rental — Mask and Snorkel (per day)",daily_trip_rental,,,50000,2026-01-01,2026-12-31
 DT-RENT-FINS,"Rental — Fins (per day)",daily_trip_rental,,,50000,2026-01-01,2026-12-31
 DT-RENT-WETSUIT,"Rental — Wetsuit (per day)",daily_trip_rental,,,100000,2026-01-01,2026-12-31
-DT-GUIDE,"Guide (additional cost)",guide,,,600000,2026-01-01,2026-12-31
+DT-RENT-MOTOR,"Rental — Motor (per day)",daily_trip_rental,,,200000,2026-01-01,2026-12-31
+DT-RENT-UNDERWATER-CAMERA,"Rental — Underwater Camera (per day)",daily_trip_rental,,,350000,2026-01-01,2026-12-31
+DT-GUIDE,"Additional Guide — Trip or Diving (per day)",guide,,,600000,2026-01-01,2026-12-31

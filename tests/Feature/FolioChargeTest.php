@@ -228,9 +228,10 @@ class FolioChargeTest extends TestCase
             ->component('Folios/Show')
             ->has('dailyTripDestinations', 11)
             ->where('dailyTripDestinations.0.destination', 'Berau-Maratua')
-            ->has('dailyTripRentals', 3)
+            ->has('dailyTripRentals', 5)
             ->where('dailyTripGuide.code', 'DT-GUIDE')
             ->where('dailyTripGuide.price', 600_000)
+            ->where('dailyTripGuide.name', 'Additional Guide — Trip or Diving (per day)')
         );
     }
 
@@ -275,6 +276,96 @@ class FolioChargeTest extends TestCase
         $this->assertEquals(0, (float) $rentalItem->service_charge_amount);
         $this->assertEquals(0, (float) $rentalItem->tax_amount);
         $this->assertEquals(300_000, $rentalItem->line_total);
+    }
+
+    public function test_pratasaba_rental_motor_camera_guide_and_car_charges_have_no_tax_or_service_charge(): void
+    {
+        $this->artisan('pratasaba:import-dive-price-list')->assertSuccessful();
+
+        $motorRate = DiveRateItem::query()->where('code', 'DT-RENT-MOTOR')->firstOrFail();
+        $cameraRate = DiveRateItem::query()->where('code', 'DT-RENT-UNDERWATER-CAMERA')->firstOrFail();
+        $guideRate = DiveRateItem::query()->where('code', 'DT-GUIDE')->firstOrFail();
+
+        $transportCarCategory = RevenueCategory::query()
+            ->where('hotel_id', $this->hotel->id)
+            ->where('code', 'transport_car')
+            ->firstOrFail();
+
+        $motorResponse = $this->actingAs($this->cashier)->post(route('folios.charges.store', $this->folio), [
+            'description' => 'ignored',
+            'quantity' => 2,
+            'unit_price' => 1,
+            'rate_item_id' => $motorRate->id,
+        ]);
+        $motorResponse->assertRedirect();
+        $motorResponse->assertSessionHas('success');
+
+        $motorItem = FolioItem::query()->where('folio_id', $this->folio->id)->firstOrFail();
+        $this->assertSame($motorRate->name, $motorItem->description);
+        $this->assertEquals(400_000, (float) $motorItem->amount);
+        $this->assertEquals(0, (float) $motorItem->service_charge_amount);
+        $this->assertEquals(0, (float) $motorItem->tax_amount);
+
+        $cameraResponse = $this->actingAs($this->cashier)->post(route('folios.charges.store', $this->folio), [
+            'description' => 'ignored',
+            'quantity' => 1,
+            'unit_price' => 1,
+            'rate_item_id' => $cameraRate->id,
+        ]);
+        $cameraResponse->assertRedirect();
+        $cameraResponse->assertSessionHas('success');
+
+        $cameraItem = FolioItem::query()
+            ->where('folio_id', $this->folio->id)
+            ->orderByDesc('id')
+            ->firstOrFail();
+        $this->assertEquals(350_000, (float) $cameraItem->amount);
+        $this->assertEquals(0, (float) $cameraItem->service_charge_amount);
+        $this->assertEquals(0, (float) $cameraItem->tax_amount);
+
+        $guideResponse = $this->actingAs($this->cashier)->post(route('folios.charges.store', $this->folio), [
+            'description' => 'ignored',
+            'quantity' => 1,
+            'unit_price' => 1,
+            'rate_item_id' => $guideRate->id,
+        ]);
+        $guideResponse->assertRedirect();
+        $guideResponse->assertSessionHas('success');
+
+        $guideItem = FolioItem::query()
+            ->where('folio_id', $this->folio->id)
+            ->orderByDesc('id')
+            ->firstOrFail();
+        $this->assertEquals(600_000, (float) $guideItem->amount);
+        $this->assertEquals(0, (float) $guideItem->service_charge_amount);
+        $this->assertEquals(0, (float) $guideItem->tax_amount);
+
+        $carResponse = $this->actingAs($this->cashier)->post(route('folios.charges.store', $this->folio), [
+            'charge_item_group' => 'car_rental',
+            'description' => 'Avanza, Tanjung Batu–Berau, 1 day',
+            'quantity' => 1,
+            'unit_price' => 1_250_000,
+        ]);
+        $carResponse->assertRedirect();
+        $carResponse->assertSessionHas('success');
+
+        $carItem = FolioItem::query()
+            ->where('folio_id', $this->folio->id)
+            ->orderByDesc('id')
+            ->firstOrFail();
+        $this->assertSame('Avanza, Tanjung Batu–Berau, 1 day', $carItem->description);
+        $this->assertEquals(1_250_000, (float) $carItem->amount);
+        $this->assertEquals(0, (float) $carItem->service_charge_amount);
+        $this->assertEquals(0, (float) $carItem->tax_amount);
+        $this->assertSame($transportCarCategory->id, $carItem->revenue_category_id);
+
+        $rejectedCar = $this->actingAs($this->cashier)->post(route('folios.charges.store', $this->folio), [
+            'charge_item_group' => 'car_rental',
+            'description' => 'Invalid zero price',
+            'quantity' => 1,
+            'unit_price' => 0,
+        ]);
+        $rejectedCar->assertSessionHasErrors('unit_price');
     }
 
     public function test_active_rules_payload_for_item_type_still_returns_rules_for_taxable_room_charges(): void

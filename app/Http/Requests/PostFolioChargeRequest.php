@@ -22,10 +22,19 @@ class PostFolioChargeRequest extends FormRequest
      */
     public function rules(): array
     {
+        $isCarRental = $this->input('charge_item_group') === 'car_rental';
+
         return [
+            'charge_item_group' => [
+                'nullable',
+                'string',
+                Rule::in(['manual', 'dive_package', 'daily_trip', 'daily_trip_rental', 'guide', 'car_rental']),
+            ],
             'description' => ['required', 'string', 'max:255'],
             'quantity' => ['required', 'numeric', 'min:0.01'],
-            'unit_price' => ['required', 'numeric', 'min:0'],
+            'unit_price' => $isCarRental
+                ? ['required', 'numeric', 'min:0.01']
+                : ['required', 'numeric', 'min:0'],
             'revenue_category_id' => ['nullable', 'integer', 'exists:revenue_categories,id'],
             'dive_package_id' => ['nullable', 'integer', 'exists:dive_packages,id'],
             'dive_boat_rate_item_id' => [
@@ -45,6 +54,22 @@ class PostFolioChargeRequest extends FormRequest
     public function withValidator(Validator $validator): void
     {
         $validator->after(function (Validator $validator): void {
+            if ($this->input('charge_item_group') === 'car_rental') {
+                if ($this->filled('rate_item_id')) {
+                    $validator->errors()->add(
+                        'rate_item_id',
+                        'Car rental charges cannot use a rate list item.',
+                    );
+                }
+
+                if ($this->filled('dive_package_id')) {
+                    $validator->errors()->add(
+                        'dive_package_id',
+                        'Car rental charges cannot be combined with a dive package.',
+                    );
+                }
+            }
+
             if ($this->filled('rate_item_id') && $this->filled('dive_package_id')) {
                 $validator->errors()->add(
                     'rate_item_id',

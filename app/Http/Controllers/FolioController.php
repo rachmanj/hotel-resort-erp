@@ -135,8 +135,18 @@ class FolioController extends Controller
         $validated = $request->validated();
         $description = $validated['description'];
         $revenueCategoryId = $validated['revenue_category_id'] ?? null;
+        $chargeItemGroup = $validated['charge_item_group'] ?? 'manual';
 
         $unitPrice = (float) $validated['unit_price'];
+
+        if ($chargeItemGroup === 'car_rental') {
+            if ($revenueCategoryId === null) {
+                $revenueCategoryId = RevenueCategory::query()
+                    ->where('hotel_id', $folio->hotel_id)
+                    ->where('code', 'transport_car')
+                    ->value('id');
+            }
+        }
 
         if ($validated['rate_item_id'] ?? null) {
             $rateItem = DiveRateItem::query()->findOrFail($validated['rate_item_id']);
