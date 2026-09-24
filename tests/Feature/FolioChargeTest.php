@@ -232,6 +232,10 @@ class FolioChargeTest extends TestCase
             ->where('dailyTripGuide.code', 'DT-GUIDE')
             ->where('dailyTripGuide.price', 600_000)
             ->where('dailyTripGuide.name', 'Additional Guide — Trip or Diving (per day)')
+            ->has('guideChargeUnits', 3)
+            ->where('guideChargeUnits.0.value', 'per_day')
+            ->where('guideChargeUnits.1.value', 'half_day')
+            ->where('guideChargeUnits.2.value', 'per_trip')
         );
     }
 
@@ -324,6 +328,8 @@ class FolioChargeTest extends TestCase
         $this->assertEquals(0, (float) $cameraItem->tax_amount);
 
         $guideResponse = $this->actingAs($this->cashier)->post(route('folios.charges.store', $this->folio), [
+            'charge_item_group' => 'guide',
+            'guide_unit' => 'per_day',
             'description' => 'ignored',
             'quantity' => 1,
             'unit_price' => 1,
@@ -336,6 +342,10 @@ class FolioChargeTest extends TestCase
             ->where('folio_id', $this->folio->id)
             ->orderByDesc('id')
             ->firstOrFail();
+        $this->assertSame(
+            'Additional Guide — Trip or Diving (per day)',
+            $guideItem->description,
+        );
         $this->assertEquals(600_000, (float) $guideItem->amount);
         $this->assertEquals(0, (float) $guideItem->service_charge_amount);
         $this->assertEquals(0, (float) $guideItem->tax_amount);
@@ -366,6 +376,103 @@ class FolioChargeTest extends TestCase
             'unit_price' => 0,
         ]);
         $rejectedCar->assertSessionHasErrors('unit_price');
+    }
+
+    public function test_guide_charge_units_use_rate_item_or_operator_price_with_distinct_descriptions(): void
+    {
+        $this->artisan('pratasaba:import-dive-price-list')->assertSuccessful();
+
+        $guideRate = DiveRateItem::query()->where('code', 'DT-GUIDE')->firstOrFail();
+        $boatCategory = RevenueCategory::query()
+            ->where('hotel_id', $this->hotel->id)
+            ->where('code', 'boat')
+            ->firstOrFail();
+
+        $perDayResponse = $this->actingAs($this->cashier)->post(route('folios.charges.store', $this->folio), [
+            'charge_item_group' => 'guide',
+            'guide_unit' => 'per_day',
+            'description' => 'client text',
+            'quantity' => 2,
+            'unit_price' => 1,
+            'rate_item_id' => $guideRate->id,
+            'revenue_category_id' => $boatCategory->id,
+        ]);
+        $perDayResponse->assertRedirect();
+        $perDayResponse->assertSessionHas('success');
+
+        $perDayItem = FolioItem::query()->where('folio_id', $this->folio->id)->firstOrFail();
+        $this->assertSame('Additional Guide — Trip or Diving (per day)', $perDayItem->description);
+        $this->assertEquals(1_200_000, (float) $perDayItem->amount);
+        $this->assertEquals(0, (float) $perDayItem->service_charge_amount);
+        $this->assertEquals(0, (float) $perDayItem->tax_amount);
+        $this->assertSame($boatCategory->id, $perDayItem->revenue_category_id);
+
+        $halfDayResponse = $this->actingAs($this->cashier)->post(route('folios.charges.store', $this->folio), [
+            'charge_item_group' => 'guide',
+            'guide_unit' => 'half_day',
+            'description' => 'client text',
+            'quantity' => 1,
+            'unit_price' => 450_000,
+            'rate_item_id' => $guideRate->id,
+            'revenue_category_id' => $boatCategory->id,
+        ]);
+        $halfDayResponse->assertRedirect();
+        $halfDayResponse->assertSessionHas('success');
+
+        $halfDayItem = FolioItem::query()
+            ->where('folio_id', $this->folio->id)
+            ->orderByDesc('id')
+            ->firstOrFail();
+        $this->assertSame('Additional Guide — Trip or Diving (half day)', $halfDayItem->description);
+        $this->assertEquals(450_000, (float) $halfDayItem->amount);
+        $this->assertEquals(0, (float) $halfDayItem->service_charge_amount);
+        $this->assertEquals(0, (float) $halfDayItem->tax_amount);
+        $this->assertSame($boatCategory->id, $halfDayItem->revenue_category_id);
+
+        $perTripResponse = $this->actingAs($this->cashier)->post(route('folios.charges.store', $this->folio), [
+            'charge_item_group' => 'guide',
+            'guide_unit' => 'per_trip',
+            'description' => 'client text',
+            'quantity' => 1,
+            'unit_price' => 800_000,
+            'rate_item_id' => $guideRate->id,
+            'revenue_category_id' => $boatCategory->id,
+        ]);
+        $perTripResponse->assertRedirect();
+        $perTripResponse->assertSessionHas('success');
+
+        $perTripItem = FolioItem::query()
+            ->where('folio_id', $this->folio->id)
+            ->orderByDesc('id')
+            ->firstOrFail();
+        $this->assertSame('Additional Guide — Trip or Diving (per trip)', $perTripItem->description);
+        $this->assertEquals(800_000, (float) $perTripItem->amount);
+        $this->assertEquals(0, (float) $perTripItem->service_charge_amount);
+        $this->assertEquals(0, (float) $perTripItem->tax_amount);
+        $this->assertSame($boatCategory->id, $perTripItem->revenue_category_id);
+
+        $this->assertNotSame($perDayItem->description, $halfDayItem->description);
+        $this->assertNotSame($perDayItem->description, $perTripItem->description);
+        $this->assertNotSame($halfDayItem->description, $perTripItem->description);
+
+        $rejectedHalfDay = $this->actingAs($this->cashier)->post(route('folios.charges.store', $this->folio), [
+            'charge_item_group' => 'guide',
+            'guide_unit' => 'half_day',
+            'description' => 'missing price',
+            'quantity' => 1,
+            'unit_price' => 0,
+            'rate_item_id' => $guideRate->id,
+        ]);
+        $rejectedHalfDay->assertSessionHasErrors('unit_price');
+
+        $rejectedPerTrip = $this->actingAs($this->cashier)->post(route('folios.charges.store', $this->folio), [
+            'charge_item_group' => 'guide',
+            'guide_unit' => 'per_trip',
+            'description' => 'missing price',
+            'quantity' => 1,
+            'rate_item_id' => $guideRate->id,
+        ]);
+        $rejectedPerTrip->assertSessionHasErrors('unit_price');
     }
 
     public function test_active_rules_payload_for_item_type_still_returns_rules_for_taxable_room_charges(): void

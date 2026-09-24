@@ -6,6 +6,7 @@ use App\Enums\DivePackageType;
 use App\Enums\DiveRateItemType;
 use App\Enums\FolioItemType;
 use App\Enums\FolioStatus;
+use App\Enums\GuideChargeUnit;
 use App\Enums\PaymentMethod;
 use App\Http\Requests\PostFolioChargeRequest;
 use App\Http\Requests\PostFolioPaymentRequest;
@@ -114,6 +115,7 @@ class FolioController extends Controller
             'dailyTripDestinations' => DiveRateItem::dailyTripDestinationsPayload(),
             'dailyTripRentals' => DiveRateItem::dailyTripRentalsPayload(),
             'dailyTripGuide' => DiveRateItem::dailyTripGuidePayload(),
+            'guideChargeUnits' => GuideChargeUnit::optionsPayload(),
             'revenueCategories' => RevenueCategory::query()
                 ->where('is_active', true)
                 ->orderBy('sort_order')
@@ -148,7 +150,19 @@ class FolioController extends Controller
             }
         }
 
-        if ($validated['rate_item_id'] ?? null) {
+        if ($chargeItemGroup === 'guide') {
+            $rateItem = DiveRateItem::query()->findOrFail($validated['rate_item_id']);
+            $guideUnit = GuideChargeUnit::from($validated['guide_unit']);
+
+            if ($rateItem->item_type !== DiveRateItemType::Guide) {
+                return back()->with('error', 'Selected rate item is not a guide charge.');
+            }
+
+            $description = $guideUnit->buildDescription($rateItem->name);
+            $unitPrice = $guideUnit->usesRateItemPrice()
+                ? (float) $rateItem->price
+                : (float) $validated['unit_price'];
+        } elseif ($validated['rate_item_id'] ?? null) {
             $rateItem = DiveRateItem::query()->findOrFail($validated['rate_item_id']);
 
             if (! in_array($rateItem->item_type, [

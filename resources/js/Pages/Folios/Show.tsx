@@ -91,8 +91,11 @@ interface FolioShowProps {
     }>;
     dailyTripRentals: Array<{ id: number; code: string; name: string; price: number }>;
     dailyTripGuide: { id: number; code: string; name: string; price: number } | null;
+    guideChargeUnits: Array<{ value: string; label: string }>;
     revenueCategories: Array<{ id: number; code: string; name: string }>;
 }
+
+type GuideChargeUnitValue = 'per_day' | 'half_day' | 'per_trip';
 
 type ChargeItemGroup =
     | 'manual'
@@ -139,6 +142,18 @@ function computeDiveUnitPrice(
 
 const formatIdr = (v: number | string) => `Rp ${Number(v).toLocaleString('id-ID')}`;
 
+const GUIDE_UNIT_PHRASES: Record<GuideChargeUnitValue, string> = {
+    per_day: 'per day',
+    half_day: 'half day',
+    per_trip: 'per trip',
+};
+
+function buildGuideChargeDescription(rateItemName: string, unit: GuideChargeUnitValue): string {
+    const base = rateItemName.replace(/\s*\(per day\)\s*$/i, '').trim();
+
+    return `${base} (${GUIDE_UNIT_PHRASES[unit]})`;
+}
+
 export default function FolioShow({
     folio,
     balance,
@@ -155,6 +170,7 @@ export default function FolioShow({
     dailyTripDestinations,
     dailyTripRentals,
     dailyTripGuide,
+    guideChargeUnits,
     revenueCategories,
 }: FolioShowProps) {
     const [chargeModalOpen, setChargeModalOpen] = useState(false);
@@ -172,6 +188,7 @@ export default function FolioShow({
         dive_boat_rate_item_id: null as number | null,
         daily_trip_destination_label: null as string | null,
         rate_item_id: null as number | null,
+        guide_unit: 'per_day' as GuideChargeUnitValue,
         revenue_category_id: null as number | null,
         description: '',
         quantity: 1,
@@ -203,12 +220,37 @@ export default function FolioShow({
             dive_boat_rate_item_id: null,
             daily_trip_destination_label: null,
             rate_item_id: null,
+            guide_unit: 'per_day',
             revenue_category_id: null,
             description: '',
             quantity: 1,
             unit_price: 0,
         });
         setChargeModalOpen(true);
+    };
+
+    const applyGuideChargePricing = (unit: GuideChargeUnitValue) => {
+        if (!dailyTripGuide) {
+            return;
+        }
+
+        const description = buildGuideChargeDescription(dailyTripGuide.name, unit);
+
+        if (unit === 'per_day') {
+            chargeForm.setData({
+                guide_unit: unit,
+                rate_item_id: dailyTripGuide.id,
+                description,
+                unit_price: dailyTripGuide.price,
+            });
+        } else {
+            chargeForm.setData({
+                guide_unit: unit,
+                rate_item_id: dailyTripGuide.id,
+                description,
+                unit_price: 0,
+            });
+        }
     };
 
     const applyRateItemPricing = (rateItemId: number | null, quantity: number) => {
@@ -244,13 +286,14 @@ export default function FolioShow({
             dive_boat_rate_item_id: null,
             daily_trip_destination_label: null,
             rate_item_id: null,
+            guide_unit: 'per_day',
             description: '',
             quantity: 1,
             unit_price: 0,
         });
 
         if (group === 'guide' && dailyTripGuide) {
-            applyRateItemPricing(dailyTripGuide.id, 1);
+            applyGuideChargePricing('per_day');
         }
 
         if (group === 'car_rental') {
@@ -366,14 +409,18 @@ export default function FolioShow({
                 chargeForm.data.dive_boat_rate_item_id,
                 quantity,
             );
-        } else if (
-            chargeItemGroup === 'daily_trip' ||
-            chargeItemGroup === 'daily_trip_rental' ||
-            chargeItemGroup === 'guide'
-        ) {
+        } else if (chargeItemGroup === 'daily_trip' || chargeItemGroup === 'daily_trip_rental') {
             applyRateItemPricing(chargeForm.data.rate_item_id, quantity);
+        } else if (chargeItemGroup === 'guide') {
+            applyGuideChargePricing(chargeForm.data.guide_unit);
+            chargeForm.setData('quantity', quantity);
         }
     };
+
+    const guideUnit = chargeForm.data.guide_unit;
+    const guideUnitPriceLocked = chargeItemGroup === 'guide' && guideUnit === 'per_day';
+    const guideOperatorSetsUnitPrice =
+        chargeItemGroup === 'guide' && (guideUnit === 'half_day' || guideUnit === 'per_trip');
 
     const submitCharge = () => {
         chargeForm.post(`/folios/${folio.id}/charges`, {
@@ -642,11 +689,22 @@ export default function FolioShow({
                         </Form.Item>
                     )}
                     {chargeItemGroup === 'guide' && dailyTripGuide && (
-                        <Form.Item label="Guide">
-                            <Typography.Text>
-                                {dailyTripGuide.name} · {formatIdr(dailyTripGuide.price)}
-                            </Typography.Text>
-                        </Form.Item>
+                        <>
+                            <Form.Item label="Guide">
+                                <Typography.Text>
+                                    {dailyTripGuide.name} · {formatIdr(dailyTripGuide.price)} per day (list)
+                                </Typography.Text>
+                            </Form.Item>
+                            <Form.Item label="Billing unit" required>
+                                <Select
+                                    value={chargeForm.data.guide_unit}
+                                    options={guideChargeUnits}
+                                    onChange={(value) =>
+                                        applyGuideChargePricing(value as GuideChargeUnitValue)
+                                    }
+                                />
+                            </Form.Item>
+                        </>
                     )}
                     {chargeItemGroup === 'car_rental' && (
                         <Typography.Paragraph type="secondary" style={{ marginBottom: 16 }}>
@@ -691,7 +749,10 @@ export default function FolioShow({
                     </Form.Item>
                     <Form.Item label="Unit Price" required>
                         <InputNumber
-                            min={chargeItemGroup === 'car_rental' ? 0.01 : 0}
+                            min={
+                                chargeItemGroup === 'car_rental' || guideOperatorSetsUnitPrice ? 0.01 : 0
+                            }
+                            disabled={guideUnitPriceLocked}
                             style={{ width: '100%' }}
                             value={chargeForm.data.unit_price}
                             onChange={(v) => chargeForm.setData('unit_price', v ?? 0)}

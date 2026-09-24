@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use App\Enums\DivePackageType;
 use App\Enums\DiveRateItemType;
+use App\Enums\GuideChargeUnit;
 use App\Models\DivePackage;
 use App\Models\DiveRateItem;
 use Illuminate\Foundation\Http\FormRequest;
@@ -23,6 +24,12 @@ class PostFolioChargeRequest extends FormRequest
     public function rules(): array
     {
         $isCarRental = $this->input('charge_item_group') === 'car_rental';
+        $isGuide = $this->input('charge_item_group') === 'guide';
+        $guideUnit = $this->input('guide_unit');
+        $isGuideOperatorPriced = $isGuide && in_array($guideUnit, [
+            GuideChargeUnit::HalfDay->value,
+            GuideChargeUnit::PerTrip->value,
+        ], true);
 
         return [
             'charge_item_group' => [
@@ -32,9 +39,15 @@ class PostFolioChargeRequest extends FormRequest
             ],
             'description' => ['required', 'string', 'max:255'],
             'quantity' => ['required', 'numeric', 'min:0.01'],
-            'unit_price' => $isCarRental
+            'unit_price' => ($isCarRental || $isGuideOperatorPriced)
                 ? ['required', 'numeric', 'min:0.01']
                 : ['required', 'numeric', 'min:0'],
+            'guide_unit' => [
+                Rule::requiredIf($isGuide),
+                'nullable',
+                'string',
+                Rule::enum(GuideChargeUnit::class),
+            ],
             'revenue_category_id' => ['nullable', 'integer', 'exists:revenue_categories,id'],
             'dive_package_id' => ['nullable', 'integer', 'exists:dive_packages,id'],
             'dive_boat_rate_item_id' => [
@@ -44,6 +57,7 @@ class PostFolioChargeRequest extends FormRequest
                 'exists:dive_rate_items,id',
             ],
             'rate_item_id' => [
+                Rule::requiredIf($isGuide),
                 'nullable',
                 'integer',
                 'exists:dive_rate_items,id',
@@ -70,6 +84,26 @@ class PostFolioChargeRequest extends FormRequest
                 }
             }
 
+            if ($this->input('charge_item_group') === 'guide') {
+                if ($this->filled('dive_package_id')) {
+                    $validator->errors()->add(
+                        'dive_package_id',
+                        'Guide charges cannot be combined with a dive package.',
+                    );
+                }
+
+                $rateItemId = $this->integer('rate_item_id');
+                if ($rateItemId !== 0) {
+                    $rateItem = DiveRateItem::query()->find($rateItemId);
+                    if ($rateItem !== null && $rateItem->item_type !== DiveRateItemType::Guide) {
+                        $validator->errors()->add(
+                            'rate_item_id',
+                            'Selected rate item is not a guide charge.',
+                        );
+                    }
+                }
+            }
+
             if ($this->filled('rate_item_id') && $this->filled('dive_package_id')) {
                 $validator->errors()->add(
                     'rate_item_id',
@@ -78,7 +112,7 @@ class PostFolioChargeRequest extends FormRequest
             }
 
             $rateItemId = $this->integer('rate_item_id');
-            if ($rateItemId !== 0) {
+            if ($rateItemId !== 0 && $this->input('charge_item_group') !== 'guide') {
                 $rateItem = DiveRateItem::query()->find($rateItemId);
                 if ($rateItem !== null && ! in_array($rateItem->item_type, [
                     DiveRateItemType::DailyTrip,
