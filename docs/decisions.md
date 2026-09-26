@@ -30,6 +30,29 @@ Decision: [Title] - [YYYY-MM-DD]
 
 ## Recent Decisions
 
+Decision: Bank reconciliation rebuild — zero-sum matching, GL book snapshot, and journal-backed adjustments - 2026-09-26
+
+**Context**: The legacy bank-rec module matched one statement line to one GL row and could not prove balances, carry outstanding items, or post reversible adjustments. The rebuild had to align with Sarang/AccountingOne patterns already chosen in the stakeholder plan while staying inside existing `GlPostingService` and journal-entry conventions.
+
+**Options Considered**:
+
+1. **Subtract bank and book nets for match validity**: treat `difference` as `bankNet − bookNet`.
+   - ✅ Pros: matches spreadsheet intuition for some users.
+   - ❌ Cons: breaks many-to-many groups and contradicts the cleared-net proof used at submit time.
+2. **Summation zero-sum with bank vs GL polarity (chosen)**: store statement lines in bank polarity and book lines in GL polarity; a group is valid when `bankNet + bookNet ≈ 0` with a single tolerance constant.
+   - ✅ Pros: one rule for manual, auto, and split matches; submit checks the same cleared-net identity.
+   - ❌ Cons: requires training on sign convention in the UI.
+
+**Decision**: (1) Use summation zero-sum with `BankReconciliationSupport::TOLERANCE = 0.005` for all match groups and cleared-net submission checks. (2) Snapshot book lines from `general_ledger` per period via `BankBookLineFetcher`, refresh opening/closing book balances from GL movement, and block submit when snapshot rows drift (`is_stale`). (3) Post bank-only statement differences through a real `JournalEntry` plus `GlPostingService::post()` with `source_type = journal_entry` and `source_id` equal to the journal id (never the reconciliation id), with reversals via `ReverseBankAdjustmentAction` and `reversed_from_id`.
+
+**Rationale**: Summation is the only rule that stays consistent when a single bank line pairs with multiple GL lines or vice versa. A live GL snapshot makes the book side auditable while staleness detection prevents signing off after someone edits the ledger. Journal-backed adjustments reuse Finance’s existing approval and reversal machinery instead of silent direct GL writes.
+
+**Implementation**: `app/Services/Accounting/BankReconciliation/BankReconciliationBalanceService.php`, `BankReconciliationMatchingService.php`, `BankBookLineFetcher.php`, `BankReconciliationWorkflowService.php`, `app/Actions/Accounting/PostBankAdjustmentAction.php`, `ReverseBankAdjustmentAction.php`, `CarryForwardOutstandingAction.php`, `app/Http/Controllers/Accounting/BankReconciliationController.php`, `routes/web.php` (`/accounting/bank-reconciliation/*`, permissions `bankrec.view|import|reconcile|adjust|validate`), `app/Console/Commands/BankReconciliationHealthCommand.php`, `PurgeBankReconciliationSessionsCommand.php`, `routes/console.php` schedules, `docs/spec-bank-reconciliation.md`, `tests/Feature/BankReconciliationEndToEndTest.php` and related feature/unit tests.
+
+**Review Date**: After the first month-end bank reconciliation is validated in production — confirm outstanding carry-forward and adjustment journals match Finance’s close checklist.
+
+---
+
 Decision: Room and F&B price lists are tax inclusive — service charge 10% and PBJT 10% are carved out of the price, never added on top - 2026-09-22
 
 **Context**: The client confirmed in writing that hotel and restaurant sales in their regency are not subject to PPN 11% but to Pajak Barang dan Jasa Tertentu (PBJT) at 10%, and that every price in their price list already includes the service charge and the tax. The app was posting `amount = price` and then adding SC 10% and PPN 11% on top, so a room quoted at 1.690.000 billed 2.044.900 — about 21% too much on all room and F&B revenue. Their worked split is DPP 1.396.694,21 + SC 139.669,42 + PBJT 153.636,36, and the sample invoices they sent carry no service charge or tax columns at all.

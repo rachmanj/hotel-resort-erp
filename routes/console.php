@@ -12,3 +12,5 @@ Schedule::command('hotel:check-no-shows')->hourly();
 Schedule::command('reservations:expire-holds')->dailyAt('01:00');
 Schedule::command('housekeeping:generate-assignments')->dailyAt('06:00');
 Schedule::command('inventory:check-low-stock')->hourly();
+Schedule::command('bankrec:health')->daily();
+Schedule::command('bankrec:purge-sessions --days=90')->weekly();
