@@ -3,10 +3,13 @@
 namespace App\Services\Accounting;
 
 use App\Enums\AccountingPeriodStatus;
+use App\Enums\BankReconciliationStatus;
 use App\Models\AccountingPeriod;
+use App\Models\BankReconciliation;
 use App\Models\Hotel;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Support\Collection;
 use InvalidArgumentException;
 
 class AccountingPeriodService
@@ -53,6 +56,21 @@ class AccountingPeriodService
             throw new InvalidArgumentException('Accounting period is already closed.');
         }
 
+        $blocking = $this->unfinishedBankReconciliationsBlockingClose($period);
+
+        if ($blocking->isNotEmpty()) {
+            $labels = $blocking
+                ->map(fn (BankReconciliation $reconciliation): string => $this->reconciliationDisplayLabel($reconciliation))
+                ->implode(', ');
+
+            throw new InvalidArgumentException(sprintf(
+                'Cannot close %s: %d bank reconciliation(s) are not completed yet (%s).',
+                $period->name,
+                $blocking->count(),
+                $labels,
+            ));
+        }
+
         $period->update([
             'status' => AccountingPeriodStatus::Closed->value,
             'closed_at' => now(),
@@ -86,5 +104,48 @@ class AccountingPeriodService
             $date->copy()->startOfMonth(),
             $date->copy()->endOfMonth(),
         );
+    }
+
+    /**
+     * @return Collection<int, BankReconciliation>
+     */
+    private function unfinishedBankReconciliationsBlockingClose(AccountingPeriod $period): Collection
+    {
+        return BankReconciliation::query()
+            ->with('bankAccount')
+            ->whereHas('bankAccount', fn ($query) => $query->where('hotel_id', $period->hotel_id))
+            ->whereNotIn('status', [
+                BankReconciliationStatus::Completed->value,
+                BankReconciliationStatus::Void->value,
+            ])
+            ->get()
+            ->filter(fn (BankReconciliation $reconciliation): bool => $this->reconciliationOverlapsPeriod($reconciliation, $period))
+            ->values();
+    }
+
+    private function reconciliationOverlapsPeriod(BankReconciliation $reconciliation, AccountingPeriod $period): bool
+    {
+        $periodEnd = $reconciliation->period_end_date ?? $reconciliation->periode;
+
+        if ($periodEnd === null) {
+            return false;
+        }
+
+        $periodStart = $reconciliation->periode ?? $periodEnd->copy()->startOfMonth();
+
+        return $periodStart->toDateString() <= $period->end_date->toDateString()
+            && $periodEnd->toDateString() >= $period->start_date->toDateString();
+    }
+
+    private function reconciliationDisplayLabel(BankReconciliation $reconciliation): string
+    {
+        $reconciliation->loadMissing('bankAccount');
+
+        $bankName = $reconciliation->bankAccount->bank_name;
+        $periodLabel = $reconciliation->period_end_date?->format('Y-m')
+            ?? $reconciliation->periode?->format('Y-m')
+            ?? 'unknown period';
+
+        return trim("{$bankName} {$periodLabel}");
     }
 }
