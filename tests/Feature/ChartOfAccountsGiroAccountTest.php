@@ -35,5 +35,16 @@ class ChartOfAccountsGiroAccountTest extends TestCase
         $this->assertSame('Pendapatan Jasa Giro', $account->name);
         $this->assertSame(AccountType::Revenue, $account->account_type);
         $this->assertTrue($account->is_postable);
+
+        $pphFinal = ChartOfAccount::query()
+            ->withoutGlobalScope('hotel')
+            ->where('hotel_id', $hotel->id)
+            ->where('account_code', '2-2220')
+            ->first();
+
+        $this->assertNotNull($pphFinal);
+        $this->assertSame('PPh Final Jasa Giro Terutang', $pphFinal->name);
+        $this->assertSame(AccountType::Liability, $pphFinal->account_type);
+        $this->assertTrue($pphFinal->is_postable);
     }
 }

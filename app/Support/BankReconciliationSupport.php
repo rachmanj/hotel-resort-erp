@@ -8,7 +8,7 @@ class BankReconciliationSupport
 
     /**
      * Counter-account suggestions for bank-only statement lines (keyword → COA code from ChartOfAccountsSeeder).
-     * 6-8600 Bank Charges, 4-9100 Pendapatan Jasa Giro, 2-2200 PPh 23 Terutang.
+     * 6-8600 Bank Charges, 4-9100 Pendapatan Jasa Giro, 2-2220 PPh Final Jasa Giro Terutang, 2-2200 PPh 23 Terutang.
      *
      * @var array<string, string>
      */
@@ -20,6 +20,10 @@ class BankReconciliationSupport
         'bunga' => '4-9100',
         'jasa giro' => '4-9100',
         'interest' => '4-9100',
+        'pph final' => '2-2220',
+        'pajak giro' => '2-2220',
+        'pph 4(2)' => '2-2220',
+        'pph pasal 4' => '2-2220',
         'pajak' => '2-2200',
         'pph' => '2-2200',
         'tax' => '2-2200',
@@ -67,7 +71,7 @@ class BankReconciliationSupport
         }
 
         $keywords = array_keys(self::COUNTER_ACCOUNT_BY_KEYWORD);
-        usort($keywords, static fn (string $a, string $b): int => strlen($b) <=> strlen($a));
+        usort($keywords, static fn (string $a, string $b): int => strlen($b) <=> strlen($a) ?: strcmp($b, $a));
 
         foreach ($keywords as $keyword) {
             if (str_contains($normalized, $keyword)) {

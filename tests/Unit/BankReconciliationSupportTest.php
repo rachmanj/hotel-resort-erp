@@ -33,6 +33,8 @@ class BankReconciliationSupportTest extends TestCase
 
     public function test_suggest_counter_account_code_maps_tax_descriptions(): void
     {
+        $this->assertSame('2-2220', BankReconciliationSupport::suggestCounterAccountCode('PPh Final Jasa Giro 20%'));
+        $this->assertSame('2-2220', BankReconciliationSupport::suggestCounterAccountCode('Pajak giro 14903'));
         $this->assertSame('2-2200', BankReconciliationSupport::suggestCounterAccountCode('PPh 23 withholding'));
     }
 
