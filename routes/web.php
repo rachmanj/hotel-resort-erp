@@ -277,13 +277,29 @@ Route::middleware(['auth', 'hotel.context'])->group(function (): void {
         Route::get('/transfers', [FundTransferController::class, 'index'])->name('transfers.index')->middleware('can:accounting.view');
         Route::post('/transfers', [FundTransferController::class, 'store'])->name('transfers.store')->middleware(['can:accounting.manage', 'idempotency']);
 
-        Route::get('/bank-reconciliation', [BankReconciliationController::class, 'index'])->name('bank-rec.index')->middleware('can:accounting.manage');
-        Route::post('/bank-reconciliation', [BankReconciliationController::class, 'store'])->name('bank-rec.store')->middleware('can:accounting.manage');
-        Route::get('/bank-reconciliation/{bankReconciliation}/reconcile', [BankReconciliationController::class, 'reconcile'])->name('bank-rec.reconcile')->middleware('can:accounting.manage');
-        Route::post('/bank-reconciliation/{bankReconciliation}/import-lines', [BankReconciliationController::class, 'importLines'])->name('bank-rec.import-lines')->middleware('can:accounting.manage');
-        Route::post('/bank-reconciliation/{bankReconciliation}/match', [BankReconciliationController::class, 'match'])->name('bank-rec.match')->middleware('can:accounting.manage');
-        Route::post('/bank-reconciliation/{bankReconciliation}/auto-match', [BankReconciliationController::class, 'autoMatch'])->name('bank-rec.auto-match')->middleware('can:accounting.manage');
-        Route::post('/bank-reconciliation/{bankReconciliation}/complete', [BankReconciliationController::class, 'complete'])->name('bank-rec.complete')->middleware('can:accounting.manage');
+        Route::get('/bank-reconciliation', [BankReconciliationController::class, 'index'])->name('bank-rec.index')->middleware('can:bankrec.view');
+        Route::post('/bank-reconciliation', [BankReconciliationController::class, 'store'])->name('bank-rec.store')->middleware(['can:bankrec.import', 'idempotency']);
+        Route::get('/bank-reconciliation/{bankReconciliation}/reconcile', [BankReconciliationController::class, 'reconcile'])->name('bank-rec.reconcile')->middleware('can:bankrec.view');
+        Route::get('/bank-reconciliation/{bankReconciliation}/status', [BankReconciliationController::class, 'status'])->name('bank-rec.status')->middleware('can:bankrec.view');
+        Route::post('/bank-reconciliation/{bankReconciliation}/import-lines', [BankReconciliationController::class, 'importLines'])->name('bank-rec.import-lines')->middleware(['can:bankrec.import', 'idempotency']);
+        Route::post('/bank-reconciliation/{bankReconciliation}/balances', [BankReconciliationController::class, 'updateBalances'])->name('bank-rec.balances')->middleware(['can:bankrec.reconcile', 'idempotency']);
+        Route::post('/bank-reconciliation/{bankReconciliation}/book-lines/refresh', [BankReconciliationController::class, 'refreshBookLines'])->name('bank-rec.book-lines.refresh')->middleware(['can:bankrec.reconcile', 'idempotency']);
+        Route::post('/bank-reconciliation/{bankReconciliation}/auto-match', [BankReconciliationController::class, 'autoMatch'])->name('bank-rec.auto-match')->middleware(['can:bankrec.reconcile', 'idempotency']);
+        Route::post('/bank-reconciliation/{bankReconciliation}/match', [BankReconciliationController::class, 'match'])->name('bank-rec.match')->middleware(['can:bankrec.reconcile', 'idempotency']);
+        Route::delete('/bank-reconciliation/{bankReconciliation}/match/{match}', [BankReconciliationController::class, 'unmatch'])->name('bank-rec.unmatch')->middleware(['can:bankrec.reconcile', 'idempotency']);
+        Route::post('/bank-reconciliation/{bankReconciliation}/lines/{line}/exclude', [BankReconciliationController::class, 'excludeStatementLine'])->name('bank-rec.lines.exclude')->middleware(['can:bankrec.reconcile', 'idempotency']);
+        Route::post('/bank-reconciliation/{bankReconciliation}/lines/{line}/include', [BankReconciliationController::class, 'includeStatementLine'])->name('bank-rec.lines.include')->middleware(['can:bankrec.reconcile', 'idempotency']);
+        Route::post('/bank-reconciliation/{bankReconciliation}/lines/{line}/outstanding', [BankReconciliationController::class, 'markStatementLineOutstanding'])->name('bank-rec.lines.outstanding')->middleware(['can:bankrec.reconcile', 'idempotency']);
+        Route::post('/bank-reconciliation/{bankReconciliation}/book-lines/{bookLine}/exclude', [BankReconciliationController::class, 'excludeBookLine'])->name('bank-rec.book-lines.exclude')->middleware(['can:bankrec.reconcile', 'idempotency']);
+        Route::post('/bank-reconciliation/{bankReconciliation}/book-lines/{bookLine}/include', [BankReconciliationController::class, 'includeBookLine'])->name('bank-rec.book-lines.include')->middleware(['can:bankrec.reconcile', 'idempotency']);
+        Route::post('/bank-reconciliation/{bankReconciliation}/book-lines/{bookLine}/outstanding', [BankReconciliationController::class, 'markBookLineOutstanding'])->name('bank-rec.book-lines.outstanding')->middleware(['can:bankrec.reconcile', 'idempotency']);
+        Route::post('/bank-reconciliation/{bankReconciliation}/adjustments', [BankReconciliationController::class, 'postAdjustment'])->name('bank-rec.adjustments.store')->middleware(['can:bankrec.adjust', 'idempotency']);
+        Route::post('/bank-reconciliation/{bankReconciliation}/adjustments/{line}/reverse', [BankReconciliationController::class, 'reverseAdjustment'])->name('bank-rec.adjustments.reverse')->middleware(['can:bankrec.adjust', 'idempotency']);
+        Route::post('/bank-reconciliation/{bankReconciliation}/submit', [BankReconciliationController::class, 'submitForValidation'])->name('bank-rec.submit')->middleware(['can:bankrec.reconcile', 'idempotency']);
+        Route::post('/bank-reconciliation/{bankReconciliation}/validate', [BankReconciliationController::class, 'validateReconciliation'])->name('bank-rec.validate')->middleware(['can:bankrec.validate', 'idempotency']);
+        Route::post('/bank-reconciliation/{bankReconciliation}/reject', [BankReconciliationController::class, 'rejectReconciliation'])->name('bank-rec.reject')->middleware(['can:bankrec.validate', 'idempotency']);
+        Route::post('/bank-reconciliation/{bankReconciliation}/reopen', [BankReconciliationController::class, 'reopenReconciliation'])->name('bank-rec.reopen')->middleware(['can:bankrec.validate', 'idempotency']);
+        Route::post('/bank-reconciliation/{bankReconciliation}/void', [BankReconciliationController::class, 'voidReconciliation'])->name('bank-rec.void')->middleware(['can:bankrec.validate', 'idempotency']);
 
         Route::get('/fixed-assets', [FixedAssetController::class, 'index'])->name('fixed-assets.index')->middleware('can:accounting.manage');
         Route::put('/fixed-assets/{asset}', [FixedAssetController::class, 'update'])->name('fixed-assets.update')->middleware('can:accounting.manage');

@@ -243,7 +243,7 @@ export default function AuthenticatedLayout({ children, title }: AuthenticatedLa
                 name: 'Transfers',
                 icon: <BankOutlined />,
             },
-            can('accounting.manage') && {
+            can('bankrec.view') && {
                 path: '/accounting/bank-reconciliation',
                 name: 'Bank Reconciliation',
                 icon: <BankOutlined />,

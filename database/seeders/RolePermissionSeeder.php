@@ -10,6 +10,17 @@ use Spatie\Permission\PermissionRegistrar;
 class RolePermissionSeeder extends Seeder
 {
     /**
+     * @var list<string>
+     */
+    private const BANK_RECONCILIATION_PERMISSIONS = [
+        'bankrec.view',
+        'bankrec.import',
+        'bankrec.reconcile',
+        'bankrec.adjust',
+        'bankrec.validate',
+    ];
+
+    /**
      * @var array<string, list<string>>
      */
     private array $rolePermissions = [
@@ -126,7 +137,9 @@ class RolePermissionSeeder extends Seeder
     {
         app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
-        $allPermissions = collect($this->rolePermissions)
+        $rolePermissions = $this->rolePermissionsWithBankReconciliation();
+
+        $allPermissions = collect($rolePermissions)
             ->flatten()
             ->unique()
             ->values();
@@ -135,9 +148,39 @@ class RolePermissionSeeder extends Seeder
             Permission::findOrCreate($permission, 'web');
         }
 
-        foreach ($this->rolePermissions as $roleName => $permissions) {
+        foreach ($rolePermissions as $roleName => $permissions) {
             $role = Role::findOrCreate($roleName, 'web');
             $role->syncPermissions($permissions);
         }
+    }
+
+    /**
+     * @return array<string, list<string>>
+     */
+    private function rolePermissionsWithBankReconciliation(): array
+    {
+        $merged = [];
+
+        foreach ($this->rolePermissions as $roleName => $permissions) {
+            $merged[$roleName] = array_values(array_unique(array_merge(
+                $permissions,
+                $this->bankReconciliationPermissionsForRole($roleName),
+            )));
+        }
+
+        return $merged;
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function bankReconciliationPermissionsForRole(string $roleName): array
+    {
+        return match ($roleName) {
+            'admin', 'finance' => self::BANK_RECONCILIATION_PERMISSIONS,
+            'manager' => ['bankrec.view', 'bankrec.validate'],
+            'front_office' => ['bankrec.view'],
+            default => [],
+        };
     }
 }

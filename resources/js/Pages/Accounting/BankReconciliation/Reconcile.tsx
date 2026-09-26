@@ -58,7 +58,7 @@ export default function Reconcile({ reconciliation, unmatchedLedger }: Reconcile
         });
     };
 
-    const isComplete = reconciliation.status === 'completed';
+    const isComplete = reconciliation.status === 'completed' || reconciliation.status === 'pending_validation';
 
     return (
         <AuthenticatedLayout title="Reconcile Bank Statement">
@@ -86,9 +86,9 @@ export default function Reconcile({ reconciliation, unmatchedLedger }: Reconcile
                         </Button>
                         <Button
                             type="primary"
-                            onClick={() => router.post(`/accounting/bank-reconciliation/${reconciliation.id}/complete`)}
+                            onClick={() => router.post(`/accounting/bank-reconciliation/${reconciliation.id}/submit`)}
                         >
-                            Complete Reconciliation
+                            Submit for Validation
                         </Button>
                     </Space>
                 )}

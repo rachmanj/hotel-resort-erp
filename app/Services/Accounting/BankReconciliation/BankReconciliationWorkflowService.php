@@ -167,6 +167,40 @@ class BankReconciliationWorkflowService
         });
     }
 
+    public function voidReconciliation(BankReconciliation $reconciliation, User $actor, string $reason): BankReconciliation
+    {
+        return DB::transaction(function () use ($reconciliation, $actor, $reason): BankReconciliation {
+            $reconciliation->refresh();
+
+            if (! in_array($reconciliation->status, [
+                BankReconciliationStatus::Draft,
+                BankReconciliationStatus::InReview,
+                BankReconciliationStatus::Failed,
+            ], true)) {
+                throw new InvalidArgumentException('Only a draft, in-review, or failed bank reconciliation can be voided.');
+            }
+
+            $trimmedReason = trim($reason);
+            if ($trimmedReason === '') {
+                throw new InvalidArgumentException('A reason is required when voiding a bank reconciliation.');
+            }
+
+            $reconciliation->update([
+                'status' => BankReconciliationStatus::Void,
+                'validation_status' => null,
+                'submitted_by' => null,
+                'submitted_at' => null,
+                'validated_by' => null,
+                'validated_at' => null,
+                'finalized_at' => null,
+            ]);
+
+            $this->writeAudit($reconciliation, 'voided', $actor, $trimmedReason);
+
+            return $reconciliation->fresh();
+        });
+    }
+
     public function reopenReconciliation(BankReconciliation $reconciliation, User $actor, string $reason): BankReconciliation
     {
         return DB::transaction(function () use ($reconciliation, $actor, $reason): BankReconciliation {
