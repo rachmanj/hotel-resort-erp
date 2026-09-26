@@ -248,6 +248,7 @@ class ChartOfAccountsSeeder extends Seeder
             $this->postable('4-4600', 'Tiket Pantai Revenue', AccountType::Revenue, NormalBalance::Credit, '4-4000'),
             $this->postable('4-4700', 'Transport Revenue', AccountType::Revenue, NormalBalance::Credit, '4-4000'),
             $this->postable('4-4800', 'Meeting Package Revenue', AccountType::Revenue, NormalBalance::Credit, '4-4000'),
+            $this->postable('4-9100', 'Pendapatan Jasa Giro', AccountType::Revenue, NormalBalance::Credit, '4-0000'),
         ];
 
         $codeToId = ChartOfAccount::query()

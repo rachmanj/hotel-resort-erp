@@ -27,7 +27,8 @@ class BankReconciliationSupportTest extends TestCase
 
     public function test_suggest_counter_account_code_maps_interest_descriptions(): void
     {
-        $this->assertSame('4-9000', BankReconciliationSupport::suggestCounterAccountCode('Bunga 14903'));
+        $this->assertSame('4-9100', BankReconciliationSupport::suggestCounterAccountCode('Bunga 14903'));
+        $this->assertSame('4-9100', BankReconciliationSupport::suggestCounterAccountCode('Jasa giro 14903'));
     }
 
     public function test_suggest_counter_account_code_maps_tax_descriptions(): void

@@ -174,7 +174,7 @@ class BankReconciliationMatchTest extends TestCase
         }
     }
 
-    public function test_mutations_refused_when_reconciliation_is_locked(): void
+    public function test_manual_match_refused_when_reconciliation_is_pending_validation(): void
     {
         $reconciliation = $this->makeReconciliation(['status' => BankReconciliationStatus::PendingValidation]);
         $date = '2026-09-24';
@@ -193,21 +193,35 @@ class BankReconciliationMatchTest extends TestCase
             'credit' => 0,
         ]);
 
-        try {
-            $this->service->manualMatch($reconciliation, [$statement->id], [$book->id]);
-            $this->fail('Expected locked reconciliation to refuse manual match.');
-        } catch (InvalidArgumentException) {
-            // expected
-        }
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('This bank reconciliation is locked for editing');
 
-        $reconciliation->update(['status' => BankReconciliationStatus::Completed]);
+        $this->service->manualMatch($reconciliation, [$statement->id], [$book->id]);
+    }
 
-        try {
-            $this->service->autoMatch($reconciliation);
-            $this->fail('Expected locked reconciliation to refuse auto match.');
-        } catch (InvalidArgumentException) {
-            // expected
-        }
+    public function test_auto_match_refused_when_reconciliation_is_completed(): void
+    {
+        $reconciliation = $this->makeReconciliation(['status' => BankReconciliationStatus::Completed]);
+        $date = '2026-09-24';
+
+        BankReconciliationLine::factory()->create([
+            'bank_reconciliation_id' => $reconciliation->id,
+            'posting_date' => $date,
+            'debit' => 0,
+            'credit' => 10_000,
+        ]);
+
+        BankReconciliationBookLine::factory()->create([
+            'bank_reconciliation_id' => $reconciliation->id,
+            'posting_date' => $date,
+            'debit' => 10_000,
+            'credit' => 0,
+        ]);
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('This bank reconciliation is locked for editing');
+
+        $this->service->autoMatch($reconciliation);
     }
 
     public function test_exclude_and_include_statement_line_with_audit(): void

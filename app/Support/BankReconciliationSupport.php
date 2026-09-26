@@ -8,6 +8,7 @@ class BankReconciliationSupport
 
     /**
      * Counter-account suggestions for bank-only statement lines (keyword → COA code from ChartOfAccountsSeeder).
+     * 6-8600 Bank Charges, 4-9100 Pendapatan Jasa Giro, 2-2200 PPh 23 Terutang.
      *
      * @var array<string, string>
      */
@@ -16,9 +17,9 @@ class BankReconciliationSupport
         'bank charge' => '6-8600',
         'admin' => '6-8600',
         'adm' => '6-8600',
-        'bunga' => '4-9000',
-        'jasa giro' => '4-9000',
-        'interest' => '4-9000',
+        'bunga' => '4-9100',
+        'jasa giro' => '4-9100',
+        'interest' => '4-9100',
         'pajak' => '2-2200',
         'pph' => '2-2200',
         'tax' => '2-2200',
