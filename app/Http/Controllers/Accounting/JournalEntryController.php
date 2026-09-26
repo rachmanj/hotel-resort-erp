@@ -9,6 +9,7 @@ use App\Models\Department;
 use App\Models\JournalEntry;
 use App\Models\JournalEntryLine;
 use App\Services\Accounting\GlPostingService;
+use App\Services\Accounting\JournalEntryNumberService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -20,6 +21,7 @@ class JournalEntryController extends Controller
 {
     public function __construct(
         private GlPostingService $glPostingService,
+        private JournalEntryNumberService $journalEntryNumberService,
     ) {}
 
     public function index(Request $request): Response
@@ -82,7 +84,7 @@ class JournalEntryController extends Controller
 
         DB::transaction(function () use ($validated, $request): void {
             $entry = JournalEntry::query()->create([
-                'journal_no' => $this->generateJournalNumber(),
+                'journal_no' => $this->journalEntryNumberService->nextNumber(),
                 'entry_date' => $validated['entry_date'],
                 'description' => $validated['description'],
                 'status' => JournalEntryStatus::Draft->value,
@@ -175,27 +177,6 @@ class JournalEntryController extends Controller
         });
 
         return back()->with('success', 'Journal entry approved and posted.');
-    }
-
-    private function generateJournalNumber(): string
-    {
-        return DB::transaction(function (): string {
-            $prefix = 'JV-'.now()->format('Ym').'-';
-
-            $lastNo = JournalEntry::query()
-                ->withoutGlobalScope('hotel')
-                ->where('journal_no', 'like', $prefix.'%')
-                ->lockForUpdate()
-                ->orderByDesc('journal_no')
-                ->value('journal_no');
-
-            $sequence = 1;
-            if ($lastNo !== null) {
-                $sequence = (int) substr($lastNo, -4) + 1;
-            }
-
-            return $prefix.str_pad((string) $sequence, 4, '0', STR_PAD_LEFT);
-        });
     }
 
     /**
