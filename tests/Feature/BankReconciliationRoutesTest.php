@@ -102,6 +102,8 @@ class BankReconciliationRoutesTest extends TestCase
             ['accounting.bank-rec.index', [], '/accounting/bank-reconciliation'],
             ['accounting.bank-rec.store', [], '/accounting/bank-reconciliation'],
             ['accounting.bank-rec.reconcile', ['bankReconciliation' => $this->reconciliation], '/accounting/bank-reconciliation/'.$this->reconciliation->id.'/reconcile'],
+            ['accounting.bank-rec.report', ['bankReconciliation' => $this->reconciliation], '/accounting/bank-reconciliation/'.$this->reconciliation->id.'/report'],
+            ['accounting.bank-rec.report.download', ['bankReconciliation' => $this->reconciliation], '/accounting/bank-reconciliation/'.$this->reconciliation->id.'/report/download'],
             ['accounting.bank-rec.status', ['bankReconciliation' => $this->reconciliation], '/accounting/bank-reconciliation/'.$this->reconciliation->id.'/status'],
             ['accounting.bank-rec.import-lines', ['bankReconciliation' => $this->reconciliation], '/accounting/bank-reconciliation/'.$this->reconciliation->id.'/import-lines'],
             ['accounting.bank-rec.balances', ['bankReconciliation' => $this->reconciliation], '/accounting/bank-reconciliation/'.$this->reconciliation->id.'/balances'],
