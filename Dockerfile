@@ -7,7 +7,7 @@ COPY resources/ resources/
 RUN npm run build
 
 FROM php:8.4-fpm-alpine
-RUN apk add --no-cache nginx supervisor libpng-dev libjpeg-turbo-dev freetype-dev libzip-dev zip unzip git libxml2-dev oniguruma-dev curl mysql-client
+RUN apk add --no-cache nginx supervisor libpng-dev libjpeg-turbo-dev freetype-dev libzip-dev zip unzip git libxml2-dev oniguruma-dev curl mysql-client qpdf
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg && docker-php-ext-install -j$(nproc) pdo pdo_mysql mbstring xml bcmath gd zip opcache exif pcntl
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 WORKDIR /var/www

@@ -51,33 +51,43 @@ class BankStatementTextReader
 
     private function decryptSecuredPdfToTemporary(string $absolutePath): string
     {
-        $temporaryPath = tempnam(sys_get_temp_dir(), 'bank_stmt_').'.pdf';
+        $directory = storage_path('app/bank-reconciliation/tmp');
 
-        $script = <<<'PY'
-import sys
-from pypdf import PdfReader, PdfWriter
+        if (! is_dir($directory) && ! mkdir($directory, 0755, true) && ! is_dir($directory)) {
+            throw new InvalidArgumentException('Could not create temporary directory for bank statement decryption.');
+        }
 
-source, dest = sys.argv[1], sys.argv[2]
-reader = PdfReader(source)
-if reader.is_encrypted:
-    reader.decrypt("")
-writer = PdfWriter()
-for page in reader.pages:
-    writer.add_page(page)
-with open(dest, "wb") as handle:
-    writer.write(handle)
-PY;
+        $temporaryPath = $directory.'/'.uniqid('stmt_', true).'.pdf';
+        $binary = (string) config('bank_reconciliation.statement_qpdf_binary', 'qpdf');
 
-        $process = new Process(['python3', '-c', $script, $absolutePath, $temporaryPath]);
+        if ($binary !== 'qpdf' && ! is_executable($binary)) {
+            throw new InvalidArgumentException(
+                'This PDF is password-protected and could not be decrypted for text extraction. '
+                .'Install the qpdf binary on the server (or set BANK_RECON_QPDF_BINARY), or upload an unencrypted export.',
+            );
+        }
+
+        $process = new Process([
+            $binary,
+            '--decrypt',
+            '--password=',
+            $absolutePath,
+            $temporaryPath,
+        ]);
         $process->setTimeout(120);
         $process->run();
 
         if (! $process->isSuccessful() || ! is_readable($temporaryPath)) {
             @unlink($temporaryPath);
 
+            $detail = trim($process->getErrorOutput()) !== ''
+                ? trim($process->getErrorOutput())
+                : trim($process->getOutput());
+
             throw new InvalidArgumentException(
-                'This PDF is password-protected and could not be decrypted for text extraction. '
-                .'Install Python pypdf on the server or upload an unencrypted export.',
+                'This PDF is password-protected and could not be decrypted for text extraction using qpdf. '
+                .'Install the qpdf binary on the server (or set BANK_RECON_QPDF_BINARY), or upload an unencrypted export.'
+                .($detail !== '' ? ' qpdf: '.$detail : ''),
             );
         }
 

@@ -216,9 +216,13 @@ export default function Import({ reconciliation, profileOptions }: ImportProps) 
                 )}
 
                 <Card title="Upload statement file">
+                    <Typography.Paragraph type="secondary">
+                        Bank statement PDF exports are supported for import. CSV and Excel export formats will be
+                        supported in a later release.
+                    </Typography.Paragraph>
                     <Space direction="vertical" style={{ width: '100%' }} size="middle">
                         <Upload
-                            accept=".pdf,.csv,.xlsx"
+                            accept=".pdf"
                             maxCount={1}
                             beforeUpload={() => false}
                             fileList={fileList}

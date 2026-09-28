@@ -108,6 +108,12 @@ Registered in `routes/web.php` (23 routes): index, store, reconcile workspace, r
 | `bankrec:health` | Daily | Orphan match groups, unbalanced completed sessions, stale book lines, carry-forwards > 60 days; exit 1 if any anomaly |
 | `bankrec:purge-sessions --days=90` | Weekly | Delete old `draft`/`failed` sessions with no matches, adjustments, or non-unmatched statement lines; safety cap 50 deletions unless `--force` |
 
+## Statement file import (Phase 3)
+
+Uploaded files flow: `BankStatementTextReader` (PDF text extraction) → profile parser (`BankStatementProfileParserRegistry`) → `StatementImportValidator` → optional AI fallback (`BankStatementAiReader`) with the same validator gate.
+
+Many Indonesian bank PDF statements are encrypted with an empty user password (owner lock only). `smalot/pdfparser` cannot read those files directly. When parsing fails with a secured-PDF error, `BankStatementTextReader` decrypts a temporary copy with **qpdf** (`qpdf --decrypt --password=` …), then re-extracts text from the decrypted file under `storage/app/bank-reconciliation/tmp/` (always deleted after use). Configure the binary via `BANK_RECON_QPDF_BINARY` / `config('bank_reconciliation.statement_qpdf_binary')` (default `qpdf`). The production Docker image installs `qpdf` via Alpine `apk`; without qpdf, import fails with an explicit error rather than an empty statement.
+
 ## File map
 
 | Area | Location |
