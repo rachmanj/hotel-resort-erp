@@ -1,0 +1,20 @@
+Account Statement
+Account Statement Summary
+Opening Balance Total Amount DebitedNo. of Debit
+1,000,000.00 1 50,000.00
+Closing Balance Total Amount CreditedNo. of Credit
+1,150,000.00 1 200,000.00
+Account No. Account Name Alias
+1234567890123 SAMPLE HOTEL PT SAMPLE
+Period Currency Branch
+IDR01 Jul 2026 - 31 Jul 2026 KCP Sample
+CreditReference No.Remark Debit BalancePosting Date
+01 Jul 2026,
+08:00:00
+REF001
+ROOM DEPOSIT
+- 0.00 200,000.00 1,200,000.00
+02 Jul 2026,
+09:00:00
+ADMIN FEE
+- 50,000.00 0.00 1,150,000.00

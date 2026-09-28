@@ -13,6 +13,7 @@
         "laravel/boost": "^2.4",
         "laravel/framework": "^13.8",
         "laravel/tinker": "^3.0",
+        "smalot/pdfparser": "^2.12",
         "spatie/laravel-permission": "^8.3"
     },
     "require-dev": {

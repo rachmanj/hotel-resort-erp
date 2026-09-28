@@ -186,6 +186,13 @@ export default function Reconcile({
                             Auto-match
                         </Button>
                     )}
+                    {canImport && (
+                        <Link href={`/accounting/bank-reconciliation/${reconciliation.id}/import`}>
+                            <Button type="primary" aria-label="Import bank statement file">
+                                Import statement
+                            </Button>
+                        </Link>
+                    )}
                     <Link href={`/accounting/bank-reconciliation/${reconciliation.id}/report`}>
                         <Button aria-label="Open reconciliation report">Report</Button>
                     </Link>

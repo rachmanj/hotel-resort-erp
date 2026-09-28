@@ -14,6 +14,9 @@ use App\Observers\FolioItemGuestInvoiceObserver;
 use App\Observers\HousekeepingLogObserver;
 use App\Observers\ReservationProformaObserver;
 use App\Observers\ReservationRoomProformaObserver;
+use App\Services\Accounting\BankReconciliation\Statement\BankStatementProfileParserRegistry;
+use App\Services\Accounting\BankReconciliation\Statement\BcaGiroPdfParser;
+use App\Services\Accounting\BankReconciliation\Statement\MandiriKopraPdfParser;
 use App\Telegram\Notifications\TelegramChannel;
 use App\WhatsApp\Notifications\WhatsAppChannel;
 use Illuminate\Routing\Route;
@@ -25,7 +28,12 @@ class AppServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        //
+        $this->app->singleton(BankStatementProfileParserRegistry::class, function (): BankStatementProfileParserRegistry {
+            return new BankStatementProfileParserRegistry([
+                new BcaGiroPdfParser,
+                new MandiriKopraPdfParser,
+            ]);
+        });
     }
 
     public function boot(): void

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Accounting;
 
 use App\Actions\Accounting\CarryForwardOutstandingAction;
+use App\Actions\Accounting\ImportBankStatementAction;
 use App\Actions\Accounting\PostBankAdjustmentAction;
 use App\Actions\Accounting\ReverseBankAdjustmentAction;
 use App\Enums\BankBookLineStatus;
@@ -11,7 +12,9 @@ use App\Enums\BankReconciliationValidationStatus;
 use App\Enums\BankStatementLineStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ExcludeReconciliationLineRequest;
+use App\Http\Requests\ImportBankStatementFileRequest;
 use App\Http\Requests\ImportBankStatementLinesRequest;
+use App\Http\Requests\ImportBankStatementPreviewRequest;
 use App\Http\Requests\ManualMatchBankReconciliationRequest;
 use App\Http\Requests\PostBankAdjustmentRequest;
 use App\Http\Requests\RejectBankReconciliationRequest;
@@ -29,6 +32,7 @@ use App\Models\User;
 use App\Services\Accounting\BankReconciliation\BankBookLineFetcher;
 use App\Services\Accounting\BankReconciliation\BankReconciliationMatchingService;
 use App\Services\Accounting\BankReconciliation\BankReconciliationWorkflowService;
+use App\Services\Accounting\BankReconciliation\Statement\BankStatementProfileParserRegistry;
 use App\Services\Accounting\BankReconciliationService;
 use App\Support\BankReconciliationSupport;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -53,6 +57,8 @@ class BankReconciliationController extends Controller
         private CarryForwardOutstandingAction $carryForwardOutstandingAction,
         private PostBankAdjustmentAction $postBankAdjustmentAction,
         private ReverseBankAdjustmentAction $reverseBankAdjustmentAction,
+        private ImportBankStatementAction $importBankStatementAction,
+        private BankStatementProfileParserRegistry $statementParserRegistry,
     ) {}
 
     public function index(Request $request): Response
@@ -266,6 +272,83 @@ class BankReconciliationController extends Controller
         $period = $data['header']['period_end_date'] ?? 'report';
 
         return $pdf->download("bank-reconciliation-{$accountNo}-{$period}.pdf");
+    }
+
+    public function import(Request $request, BankReconciliation $bankReconciliation): Response
+    {
+        $bankReconciliation->load('bankAccount');
+
+        return Inertia::render('Accounting/BankReconciliation/Import', [
+            'reconciliation' => [
+                'id' => $bankReconciliation->id,
+                'bank_name' => $bankReconciliation->bankAccount?->bank_name,
+                'account_no' => $bankReconciliation->bankAccount?->account_no,
+                'period_end_date' => $bankReconciliation->period_end_date->toDateString(),
+                'statement_lines_count' => $bankReconciliation->lines()->count(),
+                'is_editable' => $bankReconciliation->status->isEditable() && ! $bankReconciliation->isLockedForEditing(),
+            ],
+            'profileOptions' => $this->statementParserRegistry->options(),
+        ]);
+    }
+
+    public function importPreview(
+        ImportBankStatementPreviewRequest $request,
+        BankReconciliation $bankReconciliation,
+    ): JsonResponse {
+        $path = $request->file('file')?->getRealPath();
+        $originalName = $request->file('file')?->getClientOriginalName() ?? 'statement.pdf';
+
+        if ($path === false || $path === null) {
+            return response()->json(['message' => 'Uploaded file is invalid.'], 422);
+        }
+
+        try {
+            $result = $this->importBankStatementAction->__invoke(
+                $bankReconciliation,
+                $path,
+                $originalName,
+                $request->validated('profile_code'),
+                dryRun: true,
+                actor: $request->user(),
+            );
+        } catch (InvalidArgumentException $exception) {
+            return response()->json([
+                'validation_passed' => false,
+                'validation_message' => $exception->getMessage(),
+            ], 422);
+        }
+
+        return response()->json($result->toArray());
+    }
+
+    public function importFile(
+        ImportBankStatementFileRequest $request,
+        BankReconciliation $bankReconciliation,
+    ): RedirectResponse {
+        $path = $request->file('file')?->getRealPath();
+        $originalName = $request->file('file')?->getClientOriginalName() ?? 'statement.pdf';
+
+        if ($path === false || $path === null) {
+            return back()->with('error', 'Uploaded file is invalid.');
+        }
+
+        try {
+            $this->importBankStatementAction->__invoke(
+                $bankReconciliation,
+                $path,
+                $originalName,
+                $request->validated('profile_code'),
+                dryRun: false,
+                actor: $request->user(),
+                replace: $request->boolean('replace'),
+            );
+        } catch (InvalidArgumentException $exception) {
+            return back()->with('error', $exception->getMessage());
+        }
+
+        return redirect()
+            ->route('accounting.bank-rec.reconcile', $bankReconciliation)
+            ->with('success', 'Bank statement imported.');
     }
 
     public function importLines(

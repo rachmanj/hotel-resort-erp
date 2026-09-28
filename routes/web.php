@@ -280,6 +280,9 @@ Route::middleware(['auth', 'hotel.context'])->group(function (): void {
         Route::get('/bank-reconciliation', [BankReconciliationController::class, 'index'])->name('bank-rec.index')->middleware('can:bankrec.view');
         Route::post('/bank-reconciliation', [BankReconciliationController::class, 'store'])->name('bank-rec.store')->middleware(['can:bankrec.import', 'idempotency']);
         Route::get('/bank-reconciliation/{bankReconciliation}/reconcile', [BankReconciliationController::class, 'reconcile'])->name('bank-rec.reconcile')->middleware('can:bankrec.view');
+        Route::get('/bank-reconciliation/{bankReconciliation}/import', [BankReconciliationController::class, 'import'])->name('bank-rec.import')->middleware('can:bankrec.import');
+        Route::post('/bank-reconciliation/{bankReconciliation}/import-preview', [BankReconciliationController::class, 'importPreview'])->name('bank-rec.import-preview')->middleware('can:bankrec.import');
+        Route::post('/bank-reconciliation/{bankReconciliation}/import-file', [BankReconciliationController::class, 'importFile'])->name('bank-rec.import-file')->middleware(['can:bankrec.import', 'idempotency']);
         Route::get('/bank-reconciliation/{bankReconciliation}/report', [BankReconciliationController::class, 'report'])->name('bank-rec.report')->middleware('can:bankrec.view');
         Route::get('/bank-reconciliation/{bankReconciliation}/report/download', [BankReconciliationController::class, 'reportDownload'])->name('bank-rec.report.download')->middleware('can:bankrec.view');
         Route::get('/bank-reconciliation/{bankReconciliation}/status', [BankReconciliationController::class, 'status'])->name('bank-rec.status')->middleware('can:bankrec.view');

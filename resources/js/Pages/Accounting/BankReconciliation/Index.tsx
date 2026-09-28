@@ -164,7 +164,7 @@ export default function BankReconciliationIndex({
 
                     if (permissions.includes('bankrec.import') && row.statement_lines_count === 0) {
                         actions.push(
-                            <Link key="import" href={`/accounting/bank-reconciliation/${row.id}/reconcile`}>
+                            <Link key="import" href={`/accounting/bank-reconciliation/${row.id}/import`}>
                                 Import
                             </Link>,
                         );
