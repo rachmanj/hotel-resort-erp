@@ -84,13 +84,13 @@ Kami membandingkan tabel harga pada dokumen dengan data tipe kamar di aplikasi. 
 
 Penamaan dan kode akun **kami tetapkan sendiri**, mengikuti bagan akun aplikasi supaya konsisten dengan jurnal yang sudah berjalan. Rencana kami:
 
-| Akun di aplikasi | Kode | Perlakuannya |
-|---|---|---|
-| Fee Reservasi Online (OTA) | 6-3400 | Biaya pemasaran penjualan. Akun "OTA Booking Fee" yang sudah ada kami sesuaikan namanya (belum ada transaksi di dalamnya) |
-| Fee Reservasi Offline (Marketing Non Agent) | 6-3410 | Biaya pemasaran penjualan (akun baru) |
-| Diskon Agent Rate & Corporate | 4-8900 | Potongan pendapatan: pendapatan kamar tetap tercatat pada harga Publish, selisihnya dibebankan ke akun ini |
-| Utang Fee OTA | 2-1410 | Tetap dipakai bila fee OTA dibayar belakangan |
-| Travel Agent Commission | 6-3300 | Tetap dipakai untuk komisi tunai ke agen — berbeda dari diskon rate |
+| Akun di aplikasi | Perlakuannya |
+|---|---|
+| **Fee Reservasi Online (OTA)** — kode 6-3400 | Biaya pemasaran penjualan. Akun "OTA Booking Fee" yang sudah ada kami sesuaikan namanya (belum ada transaksi di dalamnya) |
+| **Fee Reservasi Offline (Marketing Non Agent)** — kode 6-3410 | Biaya pemasaran penjualan (akun baru) |
+| **Diskon Agent Rate & Corporate** — kode 4-8900 | Potongan pendapatan: pendapatan kamar tetap tercatat pada harga Publish, selisihnya dibebankan ke akun ini |
+| **Utang Fee OTA** — kode 2-1410 | Tetap dipakai bila fee OTA dibayar belakangan |
+| **Travel Agent Commission** — kode 6-3300 | Tetap dipakai untuk komisi tunai ke agen — berbeda dari diskon rate |
 
 Bila ada di antara penetapan di atas yang bertentangan dengan bagan akun tim, mohon ditandai di sini:
 
