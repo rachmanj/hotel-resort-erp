@@ -80,15 +80,23 @@ Kami membandingkan tabel harga pada dokumen dengan data tipe kamar di aplikasi. 
 | OTA: Tiket.com fee 17% + promo 10%, Traveloka fee 19% — mohon konfirmasi apakah angka ini masih berlaku dan sejak kapan bila berubah | |
 | Mohon lampirkan **file Excel tabel harga** (bukan PDF) agar tidak ada angka yang salah ketik saat kami input | |
 
-### Akun jurnal **[PENTING]**
+### Akun jurnal
 
-Dokumen menyebut tiga akun: **Fee Reservasi Online**, **Fee Reservasi Offline**, dan **Discount**. Mohon dibantu:
+Penamaan dan kode akun **kami tetapkan sendiri**, mengikuti bagan akun aplikasi supaya konsisten dengan jurnal yang sudah berjalan. Rencana kami:
 
-| Pertanyaan | Jawaban tim |
+| Akun di aplikasi | Kode | Perlakuannya |
+|---|---|---|
+| Fee Reservasi Online (OTA) | 6-3400 | Biaya pemasaran penjualan. Akun "OTA Booking Fee" yang sudah ada kami sesuaikan namanya (belum ada transaksi di dalamnya) |
+| Fee Reservasi Offline (Marketing Non Agent) | 6-3410 | Biaya pemasaran penjualan (akun baru) |
+| Diskon Agent Rate & Corporate | 4-8900 | Potongan pendapatan: pendapatan kamar tetap tercatat pada harga Publish, selisihnya dibebankan ke akun ini |
+| Utang Fee OTA | 2-1410 | Tetap dipakai bila fee OTA dibayar belakangan |
+| Travel Agent Commission | 6-3300 | Tetap dipakai untuk komisi tunai ke agen — berbeda dari diskon rate |
+
+Bila ada di antara penetapan di atas yang bertentangan dengan bagan akun tim, mohon ditandai di sini:
+
+| Akun yang perlu disesuaikan | Keterangan tim |
 |---|---|
-| Apakah nama akun di atas sama dengan nama akun di bagan akun (Accurate) tim? Mohon dituliskan **nama lengkap + kode akunnya** | |
-| Untuk Travel Agent: selisih harga Publish dengan Agent Rate dicatat pada akun Discount. Apakah Discount di sini adalah **potongan pendapatan** (contra revenue) atau **biaya**? | |
-| Fee OTA: dicatat sebagai biaya (mengurangi pendapatan) atau sebagai utang yang dibayar belakangan? | |
+| | |
 
 ---
 
@@ -178,9 +186,9 @@ Mohon diprioritaskan pada lima hal ini, karena tanpa jawabannya pekerjaan tidak 
 
 1. **Pemetaan tipe kamar ↔ tabel harga** (Bagian 3) — nama & angka di aplikasi belum sama dengan dokumen.
 2. **Daftar Corporate Rate** — perusahaan/instansi mana saja dan berapa tarifnya.
-3. **Nama lengkap + kode akun** untuk Fee Reservasi Online, Fee Reservasi Offline, dan Discount (Bagian 3) — ini menentukan benar tidaknya jurnal keuangan.
-4. **Ketentuan yang menentukan tagihan tamu**: usia anak, batas extra bed per tipe kamar, ketentuan crew, dan lama tenggat pembatalan otomatis (Bagian 4 & 5).
-5. **Contoh Guest Registration Form** dan **penegasan bahwa Invoice menyusul** (Bagian 6).
+3. **Ketentuan yang menentukan tagihan tamu**: usia anak, batas extra bed per tipe kamar, ketentuan crew, dan lama tenggat pembatalan otomatis (Bagian 4 & 5).
+4. **Contoh Guest Registration Form** dan **daftar nama user Finance** yang berhak menerbitkan/mengunduh dokumen tagihan (Bagian 6).
+5. **Penegasan bahwa Invoice menyusul** beserta contoh 4 variannya (Bagian 6).
 
 ## 9. Berkas yang kami minta
 
