@@ -6,6 +6,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import AvailabilityGrid from './components/AvailabilityGrid';
 import GuestSearchSelect from './components/GuestSearchSelect';
 import RateSelector from './components/RateSelector';
+import ReservationSourceFields from './components/ReservationSourceFields';
 
 interface RoomType {
     id: number;
@@ -41,6 +42,11 @@ interface ReservationData {
     children: number;
     special_requests?: string | null;
     source: string;
+    source_label?: string;
+    direct_channel?: string | null;
+    marketing_user_id?: number | null;
+    is_marketing_non_agent?: boolean;
+    company_id?: number | null;
     agent_id: number | null;
     ota_fee_id: number | null;
     guest_id: number | null;
@@ -62,8 +68,11 @@ interface EditProps {
     ratePlans: RatePlan[];
     availability: AvailabilityRow[];
     sources: Array<{ value: string; label: string }>;
-    agents: Array<{ value: number; label: string; code: string }>;
-    otaFees: Array<{ value: number; label: string; code: string }>;
+    directChannels: Array<{ value: string; label: string }>;
+    marketingUsers: Array<{ value: number; label: string }>;
+    companies: Array<{ id: number; name: string }>;
+    agents: Array<{ value: number; label: string; code: string; agent_type: string; company_id?: number | null }>;
+    legacySource?: boolean;
 }
 
 export default function ReservationEdit({
@@ -72,8 +81,11 @@ export default function ReservationEdit({
     ratePlans,
     availability,
     sources,
+    directChannels,
+    marketingUsers,
+    companies,
     agents,
-    otaFees,
+    legacySource = false,
 }: EditProps) {
     const [step, setStep] = useState(0);
 
@@ -87,6 +99,10 @@ export default function ReservationEdit({
         children: reservation.children,
         special_requests: reservation.special_requests ?? '',
         source: reservation.source,
+        direct_channel: reservation.direct_channel ?? null,
+        marketing_user_id: reservation.marketing_user_id ?? null,
+        is_marketing_non_agent: reservation.is_marketing_non_agent ?? false,
+        company_id: reservation.company_id ?? null,
         agent_id: reservation.agent_id,
         ota_fee_id: reservation.ota_fee_id,
         guest_id: reservation.guest_id,
@@ -145,31 +161,24 @@ export default function ReservationEdit({
                             }}
                         />
                     </Form.Item>
-                    <Form.Item label="Source">
-                        <Select
-                            value={form.data.source}
-                            onChange={(v) => form.setData('source', v)}
-                            options={sources.map((s) => ({ value: s.value, label: s.label }))}
-                        />
-                    </Form.Item>
-                    <Form.Item label="Travel Agent" required={form.data.source === 'agent'}>
-                        <Select
-                            allowClear
-                            placeholder="Select travel agent"
-                            value={form.data.agent_id}
-                            onChange={(v) => form.setData('agent_id', v)}
-                            options={agents}
-                        />
-                    </Form.Item>
-                    <Form.Item label="OTA" required={form.data.source === 'ota'}>
-                        <Select
-                            allowClear
-                            placeholder="Select OTA"
-                            value={form.data.ota_fee_id}
-                            onChange={(v) => form.setData('ota_fee_id', v)}
-                            options={otaFees}
-                        />
-                    </Form.Item>
+                    <ReservationSourceFields
+                        data={{
+                            source: form.data.source,
+                            agent_id: form.data.agent_id,
+                            company_id: form.data.company_id,
+                            direct_channel: form.data.direct_channel,
+                            marketing_user_id: form.data.marketing_user_id,
+                            is_marketing_non_agent: form.data.is_marketing_non_agent,
+                        }}
+                        sources={sources}
+                        directChannels={directChannels}
+                        marketingUsers={marketingUsers}
+                        companies={companies}
+                        agents={agents}
+                        legacySource={legacySource}
+                        legacySourceLabel={reservation.source_label ?? reservation.source}
+                        onChange={(patch) => form.setData({ ...form.data, ...patch })}
+                    />
                 </Form>
             ),
         },

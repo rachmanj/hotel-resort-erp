@@ -46,7 +46,6 @@ use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FloorController;
 use App\Http\Controllers\FolioController;
-use App\Http\Controllers\GroupController;
 use App\Http\Controllers\GuestController;
 use App\Http\Controllers\GuestInvoiceController;
 use App\Http\Controllers\HotelContextController;
@@ -125,17 +124,6 @@ Route::middleware(['auth', 'hotel.context'])->group(function (): void {
     Route::post('/proforma-payments/{proformaPayment}/verify', [ProformaPaymentController::class, 'verify'])->name('proforma-payments.verify')->middleware('can:proforma.payment.verify');
     Route::get('/proforma-payments/{proformaPayment}/receipt', [ProformaPaymentController::class, 'receipt'])->name('proforma-payments.receipt')->middleware('can:reservations.view');
     Route::post('/reservation-rooms/{reservationRoom}/checkout', [CheckOutController::class, 'store'])->name('reservations.checkout')->middleware(['can:reservations.checkout', 'idempotency']);
-
-    Route::get('/groups', [GroupController::class, 'index'])->name('groups.index')->middleware('can:groups.view');
-    Route::get('/groups/create', [GroupController::class, 'create'])->name('groups.create')->middleware('can:groups.manage');
-    Route::post('/groups', [GroupController::class, 'store'])->name('groups.store')->middleware('can:groups.manage');
-    Route::get('/groups/{group}', [GroupController::class, 'show'])->name('groups.show')->middleware('can:groups.view');
-    Route::post('/groups/{group}/reservations', [GroupController::class, 'addReservation'])->name('groups.reservations.add')->middleware('can:groups.manage');
-    Route::delete('/groups/{group}/reservations/{reservation}', [GroupController::class, 'removeReservation'])->name('groups.reservations.remove')->middleware('can:groups.manage');
-    Route::post('/groups/{group}/checkin', [GroupController::class, 'checkIn'])->name('groups.checkin')->middleware('can:groups.checkin');
-    Route::post('/groups/{group}/checkout', [GroupController::class, 'checkOut'])->name('groups.checkout')->middleware('can:groups.checkout');
-    Route::post('/groups/{group}/deposit', [GroupController::class, 'storeDeposit'])->name('groups.deposit.store')->middleware('can:groups.manage');
-    Route::post('/groups/{group}/invoice/generate', [GroupController::class, 'generateInvoice'])->name('groups.invoice.generate')->middleware('can:billing.invoice');
 
     Route::get('/folios/{folio}', [FolioController::class, 'show'])->name('folios.show')->middleware('can:folios.view');
     Route::post('/folios/{folio}/payments', [FolioController::class, 'postPayment'])->name('folios.payments.store')->middleware(['can:billing.payment', 'idempotency']);

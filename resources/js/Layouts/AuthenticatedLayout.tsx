@@ -84,11 +84,6 @@ export default function AuthenticatedLayout({ children, title }: AuthenticatedLa
                 name: 'Calendar',
                 icon: <CalendarOutlined />,
             },
-            can('groups.view') && {
-                path: '/groups',
-                name: 'Group Bookings',
-                icon: <TeamOutlined />,
-            },
             can('rooms.view') && {
                 path: '/rooms',
                 name: 'Rooms',

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Actions\Reservations\CancelReservationAction;
 use App\Actions\Reservations\ConfirmReservationAction;
 use App\Actions\Reservations\CreateReservationAction;
+use App\Enums\DirectChannel;
 use App\Enums\FolioType;
 use App\Enums\ReservationSource;
 use App\Enums\ReservationStatus;
@@ -13,11 +14,13 @@ use App\Http\Requests\CancelReservationRequest;
 use App\Http\Requests\StoreReservationRequest;
 use App\Http\Requests\UpdateReservationRequest;
 use App\Models\Agent;
+use App\Models\Company;
 use App\Models\OtaFee;
 use App\Models\RatePlan;
 use App\Models\Reservation;
 use App\Models\Room;
 use App\Models\RoomType;
+use App\Models\User;
 use App\Notifications\ReservationCancelledNotification;
 use App\Notifications\ReservationConfirmedNotification;
 use App\Observers\ActivityLogObserver;
@@ -39,7 +42,13 @@ class ReservationController extends Controller
     public function index(Request $request): Response
     {
         $reservations = Reservation::query()
-            ->with(['guest:id,full_name,phone', 'agent:id,name', 'reservationRooms.room:id,number', 'reservationRooms.roomType:id,name'])
+            ->with([
+                'guest:id,full_name,phone',
+                'agent:id,name',
+                'marketing:id,name',
+                'reservationRooms.room:id,number',
+                'reservationRooms.roomType:id,name',
+            ])
             ->when($request->filled('status'), fn ($q) => $q->where('status', $request->string('status')))
             ->when($request->filled('source'), fn ($q) => $q->where('source', $request->string('source')))
             ->when($request->filled('date_from'), fn ($q) => $q->where('arrival_date', '>=', $request->string('date_from')))
@@ -63,6 +72,10 @@ class ReservationController extends Controller
                 'status_color' => $reservation->status->color(),
                 'source' => $reservation->source->value,
                 'source_label' => $reservation->source->label(),
+                'direct_channel' => $reservation->direct_channel?->value,
+                'direct_channel_label' => $reservation->direct_channel?->label(),
+                'marketing_user' => $reservation->marketing?->only(['id', 'name']),
+                'is_marketing_non_agent' => $reservation->is_marketing_non_agent,
                 'arrival_date' => $reservation->arrival_date->toDateString(),
                 'departure_date' => $reservation->departure_date->toDateString(),
                 'adults' => $reservation->adults,
@@ -83,10 +96,7 @@ class ReservationController extends Controller
                 'label' => $s->label(),
                 'color' => $s->color(),
             ]),
-            'sources' => collect(ReservationSource::cases())->map(fn (ReservationSource $s) => [
-                'value' => $s->value,
-                'label' => $s->label(),
-            ]),
+            'sources' => $this->categorisedSourceOptions(),
             'filters' => $request->only(['status', 'source', 'date_from', 'date_to', 'guest_search']),
         ]);
     }
@@ -128,12 +138,7 @@ class ReservationController extends Controller
                 'arrival_date' => $arrival,
                 'departure_date' => $departure,
             ],
-            'sources' => collect(ReservationSource::cases())->map(fn (ReservationSource $s) => [
-                'value' => $s->value,
-                'label' => $s->label(),
-            ]),
-            'agents' => $this->activeAgentOptions($hotelId),
-            'otaFees' => $this->activeOtaFeeOptions($hotelId),
+            ...$this->reservationSourceFormProps($hotelId),
         ]);
     }
 
@@ -185,6 +190,11 @@ class ReservationController extends Controller
                 'children' => $reservation->children,
                 'special_requests' => $reservation->special_requests,
                 'source' => $reservation->source->value,
+                'source_label' => $reservation->source->label(),
+                'direct_channel' => $reservation->direct_channel?->value,
+                'marketing_user_id' => $reservation->marketing_user_id,
+                'is_marketing_non_agent' => $reservation->is_marketing_non_agent,
+                'company_id' => $reservation->agent?->company_id,
                 'agent_id' => $reservation->agent_id,
                 'ota_fee_id' => $reservation->ota_fee_id,
                 'guest_id' => $reservation->guest_id,
@@ -217,12 +227,8 @@ class ReservationController extends Controller
                     'season' => $plan->season?->only(['id', 'name']),
                 ]),
             'availability' => $availabilityService->getAvailability($checkin, $checkout, $reservation->hotel_id, $reservation->id),
-            'sources' => collect(ReservationSource::cases())->map(fn (ReservationSource $s) => [
-                'value' => $s->value,
-                'label' => $s->label(),
-            ]),
-            'agents' => $this->activeAgentOptions($reservation->hotel_id),
-            'otaFees' => $this->activeOtaFeeOptions($reservation->hotel_id),
+            ...$this->reservationSourceFormProps($reservation->hotel_id),
+            'legacySource' => $reservation->source->isLegacy(),
         ]);
     }
 
@@ -256,13 +262,20 @@ class ReservationController extends Controller
                     ));
                 }
 
+                $source = $validated['source'] ?? $reservation->source->value;
+
                 $reservation->update([
                     'arrival_date' => $validated['arrival_date'],
                     'departure_date' => $validated['departure_date'],
                     'adults' => $validated['adults'] ?? $reservation->adults,
                     'children' => $validated['children'] ?? $reservation->children,
                     'special_requests' => $validated['special_requests'] ?? null,
-                    'source' => $validated['source'] ?? $reservation->source->value,
+                    'source' => $source,
+                    'direct_channel' => $source === ReservationSource::Direct->value
+                        ? ($validated['direct_channel'] ?? null)
+                        : null,
+                    'marketing_user_id' => $validated['marketing_user_id'] ?? $reservation->marketing_user_id,
+                    'is_marketing_non_agent' => $validated['is_marketing_non_agent'] ?? $reservation->is_marketing_non_agent,
                     'agent_id' => $validated['agent_id'] ?? null,
                     'ota_fee_id' => $validated['ota_fee_id'] ?? null,
                 ]);
@@ -310,6 +323,7 @@ class ReservationController extends Controller
         $reservation->load([
             'guest',
             'agent',
+            'marketing:id,name',
             'createdBy:id,name',
             'promotion',
             'promotionRedemptions.promotion',
@@ -338,6 +352,11 @@ class ReservationController extends Controller
                 'hold_expires_at' => $reservation->hold_expires_at?->toDateTimeString(),
                 'source' => $reservation->source->value,
                 'source_label' => $reservation->source->label(),
+                'direct_channel' => $reservation->direct_channel?->value,
+                'direct_channel_label' => $reservation->direct_channel?->label(),
+                'marketing_user' => $reservation->marketing?->only(['id', 'name']),
+                'is_marketing_non_agent' => $reservation->is_marketing_non_agent,
+                'marketing_non_agent_confirmed_at' => $reservation->marketing_non_agent_confirmed_at?->toDateTimeString(),
                 'agent' => $reservation->agent?->only(['id', 'name', 'code']),
                 'arrival_date' => $reservation->arrival_date->toDateString(),
                 'departure_date' => $reservation->departure_date->toDateString(),
@@ -488,14 +507,49 @@ class ReservationController extends Controller
     /**
      * @return Collection<int, array{value: int, label: string, code: string}>
      */
+    /**
+     * @return array<string, mixed>
+     */
+    private function reservationSourceFormProps(?int $hotelId): array
+    {
+        return [
+            'sources' => $this->categorisedSourceOptions(),
+            'directChannels' => collect(DirectChannel::cases())->map(fn (DirectChannel $c) => [
+                'value' => $c->value,
+                'label' => $c->label(),
+            ]),
+            'marketingUsers' => User::marketingOptions(),
+            'companies' => Company::query()->where('is_active', true)->orderBy('name')->get(['id', 'name']),
+            'agents' => $this->activeAgentOptions($hotelId),
+            'otaFees' => $this->activeOtaFeeOptions($hotelId),
+        ];
+    }
+
+    /**
+     * @return Collection<int, array{value: string, label: string}>
+     */
+    private function categorisedSourceOptions(): Collection
+    {
+        return collect(ReservationSource::categorised())->map(fn (ReservationSource $s) => [
+            'value' => $s->value,
+            'label' => $s->label(),
+        ]);
+    }
+
     private function activeAgentOptions(?int $hotelId): Collection
     {
         return Agent::query()
             ->when($hotelId !== null, fn ($q) => $q->where('hotel_id', $hotelId))
             ->where('is_active', true)
             ->orderBy('name')
-            ->get(['id', 'name', 'code'])
-            ->map(fn (Agent $a) => ['value' => $a->id, 'label' => $a->name, 'code' => $a->code])
+            ->get(['id', 'name', 'code', 'agent_type', 'company_id'])
+            ->map(fn (Agent $a) => [
+                'value' => $a->id,
+                'label' => $a->name,
+                'code' => $a->code,
+                'agent_type' => $a->agent_type->value,
+                'company_id' => $a->company_id,
+            ])
             ->values();
     }
 

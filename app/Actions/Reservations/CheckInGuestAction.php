@@ -28,9 +28,16 @@ class CheckInGuestAction
     /**
      * @param  list<int>|null  $reservationRoomIds  Check in specific rooms only (multi-room partial check-in)
      */
-    public function __invoke(Reservation $reservation, ?User $performedBy = null, ?array $reservationRoomIds = null): Reservation
-    {
-        return DB::transaction(function () use ($reservation, $performedBy, $reservationRoomIds): Reservation {
+    /**
+     * @param  array{is_marketing_non_agent?: bool}|null  $checkInOptions
+     */
+    public function __invoke(
+        Reservation $reservation,
+        ?User $performedBy = null,
+        ?array $reservationRoomIds = null,
+        ?array $checkInOptions = null,
+    ): Reservation {
+        return DB::transaction(function () use ($reservation, $performedBy, $reservationRoomIds, $checkInOptions): Reservation {
             $reservation = Reservation::query()->lockForUpdate()->findOrFail($reservation->id);
             $reservation->load(['guest', 'reservationRooms.room.roomType', 'reservationGroup']);
 
@@ -44,6 +51,17 @@ class CheckInGuestAction
 
             if ($reservation->guest?->is_blacklisted) {
                 throw new InvalidArgumentException('Guest is blacklisted and cannot check in.');
+            }
+
+            if ($checkInOptions !== null && array_key_exists('is_marketing_non_agent', $checkInOptions)) {
+                $isNonAgent = (bool) $checkInOptions['is_marketing_non_agent'];
+                $updates = ['is_marketing_non_agent' => $isNonAgent];
+
+                if ($isNonAgent && ! $reservation->is_marketing_non_agent) {
+                    $updates['marketing_non_agent_confirmed_at'] = now();
+                }
+
+                $reservation->update($updates);
             }
 
             $roomsToCheckIn = $reservation->reservationRooms

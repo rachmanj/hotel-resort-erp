@@ -3,11 +3,13 @@
 namespace App\Models;
 
 use App\Enums\CreatedVia;
+use App\Enums\DirectChannel;
 use App\Enums\ReservationSource;
 use App\Enums\ReservationStatus;
 use App\Models\Concerns\BelongsToHotel;
 use App\Models\Concerns\LogsActivity;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -22,6 +24,10 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
     'reservation_group_id',
     'promotion_id',
     'source',
+    'direct_channel',
+    'marketing_user_id',
+    'is_marketing_non_agent',
+    'marketing_non_agent_confirmed_at',
     'status',
     'hold_expires_at',
     'arrival_date',
@@ -41,6 +47,9 @@ class Reservation extends Model
     {
         return [
             'source' => ReservationSource::class,
+            'direct_channel' => DirectChannel::class,
+            'is_marketing_non_agent' => 'boolean',
+            'marketing_non_agent_confirmed_at' => 'datetime',
             'status' => ReservationStatus::class,
             'hold_expires_at' => 'datetime',
             'arrival_date' => 'date',
@@ -77,6 +86,19 @@ class Reservation extends Model
     public function agent(): BelongsTo
     {
         return $this->belongsTo(Agent::class);
+    }
+
+    public function marketing(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'marketing_user_id');
+    }
+
+    /**
+     * @param  Builder<Reservation>  $query
+     */
+    public function scopeForMarketingUser(Builder $query, int $userId): Builder
+    {
+        return $query->where('marketing_user_id', $userId);
     }
 
     public function otaFee(): BelongsTo

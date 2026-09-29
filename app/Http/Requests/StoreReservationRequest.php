@@ -3,15 +3,22 @@
 namespace App\Http\Requests;
 
 use App\Enums\GuestIdType;
-use App\Enums\ReservationSource;
+use App\Http\Requests\Concerns\ValidatesReservationMarketingFields;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
 class StoreReservationRequest extends FormRequest
 {
+    use ValidatesReservationMarketingFields;
+
     public function authorize(): bool
     {
         return $this->user()?->can('reservations.create') ?? false;
+    }
+
+    protected function prepareForValidation(): void
+    {
+        $this->prepareCorporateAgentFromCompany();
     }
 
     /**
@@ -35,13 +42,11 @@ class StoreReservationRequest extends FormRequest
             'room_id' => ['nullable', 'integer', 'exists:rooms,id'],
             'rate_plan_id' => ['nullable', 'integer', 'exists:rate_plans,id'],
             'promotion_code' => ['nullable', 'string', 'max:30'],
-            'company_id' => ['nullable', 'integer', 'exists:companies,id'],
             'adults' => ['sometimes', 'integer', 'min:1', 'max:20'],
             'children' => ['sometimes', 'integer', 'min:0', 'max:20'],
             'special_requests' => ['nullable', 'string'],
-            'source' => ['sometimes', Rule::enum(ReservationSource::class)],
-            'agent_id' => ['nullable', 'integer', 'exists:agents,id', 'required_if:source,agent'],
-            'ota_fee_id' => ['nullable', 'integer', 'exists:ota_fees,id', 'required_if:source,ota'],
+            'ota_fee_id' => ['nullable', 'integer', 'exists:ota_fees,id'],
+            ...$this->reservationMarketingFieldRules(requireMarketingUser: true),
         ];
     }
 }

@@ -45,6 +45,9 @@ class CreateReservationAction
      *     children?: int,
      *     special_requests?: string|null,
      *     source?: string,
+     *     direct_channel?: string|null,
+     *     marketing_user_id?: int|null,
+     *     is_marketing_non_agent?: bool,
      *     agent_id?: int|null,
      *     ota_fee_id?: int|null,
      *     external_booking_id?: string|null,
@@ -95,6 +98,11 @@ class CreateReservationAction
                 'ota_fee_id' => $data['ota_fee_id'] ?? null,
                 'reservation_group_id' => $data['reservation_group_id'] ?? null,
                 'source' => $data['source'] ?? ReservationSource::Walkin->value,
+                'direct_channel' => ($data['source'] ?? ReservationSource::Walkin->value) === ReservationSource::Direct->value
+                    ? ($data['direct_channel'] ?? null)
+                    : null,
+                'marketing_user_id' => $data['marketing_user_id'] ?? null,
+                'is_marketing_non_agent' => (bool) ($data['is_marketing_non_agent'] ?? false),
                 'status' => $status->value,
                 'hold_expires_at' => $status === ReservationStatus::Tentative
                     ? now()->addDays((int) config('reservations.hold_days'))

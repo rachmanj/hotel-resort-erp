@@ -17,6 +17,9 @@ interface ReservationShowProps {
         hold_expires_at?: string | null;
         source: string;
         source_label: string;
+        direct_channel_label?: string | null;
+        marketing_user?: { id: number; name: string } | null;
+        is_marketing_non_agent?: boolean;
         agent?: { id: number; name: string; code?: string } | null;
         arrival_date: string;
         departure_date: string;
@@ -183,7 +186,18 @@ export default function ReservationShow({
                 <Descriptions.Item label="Status">
                     <Tag color={reservation.status_color}>{reservation.status_label}</Tag>
                 </Descriptions.Item>
-                <Descriptions.Item label="Source">{reservation.source_label}</Descriptions.Item>
+                <Descriptions.Item label="Category">
+                    {reservation.source_label}
+                    {reservation.direct_channel_label
+                        ? ` · ${reservation.direct_channel_label}`
+                        : ''}
+                </Descriptions.Item>
+                <Descriptions.Item label="Marketing">
+                    {reservation.marketing_user?.name ?? '–'}
+                    {reservation.is_marketing_non_agent && (
+                        <Tag color="blue" style={{ marginLeft: 8 }}>Non agent</Tag>
+                    )}
+                </Descriptions.Item>
                 {reservation.status === 'tentative' && reservation.hold_expires_at && (
                     <Descriptions.Item label="Hold expires" span={2}>
                         <Tag color="orange">{reservation.hold_expires_at}</Tag>

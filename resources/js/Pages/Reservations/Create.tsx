@@ -1,5 +1,5 @@
 import { Head, router, useForm } from '@inertiajs/react';
-import { Alert, Button, DatePicker, Form, Input, InputNumber, Select, Steps } from 'antd';
+import { Alert, Button, DatePicker, Form, Input, InputNumber, Steps } from 'antd';
 import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
@@ -7,6 +7,7 @@ import { newIdempotencyKey } from '@/lib/idempotency';
 import AvailabilityGrid from './components/AvailabilityGrid';
 import GuestSearchSelect from './components/GuestSearchSelect';
 import RateSelector from './components/RateSelector';
+import ReservationSourceFields from './components/ReservationSourceFields';
 
 interface RoomType {
     id: number;
@@ -39,7 +40,10 @@ interface CreateProps {
     availability: AvailabilityRow[];
     defaults: { arrival_date: string; departure_date: string };
     sources: Array<{ value: string; label: string }>;
-    agents: Array<{ value: number; label: string; code: string }>;
+    directChannels: Array<{ value: string; label: string }>;
+    marketingUsers: Array<{ value: number; label: string }>;
+    companies: Array<{ id: number; name: string }>;
+    agents: Array<{ value: number; label: string; code: string; agent_type: string; company_id?: number | null }>;
     otaFees: Array<{ value: number; label: string; code: string }>;
 }
 
@@ -49,8 +53,10 @@ export default function ReservationCreate({
     availability,
     defaults,
     sources,
+    directChannels,
+    marketingUsers,
+    companies,
     agents,
-    otaFees,
 }: CreateProps) {
     const [step, setStep] = useState(0);
     const [isOnline, setIsOnline] = useState(
@@ -80,8 +86,11 @@ export default function ReservationCreate({
         children: 0,
         special_requests: '',
         source: 'walkin',
+        direct_channel: null as string | null,
+        marketing_user_id: null as number | null,
+        is_marketing_non_agent: false,
+        company_id: null as number | null,
         agent_id: null as number | null,
-        ota_fee_id: null as number | null,
         guest_id: null as number | null,
         guest: {
             full_name: '',
@@ -140,31 +149,22 @@ export default function ReservationCreate({
                             }}
                         />
                     </Form.Item>
-                    <Form.Item label="Source">
-                        <Select
-                            value={form.data.source}
-                            onChange={(v) => form.setData('source', v)}
-                            options={sources.map((s) => ({ value: s.value, label: s.label }))}
-                        />
-                    </Form.Item>
-                    <Form.Item label="Travel Agent" required={form.data.source === 'agent'}>
-                        <Select
-                            allowClear
-                            placeholder="Select travel agent"
-                            value={form.data.agent_id}
-                            onChange={(v) => form.setData('agent_id', v)}
-                            options={agents}
-                        />
-                    </Form.Item>
-                    <Form.Item label="OTA" required={form.data.source === 'ota'}>
-                        <Select
-                            allowClear
-                            placeholder="Select OTA"
-                            value={form.data.ota_fee_id}
-                            onChange={(v) => form.setData('ota_fee_id', v)}
-                            options={otaFees}
-                        />
-                    </Form.Item>
+                    <ReservationSourceFields
+                        data={{
+                            source: form.data.source,
+                            agent_id: form.data.agent_id,
+                            company_id: form.data.company_id,
+                            direct_channel: form.data.direct_channel,
+                            marketing_user_id: form.data.marketing_user_id,
+                            is_marketing_non_agent: form.data.is_marketing_non_agent,
+                        }}
+                        sources={sources}
+                        directChannels={directChannels}
+                        marketingUsers={marketingUsers}
+                        companies={companies}
+                        agents={agents}
+                        onChange={(patch) => form.setData({ ...form.data, ...patch })}
+                    />
                 </Form>
             ),
         },

@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Collection;
 use Spatie\Permission\Traits\HasRoles;
 
 #[Fillable(['name', 'email', 'password', 'hotel_id', 'agent_id'])]
@@ -81,5 +82,18 @@ class User extends Authenticatable
         }
 
         return $this->hotels()->where('hotels.id', $hotelId)->exists();
+    }
+
+    /**
+     * @return Collection<int, array{value: int, label: string}>
+     */
+    public static function marketingOptions(): Collection
+    {
+        return static::query()
+            ->role('marketing')
+            ->orderBy('name')
+            ->get(['id', 'name'])
+            ->map(fn (User $user) => ['value' => $user->id, 'label' => $user->name])
+            ->values();
     }
 }

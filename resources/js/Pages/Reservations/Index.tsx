@@ -15,6 +15,9 @@ interface ReservationRow {
     status_color: string;
     source: string;
     source_label: string;
+    direct_channel_label?: string | null;
+    marketing_user?: { id: number; name: string } | null;
+    is_marketing_non_agent?: boolean;
     arrival_date: string;
     departure_date: string;
     adults: number;
@@ -84,8 +87,25 @@ export default function ReservationsIndex({
                     .join(', '),
         },
         {
-            title: 'Source',
+            title: 'Category',
             dataIndex: 'source_label',
+            render: (_, record) => (
+                <span>
+                    {record.source_label}
+                    {record.direct_channel_label ? ` · ${record.direct_channel_label}` : ''}
+                </span>
+            ),
+        },
+        {
+            title: 'Marketing',
+            dataIndex: ['marketing_user', 'name'],
+            render: (_, record) => {
+                const name = record.marketing_user?.name ?? '–';
+                if (record.is_marketing_non_agent) {
+                    return `${name} (Non agent)`;
+                }
+                return name;
+            },
         },
         {
             title: 'Status',

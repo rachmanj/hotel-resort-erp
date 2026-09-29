@@ -1,5 +1,6 @@
 import { router } from '@inertiajs/react';
-import { Descriptions, Modal, message, theme } from 'antd';
+import { Checkbox, Descriptions, Form, Modal, message, theme } from 'antd';
+import { useState } from 'react';
 import { newIdempotencyKey } from '@/lib/idempotency';
 
 interface CheckInModalProps {
@@ -7,6 +8,7 @@ interface CheckInModalProps {
     reservation: {
         id: number;
         reservation_code: string;
+        is_marketing_non_agent?: boolean;
         guest?: { full_name: string; id_number?: string; phone?: string };
         reservation_rooms: Array<{
             room?: { number: string } | null;
@@ -19,10 +21,14 @@ interface CheckInModalProps {
 
 export default function CheckInModal({ open, reservation, onClose }: CheckInModalProps) {
     const { token } = theme.useToken();
+    const [marketingNonAgent, setMarketingNonAgent] = useState(
+        reservation.is_marketing_non_agent ?? false,
+    );
+
     const handleConfirm = () => {
         router.post(
             `/reservations/${reservation.id}/checkin`,
-            {},
+            { is_marketing_non_agent: marketingNonAgent },
             {
                 headers: { 'X-Idempotency-Key': newIdempotencyKey() },
                 onSuccess: () => onClose(),
@@ -53,7 +59,17 @@ export default function CheckInModal({ open, reservation, onClose }: CheckInModa
                         .join(', ')}
                 </Descriptions.Item>
             </Descriptions>
-            <p style={{ marginTop: 16, color: token.colorTextSecondary }}>
+            <Form layout="vertical" style={{ marginTop: 16 }}>
+                <Form.Item>
+                    <Checkbox
+                        checked={marketingNonAgent}
+                        onChange={(e) => setMarketingNonAgent(e.target.checked)}
+                    >
+                        Marketing (non agent)
+                    </Checkbox>
+                </Form.Item>
+            </Form>
+            <p style={{ marginTop: 8, color: token.colorTextSecondary }}>
                 Room charges will be posted to the folio with applicable taxes (SC 10% + PPN 11%).
             </p>
         </Modal>

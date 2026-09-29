@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\User;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
@@ -131,7 +132,17 @@ class RolePermissionSeeder extends Seeder
         'agent' => [
             'agents.portal',
         ],
+        'marketing' => [
+            'reservations.view',
+        ],
     ];
+
+    /**
+     * Production marketing staff (Pratasaba) — assign role without removing others.
+     *
+     * @var list<int>
+     */
+    private const MARKETING_USER_IDS = [9, 11, 12];
 
     public function run(): void
     {
@@ -151,6 +162,25 @@ class RolePermissionSeeder extends Seeder
         foreach ($rolePermissions as $roleName => $permissions) {
             $role = Role::findOrCreate($roleName, 'web');
             $role->syncPermissions($permissions);
+        }
+
+        $this->seedMarketingRoleAssignments();
+    }
+
+    private function seedMarketingRoleAssignments(): void
+    {
+        $marketingRole = Role::findByName('marketing', 'web');
+
+        foreach (self::MARKETING_USER_IDS as $userId) {
+            $user = User::query()->find($userId);
+
+            if ($user === null) {
+                continue;
+            }
+
+            if (! $user->hasRole('marketing')) {
+                $user->assignRole($marketingRole);
+            }
         }
     }
 
