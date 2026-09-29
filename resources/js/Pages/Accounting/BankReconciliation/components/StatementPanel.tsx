@@ -3,6 +3,7 @@ import { Button, Card, DatePicker, Input, Modal, Select, Space, Table, Typograph
 import type { ColumnsType, TableRowSelection } from 'antd/es/table/interface';
 import dayjs from 'dayjs';
 import { useMemo, useState, type ReactNode } from 'react';
+import { sanitizeDayjsRange, type DayjsRange } from '../dateValue';
 import type { StatementLineRow } from '../types';
 import MoneyAmount from './MoneyAmount';
 import StatusTag from './StatusTag';
@@ -31,7 +32,7 @@ export default function StatementPanel({
     const { token } = theme.useToken();
     const [statusFilter, setStatusFilter] = useState<string | undefined>();
     const [search, setSearch] = useState('');
-    const [dateRange, setDateRange] = useState<[dayjs.Dayjs | null, dayjs.Dayjs | null] | null>(null);
+    const [dateRange, setDateRange] = useState<DayjsRange>(null);
 
     const filtered = useMemo(() => {
         return lines.filter((line) => {
@@ -275,7 +276,7 @@ export default function StatementPanel({
                 <DatePicker.RangePicker
                     aria-label="Statement date range"
                     value={dateRange}
-                    onChange={(values) => setDateRange(values)}
+                    onChange={(values) => setDateRange(sanitizeDayjsRange(values))}
                 />
             </Space>
 

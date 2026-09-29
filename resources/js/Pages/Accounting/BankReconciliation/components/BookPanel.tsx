@@ -3,6 +3,7 @@ import { Button, Card, DatePicker, Input, Modal, Select, Space, Table, Tag, Tool
 import type { ColumnsType, TableRowSelection } from 'antd/es/table/interface';
 import dayjs from 'dayjs';
 import { useMemo, useState } from 'react';
+import { sanitizeDayjsRange, type DayjsRange } from '../dateValue';
 import type { BookLineRow } from '../types';
 import MoneyAmount from './MoneyAmount';
 import StatusTag from './StatusTag';
@@ -25,7 +26,7 @@ export default function BookPanel({
     const { token } = theme.useToken();
     const [statusFilter, setStatusFilter] = useState<string | undefined>();
     const [search, setSearch] = useState('');
-    const [dateRange, setDateRange] = useState<[dayjs.Dayjs | null, dayjs.Dayjs | null] | null>(null);
+    const [dateRange, setDateRange] = useState<DayjsRange>(null);
 
     const filtered = useMemo(() => {
         return lines.filter((line) => {
@@ -230,7 +231,7 @@ export default function BookPanel({
                 <DatePicker.RangePicker
                     aria-label="Book line date range"
                     value={dateRange}
-                    onChange={(values) => setDateRange(values)}
+                    onChange={(values) => setDateRange(sanitizeDayjsRange(values))}
                 />
             </Space>
 

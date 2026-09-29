@@ -7,6 +7,7 @@ import { useMemo, useState } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import MoneyAmount from './components/MoneyAmount';
 import StatusTag from './components/StatusTag';
+import { toDateString, toDayjsOrNull, toRangePickerValue } from './dateValue';
 
 interface ReconciliationRow {
     id: number;
@@ -196,7 +197,20 @@ export default function BankReconciliationIndex({
         [permissions, token],
     );
 
+    const periodEndDateValid = toDayjsOrNull(data.period_end_date) !== null;
+    const canStartReconciliation = data.bank_account_id != null && periodEndDateValid;
+    const createOkDisabledReason =
+        data.bank_account_id == null
+            ? 'Select a bank account'
+            : !periodEndDateValid
+              ? 'Period end date is required'
+              : undefined;
+
     const startReconciliation = () => {
+        if (!canStartReconciliation) {
+            return;
+        }
+
         Modal.confirm({
             title: 'Start new reconciliation?',
             onOk: () =>
@@ -270,15 +284,11 @@ export default function BankReconciliationIndex({
                 />
                 <DatePicker.RangePicker
                     aria-label="Period end date range"
-                    value={
-                        filters.period_from && filters.period_to
-                            ? [dayjs(filters.period_from), dayjs(filters.period_to)]
-                            : undefined
-                    }
+                    value={toRangePickerValue(filters.period_from, filters.period_to)}
                     onChange={(dates) =>
                         applyFilters({
-                            period_from: dates?.[0]?.format('YYYY-MM-DD') ?? null,
-                            period_to: dates?.[1]?.format('YYYY-MM-DD') ?? null,
+                            period_from: dates?.[0]?.isValid() ? dates[0].format('YYYY-MM-DD') : null,
+                            period_to: dates?.[1]?.isValid() ? dates[1].format('YYYY-MM-DD') : null,
                         })
                     }
                 />
@@ -315,6 +325,10 @@ export default function BankReconciliationIndex({
                 onCancel={() => setCreateOpen(false)}
                 onOk={startReconciliation}
                 confirmLoading={processing}
+                okButtonProps={{
+                    disabled: !canStartReconciliation,
+                    title: createOkDisabledReason,
+                }}
             >
                 <Form layout="vertical">
                     <Form.Item label="Bank account" required>
@@ -328,12 +342,26 @@ export default function BankReconciliationIndex({
                             onChange={(value) => setData('bank_account_id', value)}
                         />
                     </Form.Item>
-                    <Form.Item label="Period end date">
+                    <Form.Item
+                        label="Period end date"
+                        required
+                        validateStatus={periodEndDateValid ? undefined : 'error'}
+                        help={periodEndDateValid ? undefined : 'Period end date is required'}
+                    >
                         <DatePicker
                             aria-label="Period end date"
                             style={{ width: '100%' }}
-                            value={dayjs(data.period_end_date)}
-                            onChange={(date) => setData('period_end_date', date?.format('YYYY-MM-DD') ?? '')}
+                            allowClear={false}
+                            value={toDayjsOrNull(data.period_end_date)}
+                            onChange={(date, dateString) => {
+                                if (!dateString) {
+                                    setData('period_end_date', '');
+
+                                    return;
+                                }
+
+                                setData('period_end_date', toDateString(date));
+                            }}
                         />
                     </Form.Item>
                     <Form.Item label="Statement closing balance">

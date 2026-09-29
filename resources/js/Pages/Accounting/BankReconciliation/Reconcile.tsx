@@ -1,7 +1,7 @@
 import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
 import { Alert, Button, Card, DatePicker, InputNumber, Modal, Skeleton, Space, Typography, theme } from 'antd';
-import dayjs from 'dayjs';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { toDateString, toDayjsOrNull } from './dateValue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import AdjustmentModal from './components/AdjustmentModal';
 import BookPanel from './components/BookPanel';
@@ -121,6 +121,14 @@ export default function Reconcile({
     };
 
     const submitImport = () => {
+        const missingDate = importForm.data.lines.some((line) => toDayjsOrNull(line.statement_date) === null);
+
+        if (missingDate) {
+            Modal.error({ title: 'Each statement line must have a date' });
+
+            return;
+        }
+
         Modal.confirm({
             title: 'Import statement lines?',
             onOk: () => importForm.post(`/accounting/bank-reconciliation/${reconciliation.id}/import-lines`),
@@ -226,10 +234,10 @@ export default function Reconcile({
                                 <Space key={index} wrap style={{ marginBottom: token.marginXS }}>
                                     <DatePicker
                                         aria-label="Statement line date"
-                                        value={dayjs(line.statement_date)}
+                                        value={toDayjsOrNull(line.statement_date)}
                                         onChange={(date) => {
                                             const next = [...importForm.data.lines];
-                                            next[index] = { ...next[index], statement_date: date?.format('YYYY-MM-DD') ?? '' };
+                                            next[index] = { ...next[index], statement_date: toDateString(date) };
                                             importForm.setData('lines', next);
                                         }}
                                     />
